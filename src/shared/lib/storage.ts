@@ -45,7 +45,10 @@ export function loadData(): AppData {
     const migrated = runMigrations(JSON.parse(raw));
     const parsed = appDataSchema.safeParse(migrated);
     if (!parsed.success) {
-      console.warn('[miss-genius] données invalides, réinitialisation', parsed.error);
+      console.warn(
+        '[miss-genius] données invalides, réinitialisation',
+        parsed.error
+      );
       return createInitialData();
     }
     return parsed.data as AppData;
@@ -81,7 +84,9 @@ export function importData(json: string): AppData {
   const migrated = runMigrations(JSON.parse(json));
   const parsed = appDataSchema.safeParse(migrated);
   if (!parsed.success) {
-    throw new Error('Fichier invalide : le format ne correspond pas à Miss Genius.');
+    throw new Error(
+      'Fichier invalide : le format ne correspond pas à Miss Genius.'
+    );
   }
   return parsed.data as AppData;
 }

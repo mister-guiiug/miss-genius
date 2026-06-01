@@ -32,7 +32,10 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
       scenario.subjects,
       scenario.grades,
       makeHypotheticalGrade(subjectId, v, m, w),
-      { referenceBase: settings.referenceBase, normalizeBases: settings.normalizeBases }
+      {
+        referenceBase: settings.referenceBase,
+        normalizeBases: settings.normalizeBases,
+      }
     );
   }, [value, max, weight, scenario, subjectId, settings]);
 
@@ -80,7 +83,11 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
             </dt>
             <dd className="flex items-center gap-2">
               <span className="font-display text-lg font-bold tabular-nums">
-                {formatAverage(impact.subjectAfter, settings.rounding, settings.referenceBase)}
+                {formatAverage(
+                  impact.subjectAfter,
+                  settings.rounding,
+                  settings.referenceBase
+                )}
               </span>
               <TrendPill delta={impact.subjectDelta} />
             </dd>
@@ -91,7 +98,11 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
             </dt>
             <dd className="flex items-center gap-2">
               <span className="font-display text-lg font-bold tabular-nums">
-                {formatAverage(impact.generalAfter, settings.rounding, settings.referenceBase)}
+                {formatAverage(
+                  impact.generalAfter,
+                  settings.rounding,
+                  settings.referenceBase
+                )}
               </span>
               <TrendPill delta={impact.generalDelta} />
             </dd>

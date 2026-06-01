@@ -38,7 +38,9 @@ export function SettingsScreen() {
       setFeedback('Données importées avec succès.');
     } catch (err) {
       setFeedback(
-        err instanceof Error ? err.message : 'Import impossible : fichier invalide.'
+        err instanceof Error
+          ? err.message
+          : 'Import impossible : fichier invalide.'
       );
     }
   }
@@ -98,8 +100,8 @@ export function SettingsScreen() {
       <Card className="flex flex-col gap-3">
         <h2 className="font-bold">Sauvegarde locale</h2>
         <p className="text-sm text-[var(--mg-text-soft)]">
-          Tes données restent sur cet appareil. Exporte-les pour les conserver ou
-          les transférer.
+          Tes données restent sur cet appareil. Exporte-les pour les conserver
+          ou les transférer.
         </p>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={handleExport}>
@@ -121,7 +123,10 @@ export function SettingsScreen() {
           />
         </div>
         {feedback && (
-          <p role="status" className="text-sm font-medium text-[var(--mg-good)]">
+          <p
+            role="status"
+            className="text-sm font-medium text-[var(--mg-good)]"
+          >
             {feedback}
           </p>
         )}

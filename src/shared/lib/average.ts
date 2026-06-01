@@ -6,11 +6,7 @@
  * elles sont normalisées vers la base de référence si `normalizeBases` est actif.
  */
 
-import type {
-  Grade,
-  RoundingConfig,
-  Subject,
-} from '../types/domain.ts';
+import type { Grade, RoundingConfig, Subject } from '../types/domain.ts';
 
 /** Une note est exploitable si ses valeurs sont des nombres finis cohérents. */
 export function isUsableGrade(g: Grade): boolean {

@@ -33,7 +33,11 @@ function FieldShell({ id, label, hint, error, children }: FieldShellProps) {
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} role="alert" className="text-xs text-[var(--mg-bad)]">
+        <p
+          id={`${id}-error`}
+          role="alert"
+          className="text-xs text-[var(--mg-bad)]"
+        >
           {error}
         </p>
       )}
@@ -41,8 +45,10 @@ function FieldShell({ id, label, hint, error, children }: FieldShellProps) {
   );
 }
 
-interface TextFieldProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'id'> {
+interface TextFieldProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'id'
+> {
   label: string;
   hint?: string;
   error?: string;
@@ -56,15 +62,19 @@ export function TextField({ label, hint, error, ...rest }: TextFieldProps) {
         id={id}
         className={cn(controlClass, error && 'border-[var(--mg-bad)]')}
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
+        aria-describedby={
+          error ? `${id}-error` : hint ? `${id}-hint` : undefined
+        }
         {...rest}
       />
     </FieldShell>
   );
 }
 
-interface SelectFieldProps
-  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'> {
+interface SelectFieldProps extends Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  'id'
+> {
   label: string;
   hint?: string;
   children: ReactNode;

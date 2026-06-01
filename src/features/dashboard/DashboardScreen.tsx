@@ -41,12 +41,22 @@ export function DashboardScreen() {
     .slice(0, 2);
 
   const emoji =
-    general === null ? '📊' : general >= 14 ? '🌟' : general >= 10 ? '🙂' : '💪';
+    general === null
+      ? '📊'
+      : general >= 14
+        ? '🌟'
+        : general >= 10
+          ? '🙂'
+          : '💪';
 
   return (
     <div className="flex flex-col gap-4 p-4">
       <Card className="flex items-center gap-4 bg-gradient-to-br from-primary to-[color:var(--color-accent)] text-white border-0">
-        <RiveBadge fallback={emoji} label="Niveau de la moyenne générale" size={92} />
+        <RiveBadge
+          fallback={emoji}
+          label="Niveau de la moyenne générale"
+          size={92}
+        />
         <div className="min-w-0">
           <p className="text-sm/5 font-medium opacity-90">Moyenne générale</p>
           <p className="font-display text-4xl font-bold tabular-nums">
@@ -95,7 +105,11 @@ export function DashboardScreen() {
                   <li key={r.subject.id}>
                     <Tag tone="good">
                       {r.subject.name} ·{' '}
-                      {formatAverage(r.average, settings.rounding, settings.referenceBase)}
+                      {formatAverage(
+                        r.average,
+                        settings.rounding,
+                        settings.referenceBase
+                      )}
                     </Tag>
                   </li>
                 ))}
@@ -112,7 +126,11 @@ export function DashboardScreen() {
                   <li key={r.subject.id}>
                     <Tag tone="low">
                       {r.subject.name} ·{' '}
-                      {formatAverage(r.average, settings.rounding, settings.referenceBase)}
+                      {formatAverage(
+                        r.average,
+                        settings.rounding,
+                        settings.referenceBase
+                      )}
                     </Tag>
                   </li>
                 ))}
@@ -122,14 +140,21 @@ export function DashboardScreen() {
         </div>
       )}
 
-      <section aria-labelledby="subjects-heading" className="flex flex-col gap-2">
+      <section
+        aria-labelledby="subjects-heading"
+        className="flex flex-col gap-2"
+      >
         <h2 id="subjects-heading" className="px-1 font-bold">
           Par matière
         </h2>
         {subjectResults.map(r => {
           const appr = appreciation(r.average);
           return (
-            <Link key={r.subject.id} to={`/subjects/${r.subject.id}`} className="contents">
+            <Link
+              key={r.subject.id}
+              to={`/subjects/${r.subject.id}`}
+              className="contents"
+            >
               <Card className="flex items-center gap-3">
                 <span
                   aria-hidden="true"
@@ -147,7 +172,11 @@ export function DashboardScreen() {
                 </div>
                 <div className="text-right">
                   <p className="font-display font-bold tabular-nums">
-                    {formatAverage(r.average, settings.rounding, settings.referenceBase)}
+                    {formatAverage(
+                      r.average,
+                      settings.rounding,
+                      settings.referenceBase
+                    )}
                   </p>
                   <Tag tone={appr.tone}>{appr.label}</Tag>
                 </div>

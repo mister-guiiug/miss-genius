@@ -54,7 +54,10 @@ function RiveBadgeImpl({
       className="grid place-items-center shrink-0"
     >
       {useStatic ? (
-        <div className="grid place-items-center text-[56px] mg-pop" aria-hidden="true">
+        <div
+          className="grid place-items-center text-[56px] mg-pop"
+          aria-hidden="true"
+        >
           {fallback}
         </div>
       ) : (

@@ -135,7 +135,11 @@ export function requiredGradeForSubjectAverage(
     return { required: 0, reason: 'already-reached', clamped: 0 };
   }
   if (needed > nextMax) {
-    return { required: needed, reason: 'impossible-too-high', clamped: nextMax };
+    return {
+      required: needed,
+      reason: 'impossible-too-high',
+      clamped: nextMax,
+    };
   }
   return { required: needed, reason: 'ok', clamped: needed };
 }

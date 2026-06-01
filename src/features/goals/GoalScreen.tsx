@@ -62,13 +62,21 @@ export function GoalScreen() {
     const w = Number(nextWeight.replace(',', '.'));
     const m = Number(nextMax.replace(',', '.'));
     if (!Number.isFinite(t) || !(w > 0) || !(m > 0)) {
-      return { reason: 'invalid-input' as RequiredReason, required: null, evalSubjectId };
+      return {
+        reason: 'invalid-input' as RequiredReason,
+        required: null,
+        evalSubjectId,
+      };
     }
 
     if (scopeKind === 'subject') {
       const grades = scenario.grades.filter(g => g.subjectId === subjectId);
       const r = requiredGradeForSubjectAverage(grades, t, w, m, options);
-      return { reason: r.reason, required: r.clamped, evalSubjectId: subjectId };
+      return {
+        reason: r.reason,
+        required: r.clamped,
+        evalSubjectId: subjectId,
+      };
     }
 
     // Objectif de moyenne générale : on cible une matière précise.
@@ -92,7 +100,16 @@ export function GoalScreen() {
     );
     return { reason: r.reason, required: r.clamped, evalSubjectId };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scopeKind, subjectId, evalSubjectId, target, nextWeight, nextMax, scenario, settings]);
+  }, [
+    scopeKind,
+    subjectId,
+    evalSubjectId,
+    target,
+    nextWeight,
+    nextMax,
+    scenario,
+    settings,
+  ]);
 
   if (scenario.subjects.length === 0) {
     return (

@@ -74,7 +74,11 @@ export function SubjectForm({ initial, onSubmit }: SubjectFormProps) {
               )}
               style={{ background: SUBJECT_HEX[c] }}
             >
-              {color === c && <span aria-hidden="true" className="text-white">✓</span>}
+              {color === c && (
+                <span aria-hidden="true" className="text-white">
+                  ✓
+                </span>
+              )}
             </button>
           ))}
         </div>

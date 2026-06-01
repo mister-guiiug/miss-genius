@@ -39,7 +39,10 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="absolute inset-0 bg-black/40 mg-rise" aria-hidden="true" />
+      <div
+        className="absolute inset-0 bg-black/40 mg-rise"
+        aria-hidden="true"
+      />
       <div
         ref={panelRef}
         role="dialog"

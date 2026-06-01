@@ -56,7 +56,11 @@ export function SubjectsScreen() {
                     <p className="truncate font-semibold">{r.subject.name}</p>
                     <p className="text-sm text-[var(--mg-text-soft)]">
                       coef {r.subject.weight} ·{' '}
-                      {formatAverage(r.average, settings.rounding, settings.referenceBase)}
+                      {formatAverage(
+                        r.average,
+                        settings.rounding,
+                        settings.referenceBase
+                      )}
                     </p>
                   </div>
                 </Link>

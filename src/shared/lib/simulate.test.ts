@@ -59,14 +59,26 @@ describe('requiredGradeForSubjectAverage', () => {
 
   it('signale « déjà atteint » quand une note ≤ 0 suffirait', () => {
     // 18/20 coef 3 ; viser 10 avec une éval coef 1 : même un 0 garde 13,5 ≥ 10.
-    const r = requiredGradeForSubjectAverage([g('math', 18, 3)], 10, 1, 20, OPTS);
+    const r = requiredGradeForSubjectAverage(
+      [g('math', 18, 3)],
+      10,
+      1,
+      20,
+      OPTS
+    );
     expect(r.reason).toBe('already-reached');
     expect(r.required).toBe(0);
   });
 
   it('signale l’impossibilité quand il faudrait dépasser le barème', () => {
     // note 5/20 coef 3 ; viser 18 avec une éval coef 1 -> impossible
-    const r = requiredGradeForSubjectAverage([g('math', 5, 3)], 18, 1, 20, OPTS);
+    const r = requiredGradeForSubjectAverage(
+      [g('math', 5, 3)],
+      18,
+      1,
+      20,
+      OPTS
+    );
     expect(r.reason).toBe('impossible-too-high');
     expect(r.clamped).toBe(20);
   });

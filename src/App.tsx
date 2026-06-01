@@ -30,7 +30,9 @@ const ScenariosScreen = lazy(() =>
   }))
 );
 const GoalScreen = lazy(() =>
-  import('./features/goals/GoalScreen.tsx').then(m => ({ default: m.GoalScreen }))
+  import('./features/goals/GoalScreen.tsx').then(m => ({
+    default: m.GoalScreen,
+  }))
 );
 const SettingsScreen = lazy(() =>
   import('./features/settings/SettingsScreen.tsx').then(m => ({
@@ -49,7 +51,8 @@ const TITLES: Record<string, string> = {
 function Shell() {
   const { pathname } = useLocation();
   const title =
-    TITLES[pathname] ?? (pathname.startsWith('/subjects/') ? 'Matière' : 'Miss Genius');
+    TITLES[pathname] ??
+    (pathname.startsWith('/subjects/') ? 'Matière' : 'Miss Genius');
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col">
@@ -57,7 +60,9 @@ function Shell() {
       <main className="flex-1">
         <Suspense
           fallback={
-            <p className="p-8 text-center text-[var(--mg-text-soft)]">Chargement…</p>
+            <p className="p-8 text-center text-[var(--mg-text-soft)]">
+              Chargement…
+            </p>
           }
         >
           <Outlet />

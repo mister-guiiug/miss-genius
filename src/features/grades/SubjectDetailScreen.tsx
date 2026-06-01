@@ -120,7 +120,11 @@ export function SubjectDetailScreen() {
         settings={settings}
       />
 
-      <Sheet open={creating} title="Nouvelle note" onClose={() => setCreating(false)}>
+      <Sheet
+        open={creating}
+        title="Nouvelle note"
+        onClose={() => setCreating(false)}
+      >
         <GradeForm
           defaultMax={settings.referenceBase}
           onSubmit={draft => {

@@ -32,12 +32,12 @@ Famille `miss-*` / `mister-*` — conventions partagées via
 
 ### Compromis assumés
 
-| Décision | Pourquoi | Alternative |
-|---|---|---|
-| **localStorage** plutôt qu'IndexedDB | Volume minuscule (< 100 Ko), accès synchrone → store simple, snapshot = unité naturelle d'export/sync | IndexedDB quand les volumes grossiront (le contrat `load/save/export/import` resterait identique) |
-| **Routing par hash** (`HashRouter`) | Déploiement GitHub Pages sans config serveur | History API + redirections |
-| **Rive en fallback par défaut** | Pas d'asset `.riv` binaire fourni ; le moteur WebGL (172 Ko) n'est jamais chargé tant qu'aucun `.riv` n'est branché → zéro coût sur mobile d'entrée de gamme | Fournir des `.riv` dans `public/rive/` |
-| **Pas de lib UI** | Tailwind v4 + composants maison légers, mobile-first | shadcn/Radix si besoin d'a11y avancée |
+| Décision                             | Pourquoi                                                                                                                                                     | Alternative                                                                                       |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| **localStorage** plutôt qu'IndexedDB | Volume minuscule (< 100 Ko), accès synchrone → store simple, snapshot = unité naturelle d'export/sync                                                        | IndexedDB quand les volumes grossiront (le contrat `load/save/export/import` resterait identique) |
+| **Routing par hash** (`HashRouter`)  | Déploiement GitHub Pages sans config serveur                                                                                                                 | History API + redirections                                                                        |
+| **Rive en fallback par défaut**      | Pas d'asset `.riv` binaire fourni ; le moteur WebGL (172 Ko) n'est jamais chargé tant qu'aucun `.riv` n'est branché → zéro coût sur mobile d'entrée de gamme | Fournir des `.riv` dans `public/rive/`                                                            |
+| **Pas de lib UI**                    | Tailwind v4 + composants maison légers, mobile-first                                                                                                         | shadcn/Radix si besoin d'a11y avancée                                                             |
 
 ---
 
@@ -82,17 +82,17 @@ miss-genius/
 
 ## 3. Dépendances & justification
 
-| Paquet | Rôle | Justification |
-|---|---|---|
-| `react` / `react-dom` 19 | UI | Standard famille |
-| `react-router-dom` 7 | Routing | Onglets / bottom nav, routes lazy |
-| `zustand` 5 | State | Léger, sélecteurs granulaires, zéro boilerplate |
-| `zod` 3 | Validation runtime | Sécurise l'import JSON et la relecture du stockage |
-| `tailwindcss` 4 + `@tailwindcss/vite` | Styles | Mobile-first, tokens via `@theme`, design system maison |
-| `@rive-app/react-webgl2` | Animations | 1–2 points d'interaction, **lazy** (code-split, hors précache) |
-| `vite-plugin-pwa` | PWA | Manifest + service worker Workbox, prompt de mise à jour |
-| `vitest` + Testing Library | Tests | Unitaires (calcul) + intégration (écrans) |
-| `sharp` (dev) | Icônes | Génère les PNG depuis le SVG source |
+| Paquet                                | Rôle               | Justification                                                  |
+| ------------------------------------- | ------------------ | -------------------------------------------------------------- |
+| `react` / `react-dom` 19              | UI                 | Standard famille                                               |
+| `react-router-dom` 7                  | Routing            | Onglets / bottom nav, routes lazy                              |
+| `zustand` 5                           | State              | Léger, sélecteurs granulaires, zéro boilerplate                |
+| `zod` 3                               | Validation runtime | Sécurise l'import JSON et la relecture du stockage             |
+| `tailwindcss` 4 + `@tailwindcss/vite` | Styles             | Mobile-first, tokens via `@theme`, design system maison        |
+| `@rive-app/react-webgl2`              | Animations         | 1–2 points d'interaction, **lazy** (code-split, hors précache) |
+| `vite-plugin-pwa`                     | PWA                | Manifest + service worker Workbox, prompt de mise à jour       |
+| `vitest` + Testing Library            | Tests              | Unitaires (calcul) + intégration (écrans)                      |
+| `sharp` (dev)                         | Icônes             | Génère les PNG depuis le SVG source                            |
 
 Pas de dépendance superflue (date lib, state manager lourd, UI kit) : assumé.
 
@@ -159,8 +159,9 @@ npm run icons        # régénère les icônes PWA depuis le SVG
 Intelligent, motivant, scolaire moderne, féminin sans être infantilisant et
 **déclinable** : violet profond (`--color-primary`) + corail (`--color-accent`),
 accents pastel par matière, coins très arrondis, typographie _Fredoka_ (display)
-+ _Plus Jakarta Sans_ (texte). Dark mode inclus. Changer `--mg-*` / `--color-*`
-dans `src/index.css` suffit à redéfinir une marque.
+
+- _Plus Jakarta Sans_ (texte). Dark mode inclus. Changer `--mg-*` / `--color-*`
+  dans `src/index.css` suffit à redéfinir une marque.
 
 ## Accessibilité
 

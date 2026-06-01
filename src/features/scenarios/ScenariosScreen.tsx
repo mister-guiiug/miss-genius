@@ -87,7 +87,11 @@ export function ScenariosScreen() {
                   </div>
                   <div className="text-right">
                     <p className="font-display text-lg font-bold tabular-nums">
-                      {formatAverage(average, settings.rounding, settings.referenceBase)}
+                      {formatAverage(
+                        average,
+                        settings.rounding,
+                        settings.referenceBase
+                      )}
                     </p>
                     {delta !== null && <TrendPill delta={delta} />}
                   </div>
@@ -129,7 +133,8 @@ export function ScenariosScreen() {
                 </div>
                 {delta !== null && (
                   <p className="mt-2 text-sm text-[var(--mg-text-soft)]">
-                    Écart vs scénario actif : <strong>{formatDelta(delta)}</strong>
+                    Écart vs scénario actif :{' '}
+                    <strong>{formatDelta(delta)}</strong>
                   </p>
                 )}
               </Card>
@@ -174,7 +179,8 @@ export function ScenariosScreen() {
           className="flex flex-col gap-4"
           onSubmit={e => {
             e.preventDefault();
-            if (renaming) renameScenario(renaming.id, renameValue.trim() || renaming.name);
+            if (renaming)
+              renameScenario(renaming.id, renameValue.trim() || renaming.name);
             setRenaming(null);
           }}
         >
