@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
-import { Download, Upload } from 'lucide-react';
+import { Download, RefreshCw, Upload } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
 import type { RoundingMode } from '../../shared/types/domain.ts';
 import { exportData, importData } from '../../shared/lib/storage.ts';
+import { forceUpdate } from '../../pwa/forceUpdate.ts';
 import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '../../shared/components/Button.tsx';
 import { SelectField } from '../../shared/components/Field.tsx';
@@ -20,6 +21,7 @@ export function SettingsScreen() {
 
   const fileRef = useRef<HTMLInputElement>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [feedback, setFeedback] = useState<string>();
 
   function handleExport() {
@@ -138,6 +140,29 @@ export function SettingsScreen() {
         <h2 className="font-bold text-[var(--mg-bad)]">Zone sensible</h2>
         <Button variant="danger" onClick={() => setConfirmReset(true)}>
           Réinitialiser toutes les données
+        </Button>
+      </Card>
+
+      <Card className="flex flex-col gap-3">
+        <h2 className="font-bold">Application</h2>
+        <p className="text-sm text-[var(--mg-text-soft)]">
+          Récupère la dernière version (recharge l'app sans toucher à tes
+          données).
+        </p>
+        <Button
+          variant="secondary"
+          disabled={updating}
+          onClick={() => {
+            setUpdating(true);
+            void forceUpdate();
+          }}
+        >
+          <RefreshCw
+            size={16}
+            aria-hidden="true"
+            className={updating ? 'animate-spin' : undefined}
+          />
+          {updating ? 'Mise à jour…' : 'Forcer la mise à jour'}
         </Button>
       </Card>
 
