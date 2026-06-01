@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import type { Subject } from '../../shared/types/domain.ts';
@@ -27,7 +28,7 @@ export function SubjectsScreen() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Button block onClick={() => setCreating(true)}>
-        + Ajouter une matière
+        <Plus size={18} aria-hidden="true" /> Ajouter une matière
       </Button>
 
       {scenario.subjects.length === 0 ? (
@@ -69,14 +70,14 @@ export function SubjectsScreen() {
                   aria-label={`Modifier ${r.subject.name}`}
                   onClick={() => setEditing(r.subject)}
                 >
-                  ✏️
+                  <Pencil size={18} aria-hidden="true" />
                 </Button>
                 <Button
                   variant="ghost"
                   aria-label={`Supprimer ${r.subject.name}`}
                   onClick={() => setToDelete(r.subject)}
                 >
-                  🗑️
+                  <Trash2 size={18} aria-hidden="true" />
                 </Button>
               </Card>
             </li>

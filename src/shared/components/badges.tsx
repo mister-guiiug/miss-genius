@@ -1,10 +1,13 @@
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import { cn } from '../lib/cn.ts';
 import { deltaTrend, formatDelta, type Trend } from '../lib/format.ts';
+
+const TREND_ICON = { up: ArrowUp, down: ArrowDown, flat: Minus } as const;
 
 /** Pastille de tendance — ne repose pas que sur la couleur (icône + signe). */
 export function TrendPill({ delta }: { delta: number | null }) {
   const trend: Trend = deltaTrend(delta);
-  const icon = trend === 'up' ? '▲' : trend === 'down' ? '▼' : '＝';
+  const Icon = TREND_ICON[trend];
   const styles: Record<Trend, string> = {
     up: 'bg-[var(--mg-good)]/12 text-[var(--mg-good)]',
     down: 'bg-[var(--mg-bad)]/12 text-[var(--mg-bad)]',
@@ -19,7 +22,7 @@ export function TrendPill({ delta }: { delta: number | null }) {
         styles[trend]
       )}
     >
-      <span aria-hidden="true">{icon}</span>
+      <Icon size={13} strokeWidth={2.75} aria-hidden="true" />
       <span>{formatDelta(delta)}</span>
       <span className="sr-only">({wording})</span>
     </span>

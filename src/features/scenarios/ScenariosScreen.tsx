@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Check, Copy, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
 import type { Scenario } from '../../shared/types/domain.ts';
 import {
@@ -54,7 +55,7 @@ export function ScenariosScreen() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Button block onClick={() => setCreating(true)}>
-        + Nouveau scénario
+        <Plus size={18} aria-hidden="true" /> Nouveau scénario
       </Button>
 
       <p className="px-1 text-sm text-[var(--mg-text-soft)]">
@@ -102,14 +103,14 @@ export function ScenariosScreen() {
                       variant="secondary"
                       onClick={() => setActive(scenario.id)}
                     >
-                      Activer
+                      <Check size={16} aria-hidden="true" /> Activer
                     </Button>
                   )}
                   <Button
                     variant="secondary"
                     onClick={() => duplicateScenario(scenario.id)}
                   >
-                    Dupliquer
+                    <Copy size={16} aria-hidden="true" /> Dupliquer
                   </Button>
                   <Button
                     variant="ghost"
@@ -119,7 +120,7 @@ export function ScenariosScreen() {
                       setRenameValue(scenario.name);
                     }}
                   >
-                    Renommer
+                    <Pencil size={16} aria-hidden="true" /> Renommer
                   </Button>
                   {scenarios.length > 1 && (
                     <Button
@@ -127,7 +128,7 @@ export function ScenariosScreen() {
                       className="text-[var(--mg-bad)]"
                       onClick={() => setToDelete(scenario)}
                     >
-                      Supprimer
+                      <Trash2 size={16} aria-hidden="true" /> Supprimer
                     </Button>
                   )}
                 </div>

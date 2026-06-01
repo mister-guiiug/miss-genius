@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Sparkles } from 'lucide-react';
 import type { Scenario, Settings } from '../../shared/types/domain.ts';
 import {
   makeHypotheticalGrade,
@@ -42,7 +43,8 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
   return (
     <Card className="flex flex-col gap-3">
       <h2 className="flex items-center gap-2 font-bold">
-        <span aria-hidden="true">🔮</span> Et si j'avais cette note ?
+        <Sparkles size={18} className="text-primary" aria-hidden="true" /> Et si
+        j'avais cette note ?
       </h2>
       <div className="grid grid-cols-3 gap-2">
         <TextField

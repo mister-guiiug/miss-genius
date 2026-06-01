@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import type { Grade } from '../../shared/types/domain.ts';
@@ -63,7 +64,7 @@ export function SubjectDetailScreen() {
       </Card>
 
       <Button block onClick={() => setCreating(true)}>
-        + Ajouter une note
+        <Plus size={18} aria-hidden="true" /> Ajouter une note
       </Button>
 
       {grades.length === 0 ? (
@@ -99,14 +100,14 @@ export function SubjectDetailScreen() {
                   aria-label="Modifier la note"
                   onClick={() => setEditing(g)}
                 >
-                  ✏️
+                  <Pencil size={18} aria-hidden="true" />
                 </Button>
                 <Button
                   variant="ghost"
                   aria-label="Supprimer la note"
                   onClick={() => setToDelete(g)}
                 >
-                  🗑️
+                  <Trash2 size={18} aria-hidden="true" />
                 </Button>
               </Card>
             </li>

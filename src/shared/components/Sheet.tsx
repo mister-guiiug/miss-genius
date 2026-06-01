@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { X } from 'lucide-react';
 import { Button } from './Button.tsx';
 
 interface SheetProps {
@@ -54,7 +55,7 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-lg font-bold">{title}</h2>
           <Button variant="ghost" aria-label="Fermer" onClick={onClose}>
-            ✕
+            <X size={20} aria-hidden="true" />
           </Button>
         </div>
         {children}

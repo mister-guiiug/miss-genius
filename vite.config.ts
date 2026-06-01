@@ -28,6 +28,7 @@ export default defineConfig(({ command }) => {
             if (!id.includes('node_modules')) return;
             const norm = id.replace(/\\/g, '/');
             if (norm.includes('/@rive-app/')) return 'rive';
+            if (norm.includes('/lucide-react/')) return 'icons';
             if (
               norm.includes('/react-dom/') ||
               norm.includes('/node_modules/react/') ||

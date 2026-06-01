@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Download, Upload } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
 import type { RoundingMode } from '../../shared/types/domain.ts';
 import { exportData, importData } from '../../shared/lib/storage.ts';
@@ -105,10 +106,10 @@ export function SettingsScreen() {
         </p>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={handleExport}>
-            ⬇️ Exporter (JSON)
+            <Download size={16} aria-hidden="true" /> Exporter (JSON)
           </Button>
           <Button variant="secondary" onClick={() => fileRef.current?.click()}>
-            ⬆️ Importer (JSON)
+            <Upload size={16} aria-hidden="true" /> Importer (JSON)
           </Button>
           <input
             ref={fileRef}

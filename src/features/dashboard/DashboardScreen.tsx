@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Award, SlidersHorizontal, Target, TrendingUp } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import { Card } from '../../shared/components/Card.tsx';
@@ -71,9 +72,11 @@ export function DashboardScreen() {
       <div className="grid grid-cols-2 gap-3">
         <Link to="/scenarios" className="contents">
           <Card className="flex flex-col gap-1">
-            <span className="text-2xl" aria-hidden="true">
-              🎛️
-            </span>
+            <SlidersHorizontal
+              size={24}
+              className="text-primary"
+              aria-hidden="true"
+            />
             <span className="font-semibold">Scénarios</span>
             <span className="text-sm text-[var(--mg-text-soft)]">
               {scenarioCount} enregistré{scenarioCount > 1 ? 's' : ''}
@@ -82,9 +85,11 @@ export function DashboardScreen() {
         </Link>
         <Link to="/goal" className="contents">
           <Card className="flex flex-col gap-1">
-            <span className="text-2xl" aria-hidden="true">
-              🎯
-            </span>
+            <Target
+              size={24}
+              className="text-[var(--color-accent)]"
+              aria-hidden="true"
+            />
             <span className="font-semibold">Objectif</span>
             <span className="text-sm text-[var(--mg-text-soft)]">
               {scenario.goal ? 'Défini' : 'À définir'}
@@ -98,7 +103,12 @@ export function DashboardScreen() {
           {strong.length > 0 && (
             <Card>
               <h2 className="mb-2 flex items-center gap-2 font-bold">
-                <span aria-hidden="true">💪</span> Tes points forts
+                <Award
+                  size={18}
+                  className="text-[var(--mg-good)]"
+                  aria-hidden="true"
+                />{' '}
+                Tes points forts
               </h2>
               <ul className="flex flex-wrap gap-2">
                 {strong.map(r => (
@@ -119,7 +129,12 @@ export function DashboardScreen() {
           {weak.length > 0 && (
             <Card>
               <h2 className="mb-2 flex items-center gap-2 font-bold">
-                <span aria-hidden="true">🚀</span> À renforcer en priorité
+                <TrendingUp
+                  size={18}
+                  className="text-[var(--color-accent)]"
+                  aria-hidden="true"
+                />{' '}
+                À renforcer en priorité
               </h2>
               <ul className="flex flex-wrap gap-2">
                 {weak.map(r => (

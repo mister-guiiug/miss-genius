@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@rive-app/react-webgl2": "^4.18.0",
+    "lucide-react": "^1.17.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.1",
