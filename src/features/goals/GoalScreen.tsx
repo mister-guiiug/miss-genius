@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Mountain, PartyPopper, Target } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import {
   requiredGradeForSubjectAverage,
@@ -13,17 +14,29 @@ import { TextField, SelectField } from '../../shared/components/Field.tsx';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
 
 /** Message pédagogique selon la faisabilité mathématique de l'objectif. */
-function reasonMessage(reason: RequiredReason, base: number): string {
+function reasonMessage(
+  reason: RequiredReason,
+  base: number
+): { icon: typeof Target | null; text: string } {
   switch (reason) {
     case 'already-reached':
-      return '🎉 Bonne nouvelle : ton objectif est déjà atteint, même sans nouvelle note décisive.';
+      return {
+        icon: PartyPopper,
+        text: 'Bonne nouvelle : ton objectif est déjà atteint, même sans nouvelle note décisive.',
+      };
     case 'impossible-too-high':
-      return `🧗 En une seule évaluation, l'objectif n'est pas atteignable (il faudrait dépasser ${base}). Vise-le sur plusieurs notes ou ajuste-le.`;
+      return {
+        icon: Mountain,
+        text: `En une seule évaluation, l'objectif n'est pas atteignable (il faudrait dépasser ${base}). Vise-le sur plusieurs notes ou ajuste-le.`,
+      };
     case 'invalid-input':
-      return 'Renseigne un objectif et un coefficient valides.';
+      return {
+        icon: null,
+        text: 'Renseigne un objectif et un coefficient valides.',
+      };
     case 'ok':
     default:
-      return '';
+      return { icon: null, text: '' };
   }
 }
 
@@ -114,7 +127,7 @@ export function GoalScreen() {
   if (scenario.subjects.length === 0) {
     return (
       <EmptyState
-        emoji="🎯"
+        icon={<Target size={64} className="text-primary" />}
         title="Pas encore d'objectif possible"
         description="Ajoute des matières et des notes pour fixer un objectif et savoir ce qu'il te faut."
         action={
@@ -133,7 +146,11 @@ export function GoalScreen() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Card className="flex items-center gap-4 bg-gradient-to-br from-[color:var(--color-accent)] to-primary text-white border-0">
-        <RiveBadge fallback="🎯" label="Objectif" size={84} />
+        <RiveBadge
+          fallback={<Target size={44} className="text-white" />}
+          label="Objectif"
+          size={84}
+        />
         <div>
           <p className="text-sm font-medium opacity-90">Mon objectif</p>
           <p className="font-display text-2xl font-bold">
@@ -229,7 +246,16 @@ export function GoalScreen() {
             </p>
           </>
         ) : (
-          <p className="px-2 py-4 text-[15px] font-medium">{message}</p>
+          <div className="flex flex-col items-center gap-2 px-2 py-4">
+            {message.icon && (
+              <message.icon
+                size={32}
+                className="text-[var(--color-accent)]"
+                aria-hidden="true"
+              />
+            )}
+            <p className="text-[15px] font-medium">{message.text}</p>
+          </div>
         )}
       </Card>
 

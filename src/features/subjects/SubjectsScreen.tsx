@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { BookOpen, Pencil, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import type { Subject } from '../../shared/types/domain.ts';
@@ -9,9 +9,11 @@ import { Button } from '../../shared/components/Button.tsx';
 import { Sheet } from '../../shared/components/Sheet.tsx';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog.tsx';
 import { EmptyState } from '../../shared/components/EmptyState.tsx';
+import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { formatAverage } from '../../shared/lib/format.ts';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
 import { SubjectForm } from './SubjectForm.tsx';
+import { QuickStartSheet } from './QuickStartSheet.tsx';
 
 export function SubjectsScreen() {
   const scenario = useAppStore(selectActiveScenario);
@@ -23,19 +25,31 @@ export function SubjectsScreen() {
 
   const [editing, setEditing] = useState<Subject | null>(null);
   const [creating, setCreating] = useState(false);
+  const [quickStart, setQuickStart] = useState(false);
   const [toDelete, setToDelete] = useState<Subject | null>(null);
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <Button block onClick={() => setCreating(true)}>
-        <Plus size={18} aria-hidden="true" /> Ajouter une matière
-      </Button>
+      <div className="flex gap-2">
+        <Button block onClick={() => setCreating(true)}>
+          <Plus size={18} aria-hidden="true" /> Ajouter
+        </Button>
+        <Button variant="secondary" block onClick={() => setQuickStart(true)}>
+          <Sparkles size={18} aria-hidden="true" /> Par classe
+        </Button>
+      </div>
 
       {scenario.subjects.length === 0 ? (
         <EmptyState
-          emoji="📚"
+          icon={<BookOpen size={64} className="text-primary" />}
           title="Aucune matière"
-          description="Ajoute tes matières et leurs coefficients pour bâtir ta moyenne."
+          description="Choisis ta classe pour activer les matières habituelles, ou ajoute-les une par une."
+          action={
+            <Button block onClick={() => setQuickStart(true)}>
+              <Sparkles size={18} aria-hidden="true" /> Démarrage rapide par
+              classe
+            </Button>
+          }
         />
       ) : (
         <ul className="flex flex-col gap-2">
@@ -48,10 +62,14 @@ export function SubjectsScreen() {
                 >
                   <span
                     aria-hidden="true"
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl text-lg"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl"
                     style={{ background: `${SUBJECT_HEX[r.subject.color]}1a` }}
                   >
-                    {r.subject.icon ?? '📘'}
+                    <SubjectIcon
+                      icon={r.subject.icon}
+                      size={20}
+                      className="text-[var(--mg-text)]"
+                    />
                   </span>
                   <div className="min-w-0">
                     <p className="truncate font-semibold">{r.subject.name}</p>
@@ -113,6 +131,8 @@ export function SubjectsScreen() {
           />
         )}
       </Sheet>
+
+      <QuickStartSheet open={quickStart} onClose={() => setQuickStart(false)} />
 
       <ConfirmDialog
         open={toDelete !== null}

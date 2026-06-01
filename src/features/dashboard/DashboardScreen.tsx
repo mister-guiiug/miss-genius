@@ -1,5 +1,15 @@
 import { Link } from 'react-router-dom';
-import { Award, SlidersHorizontal, Target, TrendingUp } from 'lucide-react';
+import {
+  Award,
+  BarChart3,
+  Dumbbell,
+  SlidersHorizontal,
+  Smile,
+  Sparkles,
+  Star,
+  Target,
+  TrendingUp,
+} from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import { Card } from '../../shared/components/Card.tsx';
@@ -7,6 +17,7 @@ import { Button } from '../../shared/components/Button.tsx';
 import { Tag } from '../../shared/components/badges.tsx';
 import { EmptyState } from '../../shared/components/EmptyState.tsx';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
+import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { formatAverage } from '../../shared/lib/format.ts';
 import { appreciation, SUBJECT_HEX } from '../../shared/lib/colors.ts';
 
@@ -19,12 +30,14 @@ export function DashboardScreen() {
   if (scenario.subjects.length === 0) {
     return (
       <EmptyState
-        emoji="🪄"
+        icon={<Sparkles size={64} className="text-primary" />}
         title="Bienvenue dans Miss Genius"
-        description="Crée ta première matière pour commencer à simuler tes moyennes."
+        description="Choisis ta classe pour activer tes matières en un instant, puis simule tes moyennes."
         action={
           <Link to="/subjects">
-            <Button block>Ajouter une matière</Button>
+            <Button block>
+              <Sparkles size={18} aria-hidden="true" /> Choisir mes matières
+            </Button>
           </Link>
         }
       />
@@ -41,20 +54,20 @@ export function DashboardScreen() {
     .filter(r => (r.average ?? 0) < 10)
     .slice(0, 2);
 
-  const emoji =
+  const HeroIcon =
     general === null
-      ? '📊'
+      ? BarChart3
       : general >= 14
-        ? '🌟'
+        ? Star
         : general >= 10
-          ? '🙂'
-          : '💪';
+          ? Smile
+          : Dumbbell;
 
   return (
     <div className="flex flex-col gap-4 p-4">
       <Card className="flex items-center gap-4 bg-gradient-to-br from-primary to-[color:var(--color-accent)] text-white border-0">
         <RiveBadge
-          fallback={emoji}
+          fallback={<HeroIcon size={48} className="text-white" />}
           label="Niveau de la moyenne générale"
           size={92}
         />
@@ -173,10 +186,14 @@ export function DashboardScreen() {
               <Card className="flex items-center gap-3">
                 <span
                   aria-hidden="true"
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl text-lg"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl"
                   style={{ background: `${SUBJECT_HEX[r.subject.color]}1a` }}
                 >
-                  {r.subject.icon ?? '📘'}
+                  <SubjectIcon
+                    icon={r.subject.icon}
+                    size={20}
+                    className="text-[var(--mg-text)]"
+                  />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{r.subject.name}</p>

@@ -38,6 +38,7 @@ interface AppState {
 
   // Matières (scénario actif)
   addSubject: (input: Omit<Subject, 'id'>) => void;
+  addSubjects: (inputs: Omit<Subject, 'id'>[]) => void;
   updateSubject: (id: string, patch: Partial<Omit<Subject, 'id'>>) => void;
   deleteSubject: (id: string) => void;
 
@@ -158,6 +159,15 @@ export const useAppStore = create<AppState>((set, get) => {
       mutateActive(sc => ({
         ...sc,
         subjects: [...sc.subjects, { ...input, id: createId('sub') }],
+      })),
+
+    addSubjects: inputs =>
+      mutateActive(sc => ({
+        ...sc,
+        subjects: [
+          ...sc.subjects,
+          ...inputs.map(input => ({ ...input, id: createId('sub') })),
+        ],
       })),
 
     updateSubject: (id, patch) =>

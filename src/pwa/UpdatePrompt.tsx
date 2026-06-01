@@ -1,4 +1,5 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { CircleCheck, Sparkles } from 'lucide-react';
 import { Button } from '../shared/components/Button.tsx';
 
 /**
@@ -25,10 +26,26 @@ export function UpdatePrompt() {
       aria-live="polite"
       className="fixed inset-x-3 bottom-20 z-40 mx-auto max-w-md rounded-2xl border border-[var(--mg-border)] bg-[var(--mg-surface)] p-4 shadow-lg mg-rise"
     >
-      <p className="mb-3 text-sm font-semibold">
-        {needRefresh
-          ? '✨ Une nouvelle version de Miss Genius est prête.'
-          : '✅ Miss Genius fonctionne maintenant hors ligne.'}
+      <p className="mb-3 flex items-center gap-2 text-sm font-semibold">
+        {needRefresh ? (
+          <>
+            <Sparkles
+              size={18}
+              className="shrink-0 text-primary"
+              aria-hidden="true"
+            />
+            Une nouvelle version de Miss Genius est prête.
+          </>
+        ) : (
+          <>
+            <CircleCheck
+              size={18}
+              className="shrink-0 text-[var(--mg-good)]"
+              aria-hidden="true"
+            />
+            Miss Genius fonctionne maintenant hors ligne.
+          </>
+        )}
       </p>
       <div className="flex gap-2">
         {needRefresh && (

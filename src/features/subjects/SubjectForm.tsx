@@ -1,12 +1,16 @@
 import { useState, type FormEvent } from 'react';
+import { Check } from 'lucide-react';
 import type { Subject, SubjectColor } from '../../shared/types/domain.ts';
 import { SUBJECT_COLORS } from '../../shared/types/domain.ts';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
 import { cn } from '../../shared/lib/cn.ts';
 import { TextField } from '../../shared/components/Field.tsx';
 import { Button } from '../../shared/components/Button.tsx';
-
-const ICONS = ['📘', '🔢', '🧪', '🌍', '🖋️', '🎨', '🎵', '⚽', '💻', '🗣️'];
+import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
+import {
+  DEFAULT_SUBJECT_ICON,
+  SUBJECT_ICON_KEYS,
+} from '../../shared/lib/subjectIcons.ts';
 
 export interface SubjectDraft {
   name: string;
@@ -24,7 +28,9 @@ export function SubjectForm({ initial, onSubmit }: SubjectFormProps) {
   const [name, setName] = useState(initial?.name ?? '');
   const [weight, setWeight] = useState(String(initial?.weight ?? 1));
   const [color, setColor] = useState<SubjectColor>(initial?.color ?? 'violet');
-  const [icon, setIcon] = useState(initial?.icon ?? '📘');
+  const [icon, setIcon] = useState<string>(
+    initial?.icon ?? DEFAULT_SUBJECT_ICON
+  );
   const [error, setError] = useState<string>();
 
   function submit(e: FormEvent) {
@@ -69,15 +75,13 @@ export function SubjectForm({ initial, onSubmit }: SubjectFormProps) {
               aria-pressed={color === c}
               onClick={() => setColor(c)}
               className={cn(
-                'h-9 w-9 rounded-full border-2',
+                'grid h-9 w-9 place-items-center rounded-full border-2',
                 color === c ? 'border-[var(--mg-text)]' : 'border-transparent'
               )}
               style={{ background: SUBJECT_HEX[c] }}
             >
               {color === c && (
-                <span aria-hidden="true" className="text-white">
-                  ✓
-                </span>
+                <Check size={16} className="text-white" aria-hidden="true" />
               )}
             </button>
           ))}
@@ -87,21 +91,25 @@ export function SubjectForm({ initial, onSubmit }: SubjectFormProps) {
       <fieldset className="flex flex-col gap-2">
         <legend className="text-sm font-semibold">Icône</legend>
         <div className="flex flex-wrap gap-2">
-          {ICONS.map(i => (
+          {SUBJECT_ICON_KEYS.map(key => (
             <button
-              key={i}
+              key={key}
               type="button"
-              aria-label={`Icône ${i}`}
-              aria-pressed={icon === i}
-              onClick={() => setIcon(i)}
+              aria-label={`Icône ${key}`}
+              aria-pressed={icon === key}
+              onClick={() => setIcon(key)}
               className={cn(
-                'grid h-10 w-10 place-items-center rounded-2xl border text-lg',
-                icon === i
+                'grid h-10 w-10 place-items-center rounded-2xl border',
+                icon === key
                   ? 'border-primary bg-primary-soft'
                   : 'border-[var(--mg-border)]'
               )}
             >
-              {i}
+              <SubjectIcon
+                icon={key}
+                size={20}
+                className="text-[var(--mg-text)]"
+              />
             </button>
           ))}
         </div>

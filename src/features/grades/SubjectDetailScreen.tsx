@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { NotebookPen, Pencil, Plus, SearchX, Trash2 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import type { Grade } from '../../shared/types/domain.ts';
@@ -9,8 +9,10 @@ import { Button } from '../../shared/components/Button.tsx';
 import { Sheet } from '../../shared/components/Sheet.tsx';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog.tsx';
 import { EmptyState } from '../../shared/components/EmptyState.tsx';
+import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { formatAverage } from '../../shared/lib/format.ts';
 import { normalizeValue } from '../../shared/lib/average.ts';
+import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
 import { GradeForm } from './GradeForm.tsx';
 import { FutureGradeSimulator } from './FutureGradeSimulator.tsx';
 
@@ -31,7 +33,7 @@ export function SubjectDetailScreen() {
   if (!result) {
     return (
       <EmptyState
-        emoji="🤔"
+        icon={<SearchX size={64} className="text-primary" />}
         title="Matière introuvable"
         description="Cette matière n'existe pas dans le scénario actif."
         action={
@@ -49,8 +51,16 @@ export function SubjectDetailScreen() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Card className="flex items-center gap-3">
-        <span aria-hidden="true" className="text-3xl">
-          {subject.icon ?? '📘'}
+        <span
+          aria-hidden="true"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl"
+          style={{ background: `${SUBJECT_HEX[subject.color]}1a` }}
+        >
+          <SubjectIcon
+            icon={subject.icon}
+            size={26}
+            className="text-[var(--mg-text)]"
+          />
         </span>
         <div className="flex-1">
           <h1 className="font-display text-xl font-bold">{subject.name}</h1>
@@ -69,7 +79,7 @@ export function SubjectDetailScreen() {
 
       {grades.length === 0 ? (
         <EmptyState
-          emoji="📝"
+          icon={<NotebookPen size={64} className="text-primary" />}
           title="Aucune note"
           description="Ajoute une première note pour calculer ta moyenne dans cette matière."
         />
