@@ -7,6 +7,7 @@ import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '../../shared/components/Button.tsx';
 import { SelectField } from '../../shared/components/Field.tsx';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog.tsx';
+import { AppFooter } from '../../shared/components/AppFooter.tsx';
 
 declare const __APP_VERSION__: string;
 
@@ -139,6 +140,8 @@ export function SettingsScreen() {
           Réinitialiser toutes les données
         </Button>
       </Card>
+
+      <AppFooter />
 
       <p className="text-center text-xs text-[var(--mg-text-soft)]">
         Miss Genius v{__APP_VERSION__}
