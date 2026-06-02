@@ -45,4 +45,20 @@ describe('addSubjects (activation en lot)', () => {
     expect(active.subjects.every(s => s.id.length > 0)).toBe(true);
     expect(active.subjects[0]!.name).toBe(level.subjects[0]!.name);
   });
+
+  it('ne crée pas de doublon de nom (activation répétée ou lot redondant)', () => {
+    const level = CLASS_LEVELS.find(c => c.id === '2nde')!;
+    const store = useAppStore.getState();
+    store.addSubjects(level.subjects);
+    store.addSubjects(level.subjects); // même classe ré-activée
+    store.addSubjects([{ ...level.subjects[0]!, weight: 9 }]); // doublon explicite
+    const active = useAppStore
+      .getState()
+      .data.scenarios.find(
+        s => s.id === useAppStore.getState().data.activeScenarioId
+      )!;
+    const names = active.subjects.map(s => s.name.toLowerCase());
+    expect(active.subjects).toHaveLength(level.subjects.length);
+    expect(new Set(names).size).toBe(names.length); // aucun doublon
+  });
 });

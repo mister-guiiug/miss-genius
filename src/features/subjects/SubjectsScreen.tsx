@@ -211,6 +211,7 @@ export function SubjectsScreen() {
         onClose={() => setCreating(false)}
       >
         <SubjectForm
+          existingSubjects={scenario.subjects}
           onSubmit={draft => {
             addSubject(draft);
             setCreating(false);
@@ -226,6 +227,7 @@ export function SubjectsScreen() {
         {editing && (
           <SubjectForm
             initial={editing}
+            existingSubjects={scenario.subjects}
             onSubmit={draft => {
               updateSubject(editing.id, draft);
               setEditing(null);

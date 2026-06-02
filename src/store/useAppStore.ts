@@ -18,6 +18,7 @@ import type {
   Subject,
 } from '../shared/types/domain.ts';
 import { createId } from '../shared/lib/id.ts';
+import { normalizeSubjectName } from '../shared/lib/subjectName.ts';
 import { createEmptyScenario, DEFAULT_SETTINGS } from '../shared/lib/seed.ts';
 import { loadData, saveData } from '../shared/lib/storage.ts';
 
@@ -164,13 +165,20 @@ export const useAppStore = create<AppState>((set, get) => {
       })),
 
     addSubjects: inputs =>
-      mutateActive(sc => ({
-        ...sc,
-        subjects: [
-          ...sc.subjects,
-          ...inputs.map(input => ({ ...input, id: createId('sub') })),
-        ],
-      })),
+      mutateActive(sc => {
+        // Anti-doublon : ignore les noms déjà présents ou répétés dans le lot.
+        const seen = new Set(
+          sc.subjects.map(s => normalizeSubjectName(s.name))
+        );
+        const added: Subject[] = [];
+        for (const input of inputs) {
+          const key = normalizeSubjectName(input.name);
+          if (!key || seen.has(key)) continue;
+          seen.add(key);
+          added.push({ ...input, id: createId('sub') });
+        }
+        return { ...sc, subjects: [...sc.subjects, ...added] };
+      }),
 
     updateSubject: (id, patch) =>
       mutateActive(sc => ({

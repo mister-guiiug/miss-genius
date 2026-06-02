@@ -11,6 +11,7 @@ import {
   DEFAULT_SUBJECT_ICON,
   SUBJECT_ICON_KEYS,
 } from '../../shared/lib/subjectIcons.ts';
+import { subjectNameTaken } from '../../shared/lib/subjectName.ts';
 
 export interface SubjectDraft {
   name: string;
@@ -21,24 +22,46 @@ export interface SubjectDraft {
 
 interface SubjectFormProps {
   initial?: Subject;
+  /** Matières déjà présentes dans le scénario (pour bloquer les doublons de nom). */
+  existingSubjects: Subject[];
   onSubmit: (draft: SubjectDraft) => void;
 }
 
-export function SubjectForm({ initial, onSubmit }: SubjectFormProps) {
+export function SubjectForm({
+  initial,
+  existingSubjects,
+  onSubmit,
+}: SubjectFormProps) {
   const [name, setName] = useState(initial?.name ?? '');
   const [weight, setWeight] = useState(String(initial?.weight ?? 1));
   const [color, setColor] = useState<SubjectColor>(initial?.color ?? 'violet');
   const [icon, setIcon] = useState<string>(
     initial?.icon ?? DEFAULT_SUBJECT_ICON
   );
-  const [error, setError] = useState<string>();
+  const [nameError, setNameError] = useState<string>();
+  const [weightError, setWeightError] = useState<string>();
 
   function submit(e: FormEvent) {
     e.preventDefault();
+    setNameError(undefined);
+    setWeightError(undefined);
     const trimmed = name.trim();
     const w = Number(weight.replace(',', '.'));
-    if (!trimmed) return setError('Donne un nom à la matière.');
-    if (!(w > 0)) return setError('Le coefficient doit être supérieur à 0.');
+
+    let valid = true;
+    if (!trimmed) {
+      setNameError('Donne un nom à la matière.');
+      valid = false;
+    } else if (subjectNameTaken(existingSubjects, trimmed, initial?.id)) {
+      setNameError('Une matière porte déjà ce nom.');
+      valid = false;
+    }
+    if (!(w > 0)) {
+      setWeightError('Le coefficient doit être supérieur à 0.');
+      valid = false;
+    }
+    if (!valid) return;
+
     onSubmit({ name: trimmed, weight: w, color, icon });
   }
 
@@ -50,7 +73,7 @@ export function SubjectForm({ initial, onSubmit }: SubjectFormProps) {
         onChange={e => setName(e.target.value)}
         placeholder="Mathématiques"
         autoFocus
-        error={error && !name.trim() ? error : undefined}
+        error={nameError}
       />
       <TextField
         label="Coefficient de la matière"
@@ -61,7 +84,7 @@ export function SubjectForm({ initial, onSubmit }: SubjectFormProps) {
         value={weight}
         onChange={e => setWeight(e.target.value)}
         hint="Poids de la matière dans la moyenne générale."
-        error={error && name.trim() ? error : undefined}
+        error={weightError}
       />
 
       <fieldset className="flex flex-col gap-2">

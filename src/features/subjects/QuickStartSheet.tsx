@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
-import { useAppStore } from '../../store/useAppStore.ts';
+import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { Button } from '../../shared/components/Button.tsx';
 import { Sheet } from '../../shared/components/Sheet.tsx';
 import { SelectField } from '../../shared/components/Field.tsx';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
+import { subjectNameTaken } from '../../shared/lib/subjectName.ts';
 import { CLASS_LEVELS } from './subjectCatalog.ts';
 
 interface QuickStartSheetProps {
@@ -24,14 +25,24 @@ export function QuickStartSheet({
   onDone,
 }: QuickStartSheetProps) {
   const addSubjects = useAppStore(s => s.addSubjects);
+  const existingSubjects = useAppStore(selectActiveScenario).subjects;
   const [classId, setClassId] = useState(CLASS_LEVELS[0]!.id);
-  // Indices décochés (par défaut tout est coché).
+  // Indices décochés manuellement (par défaut tout est coché).
   const [excluded, setExcluded] = useState<Set<number>>(new Set());
 
   const level = useMemo(
     () => CLASS_LEVELS.find(c => c.id === classId) ?? CLASS_LEVELS[0]!,
     [classId]
   );
+
+  // Matières déjà présentes dans le scénario : verrouillées (anti-doublon).
+  const alreadyAdded = useMemo(() => {
+    const set = new Set<number>();
+    level.subjects.forEach((subject, i) => {
+      if (subjectNameTaken(existingSubjects, subject.name)) set.add(i);
+    });
+    return set;
+  }, [level, existingSubjects]);
 
   function changeClass(id: string) {
     setClassId(id);
@@ -47,10 +58,12 @@ export function QuickStartSheet({
     });
   }
 
-  const selectedCount = level.subjects.length - excluded.size;
+  const isChecked = (i: number) => !excluded.has(i) && !alreadyAdded.has(i);
+  const selectedCount = level.subjects.filter((_, i) => isChecked(i)).length;
+  const allAlreadyAdded = alreadyAdded.size === level.subjects.length;
 
   function activate() {
-    const chosen = level.subjects.filter((_, i) => !excluded.has(i));
+    const chosen = level.subjects.filter((_, i) => isChecked(i));
     if (chosen.length > 0) addSubjects(chosen);
     onClose();
     onDone?.();
@@ -92,14 +105,20 @@ export function QuickStartSheet({
 
       <ul className="mt-4 flex flex-col gap-1.5">
         {level.subjects.map((subject, i) => {
-          const checked = !excluded.has(i);
+          const locked = alreadyAdded.has(i);
           return (
             <li key={`${subject.name}-${i}`}>
-              <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl border border-[var(--mg-border)] bg-[var(--mg-surface-2)] px-3">
+              <label
+                className={
+                  'flex min-h-12 items-center gap-3 rounded-2xl border border-[var(--mg-border)] bg-[var(--mg-surface-2)] px-3 ' +
+                  (locked ? 'opacity-60' : 'cursor-pointer')
+                }
+              >
                 <input
                   type="checkbox"
                   className="h-5 w-5 accent-[var(--color-primary)]"
-                  checked={checked}
+                  checked={isChecked(i)}
+                  disabled={locked}
                   onChange={() => toggle(i)}
                 />
                 <span
@@ -116,9 +135,15 @@ export function QuickStartSheet({
                 <span className="flex-1 truncate font-semibold">
                   {subject.name}
                 </span>
-                <span className="text-xs text-[var(--mg-text-soft)]">
-                  coef {subject.weight}
-                </span>
+                {locked ? (
+                  <span className="text-xs font-semibold text-[var(--mg-text-soft)]">
+                    déjà ajoutée
+                  </span>
+                ) : (
+                  <span className="text-xs text-[var(--mg-text-soft)]">
+                    coef {subject.weight}
+                  </span>
+                )}
               </label>
             </li>
           );
@@ -129,7 +154,9 @@ export function QuickStartSheet({
         <Button block onClick={activate} disabled={selectedCount === 0}>
           {selectedCount > 0
             ? `Activer ${selectedCount} matière${selectedCount > 1 ? 's' : ''}`
-            : 'Sélectionne au moins une matière'}
+            : allAlreadyAdded
+              ? 'Toutes ces matières sont déjà ajoutées'
+              : 'Sélectionne au moins une matière'}
         </Button>
       </div>
     </Sheet>
