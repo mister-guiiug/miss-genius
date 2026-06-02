@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS: Settings = {
   normalizeBases: true,
   theme: 'light',
   lockSubjectOrder: true,
+  gradeSort: 'date-desc',
 };
 
 /** Scénario vide nommé (point de départ de toute simulation). */

@@ -12,6 +12,7 @@ import { EmptyState } from '../../shared/components/EmptyState.tsx';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { formatAverage } from '../../shared/lib/format.ts';
 import { normalizeValue } from '../../shared/lib/average.ts';
+import { sortGrades } from '../../shared/lib/sortGrades.ts';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
 import { GradeForm } from './GradeForm.tsx';
 import { FutureGradeSimulator } from './FutureGradeSimulator.tsx';
@@ -46,7 +47,10 @@ export function SubjectDetailScreen() {
   }
 
   const { subject, average } = result;
-  const grades = scenario.grades.filter(g => g.subjectId === subjectId);
+  const grades = sortGrades(
+    scenario.grades.filter(g => g.subjectId === subjectId),
+    settings.gradeSort
+  );
 
   return (
     <div className="flex flex-col gap-4 p-4">

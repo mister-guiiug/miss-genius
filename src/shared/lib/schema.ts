@@ -3,7 +3,7 @@
  * Garantit qu'un JSON externe ou un schéma corrompu ne casse pas l'app.
  */
 import { z } from 'zod';
-import { GRADE_TYPES, SUBJECT_COLORS } from '../types/domain.ts';
+import { GRADE_SORTS, GRADE_TYPES, SUBJECT_COLORS } from '../types/domain.ts';
 
 const gradeSchema = z.object({
   id: z.string(),
@@ -58,6 +58,8 @@ const settingsSchema = z.object({
   // champ (ou avec une valeur invalide) ne sont pas rejetées, elles héritent
   // du défaut « verrouillé » au lieu de provoquer une réinitialisation.
   lockSubjectOrder: z.boolean().catch(true),
+  // Idem : champ ajouté en 1.x, défaut tolérant pour les données héritées.
+  gradeSort: z.enum(GRADE_SORTS).catch('date-desc'),
 });
 
 export const appDataSchema = z.object({

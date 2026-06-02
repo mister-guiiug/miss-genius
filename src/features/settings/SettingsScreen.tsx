@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Download, RefreshCw, Upload } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
-import type { RoundingMode } from '../../shared/types/domain.ts';
+import type { GradeSort, RoundingMode } from '../../shared/types/domain.ts';
 import { exportData, importData } from '../../shared/lib/storage.ts';
 import { forceUpdate } from '../../pwa/forceUpdate.ts';
 import { Card } from '../../shared/components/Card.tsx';
@@ -99,6 +99,22 @@ export function SettingsScreen() {
             onChange={e => updateSettings({ normalizeBases: e.target.checked })}
           />
         </label>
+      </Card>
+
+      <Card className="flex flex-col gap-3">
+        <h2 className="font-bold">Affichage</h2>
+        <SelectField
+          label="Ordre des notes (par matière)"
+          value={settings.gradeSort}
+          onChange={e =>
+            updateSettings({ gradeSort: e.target.value as GradeSort })
+          }
+        >
+          <option value="date-desc">Date — plus récente d'abord</option>
+          <option value="date-asc">Date — plus ancienne d'abord</option>
+          <option value="value-desc">Note — meilleure d'abord</option>
+          <option value="added">Ordre d'ajout</option>
+        </SelectField>
       </Card>
 
       <Card className="flex flex-col gap-3">

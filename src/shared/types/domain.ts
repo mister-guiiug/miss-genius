@@ -17,6 +17,16 @@ export const GRADE_TYPES = [
 
 export type GradeType = (typeof GRADE_TYPES)[number];
 
+/** Ordre d'affichage des notes dans une matière. */
+export const GRADE_SORTS = [
+  'date-desc', // date, plus récente d'abord (défaut)
+  'date-asc', // date, plus ancienne d'abord
+  'added', // ordre de saisie
+  'value-desc', // meilleure note d'abord
+] as const;
+
+export type GradeSort = (typeof GRADE_SORTS)[number];
+
 /** Mode d'arrondi appliqué à l'affichage des moyennes. */
 export type RoundingMode = 'none' | 'nearest' | 'floor' | 'ceil';
 
@@ -104,6 +114,8 @@ export interface Settings {
    * glisser-déposer pour éviter un réordonnancement accidentel.
    */
   lockSubjectOrder: boolean;
+  /** Ordre d'affichage des notes (défaut : date décroissante). */
+  gradeSort: GradeSort;
 }
 
 /** État persisté complet (enveloppe versionnée). */
