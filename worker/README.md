@@ -34,6 +34,21 @@ npm run deploy
 Wrangler affiche l'URL publique du Worker, par ex.
 `https://miss-genius-pronote-proxy.<compte>.workers.dev`.
 
+### Déploiement automatique (GitHub Actions)
+
+Le workflow [`.github/workflows/deploy-worker.yml`](../.github/workflows/deploy-worker.yml)
+déploie le Worker à chaque push sur `main` touchant `worker/**` (et via
+**Run workflow** manuel). Il nécessite deux **secrets de dépôt** :
+
+| Secret                  | Rôle                                                 |
+| ----------------------- | ---------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Token Cloudflare avec la permission « Edit Workers » |
+| `CLOUDFLARE_ACCOUNT_ID` | Identifiant du compte Cloudflare                     |
+
+Tant que ces secrets sont absents, le job se termine en **succès** sans rien
+déployer (le connecteur reste optionnel). Une étape _dry-run_ valide quand même
+le bundling du Worker.
+
 ## Brancher le PWA
 
 Côté Miss Genius, définir la variable d'environnement de build :
