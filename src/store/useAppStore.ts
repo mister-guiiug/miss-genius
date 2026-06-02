@@ -202,13 +202,7 @@ export const useAppStore = create<AppState>((set, get) => {
     reorderSubjects: (from, to) =>
       mutateActive(sc => {
         const last = sc.subjects.length - 1;
-        if (
-          from === to ||
-          from < 0 ||
-          from > last ||
-          to < 0 ||
-          to > last
-        ) {
+        if (from === to || from < 0 || from > last || to < 0 || to > last) {
           return sc; // bornes invalides ou aucun déplacement
         }
         const subjects = [...sc.subjects];

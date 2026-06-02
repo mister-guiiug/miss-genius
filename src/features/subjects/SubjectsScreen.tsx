@@ -91,7 +91,10 @@ export function SubjectsScreen() {
     return items.length - 1;
   }
 
-  function handleDragStart(e: ReactPointerEvent<HTMLButtonElement>, id: string) {
+  function handleDragStart(
+    e: ReactPointerEvent<HTMLButtonElement>,
+    id: string
+  ) {
     e.preventDefault();
     e.currentTarget.setPointerCapture(e.pointerId);
     setDraggingId(id);
