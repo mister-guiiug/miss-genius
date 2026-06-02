@@ -37,4 +37,17 @@ describe('persistance', () => {
   it('rejette un JSON importé invalide', () => {
     expect(() => importData('{"foo":1}')).toThrow();
   });
+
+  it('migre des données héritées sans `lockSubjectOrder` (pas de reset)', () => {
+    const legacy = createInitialData();
+    legacy.scenarios[0]!.name = 'Bulletin existant';
+    // Simule une sauvegarde d'avant l'ajout du champ.
+    const raw = JSON.parse(JSON.stringify(legacy));
+    delete raw.settings.lockSubjectOrder;
+    localStorage.setItem('miss-genius:data', JSON.stringify(raw));
+
+    const data = loadData();
+    expect(data.scenarios[0]!.name).toBe('Bulletin existant'); // données préservées
+    expect(data.settings.lockSubjectOrder).toBe(true); // défaut « verrouillé »
+  });
 });

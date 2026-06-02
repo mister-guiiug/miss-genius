@@ -54,6 +54,10 @@ const settingsSchema = z.object({
   }),
   normalizeBases: z.boolean(),
   theme: z.enum(['light', 'dark']),
+  // Champ ajouté en 1.x : `.catch(true)` -> les données existantes sans ce
+  // champ (ou avec une valeur invalide) ne sont pas rejetées, elles héritent
+  // du défaut « verrouillé » au lieu de provoquer une réinitialisation.
+  lockSubjectOrder: z.boolean().catch(true),
 });
 
 export const appDataSchema = z.object({

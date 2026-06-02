@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: Settings = {
   rounding: { mode: 'nearest', decimals: 2 },
   normalizeBases: true,
   theme: 'light',
+  lockSubjectOrder: true,
 };
 
 /** Scénario vide nommé (point de départ de toute simulation). */

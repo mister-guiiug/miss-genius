@@ -6,7 +6,9 @@ import {
 } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  ArrowUpDown,
   BookOpen,
+  Check,
   GripVertical,
   Pencil,
   Plus,
@@ -35,7 +37,12 @@ export function SubjectsScreen() {
   const updateSubject = useAppStore(s => s.updateSubject);
   const deleteSubject = useAppStore(s => s.deleteSubject);
   const reorderSubjects = useAppStore(s => s.reorderSubjects);
+  const updateSettings = useAppStore(s => s.updateSettings);
   const { subjectResults } = useScenarioResults(scenario, settings);
+
+  // Ordre verrouillé par défaut : le glisser-déposer n'est actif qu'une fois
+  // déverrouillé, ce qui évite tout réordonnancement accidentel.
+  const locked = settings.lockSubjectOrder;
 
   const [editing, setEditing] = useState<Subject | null>(null);
   const [creating, setCreating] = useState(false);
@@ -127,6 +134,32 @@ export function SubjectsScreen() {
         </Button>
       </div>
 
+      {scenario.subjects.length >= 2 && (
+        <div className="flex items-center gap-2">
+          {!locked && (
+            <p className="text-sm text-[var(--mg-text-soft)]">
+              Glisse les matières pour les réordonner.
+            </p>
+          )}
+          <Button
+            variant={locked ? 'ghost' : 'primary'}
+            className="ml-auto"
+            aria-pressed={!locked}
+            onClick={() => updateSettings({ lockSubjectOrder: !locked })}
+          >
+            {locked ? (
+              <>
+                <ArrowUpDown size={16} aria-hidden="true" /> Réorganiser
+              </>
+            ) : (
+              <>
+                <Check size={16} aria-hidden="true" /> Terminer
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
       {scenario.subjects.length === 0 ? (
         <EmptyState
           icon={<BookOpen size={64} className="text-primary" />}
@@ -150,17 +183,19 @@ export function SubjectsScreen() {
                     'opacity-80 shadow-lg ring-2 ring-primary/40'
                 )}
               >
-                <button
-                  type="button"
-                  aria-label={`Réordonner ${r.subject.name}`}
-                  className="-ml-1 grid h-10 w-7 shrink-0 cursor-grab touch-none place-items-center rounded-xl text-[var(--mg-text-soft)] active:cursor-grabbing"
-                  onPointerDown={e => handleDragStart(e, r.subject.id)}
-                  onPointerMove={handleDragMove}
-                  onPointerUp={handleDragEnd}
-                  onPointerCancel={handleDragEnd}
-                >
-                  <GripVertical size={18} aria-hidden="true" />
-                </button>
+                {!locked && (
+                  <button
+                    type="button"
+                    aria-label={`Réordonner ${r.subject.name}`}
+                    className="-ml-1 grid h-10 w-7 shrink-0 cursor-grab touch-none place-items-center rounded-xl text-[var(--mg-text-soft)] active:cursor-grabbing"
+                    onPointerDown={e => handleDragStart(e, r.subject.id)}
+                    onPointerMove={handleDragMove}
+                    onPointerUp={handleDragEnd}
+                    onPointerCancel={handleDragEnd}
+                  >
+                    <GripVertical size={18} aria-hidden="true" />
+                  </button>
+                )}
                 <Link
                   to={`/subjects/${r.subject.id}`}
                   className="flex min-w-0 flex-1 items-center gap-3"

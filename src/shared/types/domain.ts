@@ -99,6 +99,11 @@ export interface Settings {
   /** Normaliser automatiquement les notes saisies sur d'autres bases. */
   normalizeBases: boolean;
   theme: 'light' | 'dark';
+  /**
+   * Verrouille l'ordre des matières (true par défaut) : empêche le
+   * glisser-déposer pour éviter un réordonnancement accidentel.
+   */
+  lockSubjectOrder: boolean;
 }
 
 /** État persisté complet (enveloppe versionnée). */
