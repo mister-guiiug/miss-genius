@@ -1,7 +1,8 @@
 import type { AppData, Scenario, Settings } from '../types/domain.ts';
 import { createId } from './id.ts';
+import { buildPeriods } from './periods.ts';
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const DEFAULT_SETTINGS: Settings = {
   referenceBase: 20,
@@ -15,11 +16,14 @@ export const DEFAULT_SETTINGS: Settings = {
 /** Scénario vide nommé (point de départ de toute simulation). */
 export function createEmptyScenario(name = 'Mon bulletin'): Scenario {
   const now = Date.now();
+  const periods = buildPeriods('trimestres');
   return {
     id: createId('scn'),
     name,
     subjects: [],
     grades: [],
+    periods,
+    activePeriodId: periods[0]!.id,
     goal: null,
     createdAt: now,
     updatedAt: now,

@@ -82,8 +82,13 @@ export function GoalScreen() {
       };
     }
 
+    // Les objectifs portent sur la période active.
+    const periodGrades = scenario.grades.filter(
+      g => g.periodId === scenario.activePeriodId
+    );
+
     if (scopeKind === 'subject') {
-      const grades = scenario.grades.filter(g => g.subjectId === subjectId);
+      const grades = periodGrades.filter(g => g.subjectId === subjectId);
       const r = requiredGradeForSubjectAverage(grades, t, w, m, options);
       return {
         reason: r.reason,
@@ -95,7 +100,7 @@ export function GoalScreen() {
     // Objectif de moyenne générale : on cible une matière précise.
     const subjAvg = requiredSubjectAverageForGeneral(
       scenario.subjects,
-      scenario.grades,
+      periodGrades,
       evalSubjectId,
       t,
       options
@@ -103,7 +108,7 @@ export function GoalScreen() {
     if (subjAvg.reason !== 'ok' || subjAvg.requiredAverage === null) {
       return { reason: subjAvg.reason, required: null, evalSubjectId };
     }
-    const grades = scenario.grades.filter(g => g.subjectId === evalSubjectId);
+    const grades = periodGrades.filter(g => g.subjectId === evalSubjectId);
     const r = requiredGradeForSubjectAverage(
       grades,
       subjAvg.requiredAverage,

@@ -17,6 +17,7 @@ function grade(partial: Partial<Grade>): Grade {
   return {
     id: partial.id ?? 'g',
     subjectId: partial.subjectId ?? 's',
+    periodId: partial.periodId ?? 'p',
     value: partial.value ?? 0,
     max: partial.max ?? 20,
     weight: partial.weight ?? 1,

@@ -16,15 +16,51 @@
  */
 import type { AppData } from '../types/domain.ts';
 import { appDataSchema } from './schema.ts';
+import { createId } from './id.ts';
 import { createInitialData, SCHEMA_VERSION } from './seed.ts';
 
 const STORAGE_KEY = 'miss-genius:data';
+
+/**
+ * 1 -> 2 : introduction des périodes. Les données existantes n'avaient pas de
+ * notion de période : on crée une période « Année » par scénario et on y
+ * rattache toutes les notes (migration non destructive, ordre préservé).
+ */
+function migrateScenarioToPeriods(sc: unknown): unknown {
+  const s = sc as {
+    periods?: unknown;
+    grades?: unknown;
+    activePeriodId?: string;
+  };
+  if (Array.isArray(s.periods) && s.periods.length > 0) return sc;
+  const period = { id: createId('per'), name: 'Année' };
+  const grades = Array.isArray(s.grades)
+    ? s.grades.map(g =>
+        g && typeof g === 'object' && 'periodId' in g
+          ? g
+          : { ...(g as object), periodId: period.id }
+      )
+    : s.grades;
+  return {
+    ...(sc as object),
+    periods: [period],
+    activePeriodId: period.id,
+    grades,
+  };
+}
 
 /** Migrations indexées par version *source*. Chacune monte d'un cran. */
 const migrations: Record<number, (data: unknown) => unknown> = {
   // 0 -> 1 : exemple de squelette de migration pour les schémas pré-versionnés.
   0: (data: unknown) => ({ ...(data as object), version: 1 }),
-  // Ajouter ici 1 -> 2, 2 -> 3, … au fil des évolutions de schéma.
+  // 1 -> 2 : périodes (cf. migrateScenarioToPeriods).
+  1: (data: unknown) => {
+    const d = data as { scenarios?: unknown };
+    const scenarios = Array.isArray(d.scenarios)
+      ? d.scenarios.map(migrateScenarioToPeriods)
+      : d.scenarios;
+    return { ...(data as object), version: 2, scenarios };
+  },
 };
 
 function runMigrations(raw: unknown): unknown {

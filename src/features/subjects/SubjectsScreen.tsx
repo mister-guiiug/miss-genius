@@ -29,6 +29,7 @@ import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
 import { cn } from '../../shared/lib/cn.ts';
 import { SubjectForm } from './SubjectForm.tsx';
 import { QuickStartSheet } from './QuickStartSheet.tsx';
+import { PeriodBar } from '../periods/PeriodBar.tsx';
 
 export function SubjectsScreen() {
   const scenario = useAppStore(selectActiveScenario);
@@ -125,6 +126,8 @@ export function SubjectsScreen() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
+      <PeriodBar />
+
       <div className="flex gap-2">
         <Button block onClick={() => setCreating(true)}>
           <Plus size={18} aria-hidden="true" /> Ajouter

@@ -19,6 +19,11 @@ import type {
 } from '../shared/types/domain.ts';
 import { createId } from '../shared/lib/id.ts';
 import { normalizeSubjectName } from '../shared/lib/subjectName.ts';
+import {
+  buildPeriods,
+  createPeriod,
+  type PeriodPreset,
+} from '../shared/lib/periods.ts';
 import { createEmptyScenario, DEFAULT_SETTINGS } from '../shared/lib/seed.ts';
 import { loadData, saveData } from '../shared/lib/storage.ts';
 
@@ -45,10 +50,22 @@ interface AppState {
   /** Réordonne les matières (glisser-déposer) : déplace l'index `from` vers `to`. */
   reorderSubjects: (from: number, to: number) => void;
 
-  // Notes (scénario actif)
-  addGrade: (input: Omit<Grade, 'id'>) => void;
+  // Notes (scénario actif) — periodId par défaut = période active
+  addGrade: (
+    input: Omit<Grade, 'id' | 'periodId'> & { periodId?: string }
+  ) => void;
+  addGrades: (
+    inputs: Array<Omit<Grade, 'id' | 'periodId'> & { periodId?: string }>
+  ) => void;
   updateGrade: (id: string, patch: Partial<Omit<Grade, 'id'>>) => void;
   deleteGrade: (id: string) => void;
+
+  // Périodes (scénario actif)
+  setActivePeriod: (id: string) => void;
+  addPeriod: (name: string) => void;
+  renamePeriod: (id: string, name: string) => void;
+  deletePeriod: (id: string) => void;
+  applyPeriodPreset: (preset: PeriodPreset) => void;
 
   // Objectif (scénario actif)
   setGoal: (goal: Omit<Goal, 'id'>) => void;
@@ -214,7 +231,27 @@ export const useAppStore = create<AppState>((set, get) => {
     addGrade: input =>
       mutateActive(sc => ({
         ...sc,
-        grades: [...sc.grades, { ...input, id: createId('grd') }],
+        grades: [
+          ...sc.grades,
+          {
+            ...input,
+            periodId: input.periodId ?? sc.activePeriodId,
+            id: createId('grd'),
+          },
+        ],
+      })),
+
+    addGrades: inputs =>
+      mutateActive(sc => ({
+        ...sc,
+        grades: [
+          ...sc.grades,
+          ...inputs.map(input => ({
+            ...input,
+            periodId: input.periodId ?? sc.activePeriodId,
+            id: createId('grd'),
+          })),
+        ],
       })),
 
     updateGrade: (id, patch) =>
@@ -228,6 +265,51 @@ export const useAppStore = create<AppState>((set, get) => {
         ...sc,
         grades: sc.grades.filter(g => g.id !== id),
       })),
+
+    setActivePeriod: id =>
+      mutateActive(sc =>
+        sc.periods.some(p => p.id === id) ? { ...sc, activePeriodId: id } : sc
+      ),
+
+    addPeriod: name =>
+      mutateActive(sc => {
+        const p = createPeriod(
+          name.trim() || `Période ${sc.periods.length + 1}`
+        );
+        return { ...sc, periods: [...sc.periods, p], activePeriodId: p.id };
+      }),
+
+    renamePeriod: (id, name) =>
+      mutateActive(sc => ({
+        ...sc,
+        periods: sc.periods.map(p =>
+          p.id === id ? { ...p, name: name.trim() || p.name } : p
+        ),
+      })),
+
+    deletePeriod: id =>
+      mutateActive(sc => {
+        if (sc.periods.length <= 1) return sc; // toujours ≥ 1 période
+        const periods = sc.periods.filter(p => p.id !== id);
+        const fallback = periods[0]!.id;
+        // Les notes de la période supprimée sont rattachées à la première
+        // période restante (réaffectation non destructive).
+        const grades = sc.grades.map(g =>
+          g.periodId === id ? { ...g, periodId: fallback } : g
+        );
+        const activePeriodId =
+          sc.activePeriodId === id ? fallback : sc.activePeriodId;
+        return { ...sc, periods, grades, activePeriodId };
+      }),
+
+    applyPeriodPreset: preset =>
+      mutateActive(sc => {
+        const periods = buildPeriods(preset);
+        const target = periods[0]!.id;
+        // Toutes les notes existantes sont regroupées dans la 1re période.
+        const grades = sc.grades.map(g => ({ ...g, periodId: target }));
+        return { ...sc, periods, grades, activePeriodId: target };
+      }),
 
     setGoal: goal =>
       mutateActive(sc => ({ ...sc, goal: { ...goal, id: createId('goal') } })),

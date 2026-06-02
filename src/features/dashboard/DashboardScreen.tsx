@@ -18,6 +18,7 @@ import { Tag } from '../../shared/components/badges.tsx';
 import { EmptyState } from '../../shared/components/EmptyState.tsx';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
+import { PeriodBar } from '../periods/PeriodBar.tsx';
 import { formatAverage } from '../../shared/lib/format.ts';
 import { appreciation, SUBJECT_HEX } from '../../shared/lib/colors.ts';
 
@@ -63,8 +64,14 @@ export function DashboardScreen() {
           ? Smile
           : Dumbbell;
 
+  const activePeriod = scenario.periods.find(
+    p => p.id === scenario.activePeriodId
+  );
+
   return (
     <div className="flex flex-col gap-4 p-4">
+      <PeriodBar />
+
       <Card className="flex items-center gap-4 bg-gradient-to-br from-primary to-[color:var(--color-accent)] text-white border-0">
         <RiveBadge
           fallback={<HeroIcon size={48} className="text-white" />}
@@ -72,7 +79,9 @@ export function DashboardScreen() {
           size={92}
         />
         <div className="min-w-0">
-          <p className="text-sm/5 font-medium opacity-90">Moyenne générale</p>
+          <p className="text-sm/5 font-medium opacity-90">
+            Moyenne générale{activePeriod ? ` · ${activePeriod.name}` : ''}
+          </p>
           <p className="font-display text-4xl font-bold tabular-nums">
             {formatAverage(general, settings.rounding, settings.referenceBase)}
           </p>

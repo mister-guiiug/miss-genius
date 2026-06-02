@@ -16,7 +16,14 @@ const subjects: Subject[] = [
 ];
 
 function g(subjectId: string, value: number, weight = 1, max = 20): Grade {
-  return { id: `${subjectId}-${value}`, subjectId, value, max, weight };
+  return {
+    id: `${subjectId}-${value}`,
+    subjectId,
+    periodId: 'p',
+    value,
+    max,
+    weight,
+  };
 }
 
 describe('simulateFutureGrade', () => {

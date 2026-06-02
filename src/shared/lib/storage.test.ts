@@ -38,6 +38,41 @@ describe('persistance', () => {
     expect(() => importData('{"foo":1}')).toThrow();
   });
 
+  it('migre des données v1 (sans périodes) vers v2 sans perte', () => {
+    const legacy = {
+      version: 1,
+      scenarios: [
+        {
+          id: 'old',
+          name: 'Ancien bulletin',
+          subjects: [{ id: 'm', name: 'Maths', weight: 1, color: 'violet' }],
+          grades: [{ id: 'g1', subjectId: 'm', value: 14, max: 20, weight: 1 }],
+          goal: null,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      ],
+      activeScenarioId: 'old',
+      settings: {
+        referenceBase: 20,
+        rounding: { mode: 'nearest', decimals: 2 },
+        normalizeBases: true,
+        theme: 'light',
+      },
+      onboarded: true,
+    };
+    localStorage.setItem('miss-genius:data', JSON.stringify(legacy));
+
+    const data = loadData();
+    const sc = data.scenarios[0]!;
+    expect(data.version).toBe(2);
+    expect(sc.name).toBe('Ancien bulletin'); // préservé
+    expect(sc.periods).toHaveLength(1);
+    expect(sc.activePeriodId).toBe(sc.periods[0]!.id);
+    // chaque note hérite de la période créée
+    expect(sc.grades[0]!.periodId).toBe(sc.periods[0]!.id);
+  });
+
   it('migre des données héritées sans `lockSubjectOrder` (pas de reset)', () => {
     const legacy = createInitialData();
     legacy.scenarios[0]!.name = 'Bulletin existant';

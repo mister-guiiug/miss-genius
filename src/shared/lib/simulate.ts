@@ -19,7 +19,16 @@ export function makeHypotheticalGrade(
   max: number,
   weight: number
 ): Grade {
-  return { id: '__hypothetical__', subjectId, value, max, weight };
+  // periodId non pertinent : la note hypothétique n'est jamais persistée et le
+  // moteur ne filtre pas par période (les listes lui arrivent déjà filtrées).
+  return {
+    id: '__hypothetical__',
+    subjectId,
+    periodId: '',
+    value,
+    max,
+    weight,
+  };
 }
 
 export interface SimulationImpact {

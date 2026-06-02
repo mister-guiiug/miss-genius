@@ -29,9 +29,13 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
     if (!(m > 0) || !(w > 0) || !Number.isFinite(v) || v < 0 || v > m) {
       return null;
     }
+    // Impact mesuré sur la période active (notes filtrées en amont).
+    const periodGrades = scenario.grades.filter(
+      g => g.periodId === scenario.activePeriodId
+    );
     return simulateFutureGrade(
       scenario.subjects,
-      scenario.grades,
+      periodGrades,
       makeHypotheticalGrade(subjectId, v, m, w),
       {
         referenceBase: settings.referenceBase,

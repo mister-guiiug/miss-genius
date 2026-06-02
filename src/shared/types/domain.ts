@@ -36,10 +36,18 @@ export interface RoundingConfig {
   decimals: number;
 }
 
+/** Une période scolaire (trimestre, semestre, ou « Année »). */
+export interface Period {
+  id: string;
+  name: string;
+}
+
 /** Une note saisie dans une matière. */
 export interface Grade {
   id: string;
   subjectId: string;
+  /** Période à laquelle la note est rattachée. */
+  periodId: string;
   /** Note obtenue, exprimée sur {@link Grade.max}. */
   value: number;
   /** Barème de la note (ex. 20). Permet les notes sur bases différentes. */
@@ -91,12 +99,16 @@ export interface Goal {
   nextWeight: number;
 }
 
-/** Un scénario = un univers complet de matières + notes + objectif. */
+/** Un scénario = un univers complet de matières + notes + périodes + objectif. */
 export interface Scenario {
   id: string;
   name: string;
   subjects: Subject[];
   grades: Grade[];
+  /** Périodes du scénario (au moins une). */
+  periods: Period[];
+  /** Période actuellement affichée. */
+  activePeriodId: string;
   goal: Goal | null;
   createdAt: number;
   updatedAt: number;

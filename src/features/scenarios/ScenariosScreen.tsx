@@ -37,8 +37,15 @@ export function ScenariosScreen() {
 
   /** Moyenne générale de chaque scénario + écart vs scénario actif (comparaison). */
   const rows = useMemo(() => {
+    // Comparaison sur la période active de chaque scénario.
     const general = (s: Scenario) =>
-      generalAverage(computeSubjectResults(s.subjects, s.grades, options));
+      generalAverage(
+        computeSubjectResults(
+          s.subjects,
+          s.grades.filter(g => g.periodId === s.activePeriodId),
+          options
+        )
+      );
     const active = scenarios.find(s => s.id === activeId);
     const baseAvg = active ? general(active) : null;
     return scenarios.map(s => {

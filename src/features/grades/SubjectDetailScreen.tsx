@@ -14,6 +14,7 @@ import { formatAverage } from '../../shared/lib/format.ts';
 import { normalizeValue } from '../../shared/lib/average.ts';
 import { sortGrades } from '../../shared/lib/sortGrades.ts';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
+import { PeriodBar } from '../periods/PeriodBar.tsx';
 import { GradeForm } from './GradeForm.tsx';
 import { FutureGradeSimulator } from './FutureGradeSimulator.tsx';
 
@@ -48,12 +49,16 @@ export function SubjectDetailScreen() {
 
   const { subject, average } = result;
   const grades = sortGrades(
-    scenario.grades.filter(g => g.subjectId === subjectId),
+    scenario.grades.filter(
+      g => g.subjectId === subjectId && g.periodId === scenario.activePeriodId
+    ),
     settings.gradeSort
   );
 
   return (
     <div className="flex flex-col gap-4 p-4">
+      <PeriodBar />
+
       <Card className="flex items-center gap-3">
         <span
           aria-hidden="true"
@@ -142,6 +147,8 @@ export function SubjectDetailScreen() {
       >
         <GradeForm
           defaultMax={settings.referenceBase}
+          periods={scenario.periods}
+          defaultPeriodId={scenario.activePeriodId}
           onSubmit={draft => {
             addGrade({ subjectId, ...draft });
             setCreating(false);
@@ -158,6 +165,8 @@ export function SubjectDetailScreen() {
           <GradeForm
             initial={editing}
             defaultMax={settings.referenceBase}
+            periods={scenario.periods}
+            defaultPeriodId={scenario.activePeriodId}
             onSubmit={draft => {
               updateGrade(editing.id, draft);
               setEditing(null);

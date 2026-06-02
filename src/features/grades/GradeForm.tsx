@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import type { Grade, GradeType } from '../../shared/types/domain.ts';
+import type { Grade, GradeType, Period } from '../../shared/types/domain.ts';
 import { GRADE_TYPES } from '../../shared/types/domain.ts';
 import { TextField, SelectField } from '../../shared/components/Field.tsx';
 import { Button } from '../../shared/components/Button.tsx';
@@ -16,6 +16,7 @@ export interface GradeDraft {
   value: number;
   max: number;
   weight: number;
+  periodId: string;
   date?: string;
   type?: GradeType;
   label?: string;
@@ -24,13 +25,26 @@ export interface GradeDraft {
 interface GradeFormProps {
   initial?: Grade;
   defaultMax: number;
+  /** Périodes disponibles (un sélecteur apparaît s'il y en a plusieurs). */
+  periods: Period[];
+  /** Période pré-sélectionnée (période active du scénario). */
+  defaultPeriodId: string;
   onSubmit: (draft: GradeDraft) => void;
 }
 
-export function GradeForm({ initial, defaultMax, onSubmit }: GradeFormProps) {
+export function GradeForm({
+  initial,
+  defaultMax,
+  periods,
+  defaultPeriodId,
+  onSubmit,
+}: GradeFormProps) {
   const [value, setValue] = useState(String(initial?.value ?? ''));
   const [max, setMax] = useState(String(initial?.max ?? defaultMax));
   const [weight, setWeight] = useState(String(initial?.weight ?? 1));
+  const [periodId, setPeriodId] = useState(
+    initial?.periodId ?? defaultPeriodId
+  );
   const [date, setDate] = useState(initial?.date ?? '');
   const [type, setType] = useState<GradeType | ''>(initial?.type ?? '');
   const [label, setLabel] = useState(initial?.label ?? '');
@@ -49,6 +63,7 @@ export function GradeForm({ initial, defaultMax, onSubmit }: GradeFormProps) {
       value: v,
       max: m,
       weight: w,
+      periodId,
       date: date || undefined,
       type: type || undefined,
       label: label.trim() || undefined,
@@ -100,6 +115,19 @@ export function GradeForm({ initial, defaultMax, onSubmit }: GradeFormProps) {
           </option>
         ))}
       </SelectField>
+      {periods.length > 1 && (
+        <SelectField
+          label="Période"
+          value={periodId}
+          onChange={e => setPeriodId(e.target.value)}
+        >
+          {periods.map(p => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+        </SelectField>
+      )}
       <TextField
         label="Intitulé (facultatif)"
         value={label}

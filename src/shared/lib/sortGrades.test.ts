@@ -3,7 +3,7 @@ import type { Grade } from '../types/domain.ts';
 import { sortGrades } from './sortGrades.ts';
 
 function g(id: string, value: number, date?: string, max = 20): Grade {
-  return { id, subjectId: 's', value, max, weight: 1, date };
+  return { id, subjectId: 's', periodId: 'p', value, max, weight: 1, date };
 }
 
 // Ordre de saisie : g2 (oct) , g1 (sep) , g4 (sans date) , g3 (nov)

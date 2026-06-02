@@ -8,12 +8,18 @@ import { GRADE_SORTS, GRADE_TYPES, SUBJECT_COLORS } from '../types/domain.ts';
 const gradeSchema = z.object({
   id: z.string(),
   subjectId: z.string(),
+  periodId: z.string(),
   value: z.number(),
   max: z.number().positive(),
   weight: z.number().positive(),
   date: z.string().optional(),
   type: z.enum(GRADE_TYPES).optional(),
   label: z.string().optional(),
+});
+
+const periodSchema = z.object({
+  id: z.string(),
+  name: z.string(),
 });
 
 const subjectSchema = z.object({
@@ -41,6 +47,8 @@ const scenarioSchema = z.object({
   name: z.string(),
   subjects: z.array(subjectSchema),
   grades: z.array(gradeSchema),
+  periods: z.array(periodSchema).min(1),
+  activePeriodId: z.string(),
   goal: goalSchema,
   createdAt: z.number(),
   updatedAt: z.number(),
