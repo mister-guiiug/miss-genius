@@ -41,6 +41,8 @@ interface AppState {
   addSubjects: (inputs: Omit<Subject, 'id'>[]) => void;
   updateSubject: (id: string, patch: Partial<Omit<Subject, 'id'>>) => void;
   deleteSubject: (id: string) => void;
+  /** Réordonne les matières (glisser-déposer) : déplace l'index `from` vers `to`. */
+  reorderSubjects: (from: number, to: number) => void;
 
   // Notes (scénario actif)
   addGrade: (input: Omit<Grade, 'id'>) => void;
@@ -188,6 +190,24 @@ export const useAppStore = create<AppState>((set, get) => {
             ? null
             : sc.goal,
       })),
+
+    reorderSubjects: (from, to) =>
+      mutateActive(sc => {
+        const last = sc.subjects.length - 1;
+        if (
+          from === to ||
+          from < 0 ||
+          from > last ||
+          to < 0 ||
+          to > last
+        ) {
+          return sc; // bornes invalides ou aucun déplacement
+        }
+        const subjects = [...sc.subjects];
+        const [moved] = subjects.splice(from, 1);
+        subjects.splice(to, 0, moved!);
+        return { ...sc, subjects };
+      }),
 
     addGrade: input =>
       mutateActive(sc => ({
