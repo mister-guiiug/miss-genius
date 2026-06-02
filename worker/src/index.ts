@@ -8,24 +8,23 @@
  * `src/features/pronote/pronoteContract.ts`).
  *
  * ⚠️ Avertissements
- *  - `pawnote` est une librairie **non officielle** (rétro-ingénierie) : l'API
- *    et les noms de champs peuvent évoluer. Adapter `extractGrades()` si besoin.
+ *  - `pawnote` est **non officielle** (rétro-ingénierie) : l'API peut évoluer
+ *    (ce Worker cible pawnote 1.6.x). Vérifier après toute mise à jour.
  *  - Les identifiants transitent par ce Worker le temps de la requête : ne rien
- *    journaliser, restreindre `ALLOWED_ORIGIN`, et préférer un usage personnel.
+ *    journaliser, restreindre `ALLOWED_ORIGIN`, préférer un usage personnel.
  *  - Respecter les conditions d'utilisation de votre établissement / Pronote.
  *
- * Endpoint : POST /grades  { url, username, password, ent? }
+ * Endpoint : POST /grades  { url, username, password }
  *   -> { ok: true, period?: string, grades: [{ subject, value, max, coefficient?, date?, label? }] }
  *   -> { error: string } (status 4xx/5xx)
  */
-
-// `pawnote` est résolu au déploiement (cf. worker/package.json). Les types
-// exacts dépendent de la version installée — d'où les accès défensifs.
 import {
-  createSessionHandle,
-  loginCredentials,
-  gradesOverview,
   AccountKind,
+  createSessionHandle,
+  GradeKind,
+  gradesOverview,
+  loginCredentials,
+  TabLocation,
 } from 'pawnote';
 
 interface Env {
@@ -36,7 +35,6 @@ interface Body {
   url?: string;
   username?: string;
   password?: string;
-  ent?: string;
 }
 
 function corsHeaders(env: Env): Record<string, string> {
@@ -54,40 +52,10 @@ function json(data: unknown, status: number, env: Env): Response {
   });
 }
 
-/** Adapte la sortie pawnote au contrat. À ajuster selon la version de pawnote. */
-function extractGrades(overview: any): Array<{
-  subject: string;
-  value: number;
-  max: number;
-  coefficient?: number;
-  date?: string;
-  label?: string;
-}> {
-  const list = overview?.grades ?? [];
-  const num = (v: any): number =>
-    typeof v === 'number' ? v : typeof v?.value === 'number' ? v.value : NaN;
-  return list
-    .map((g: any) => ({
-      subject: String(g?.subject?.name ?? g?.subject ?? '').trim(),
-      value: num(g?.value),
-      max: num(g?.outOf ?? g?.max),
-      coefficient:
-        typeof g?.coefficient === 'number' ? g.coefficient : undefined,
-      date:
-        typeof g?.date?.toISOString === 'function'
-          ? g.date.toISOString().slice(0, 10)
-          : typeof g?.date === 'string'
-            ? g.date.slice(0, 10)
-            : undefined,
-      label: g?.comment || g?.description || undefined,
-    }))
-    .filter(
-      (g: { subject: string; value: number; max: number }) =>
-        g.subject &&
-        Number.isFinite(g.value) &&
-        Number.isFinite(g.max) &&
-        g.max > 0
-    );
+function toIsoDate(d: Date): string | undefined {
+  return d instanceof Date && !Number.isNaN(d.getTime())
+    ? d.toISOString().slice(0, 10)
+    : undefined;
 }
 
 export default {
@@ -123,19 +91,29 @@ export default {
         username,
         password,
         deviceUUID: `miss-genius-${username}`,
-      } as any);
+      });
 
-      // Sélection de la période courante (sinon la première disponible).
-      const resource = (session as any).user?.resources?.[0];
-      const periods: any[] =
-        resource?.grades?.periods ?? resource?.periods ?? [];
-      const period =
-        periods.find((p: any) => p?.isCurrent) ?? periods[0] ?? null;
+      // Onglet Notes -> période courante (sinon la première disponible).
+      const tab = session.userResource.tabs.get(TabLocation.Grades);
+      const period = tab?.defaultPeriod ?? tab?.periods[0];
+      if (!period) {
+        return json({ error: 'Aucune période de notes disponible.' }, 502, env);
+      }
 
-      const overview = await gradesOverview(session, period?.id ?? period);
-      const grades = extractGrades(overview);
+      const overview = await gradesOverview(session, period);
+      const grades = overview.grades
+        // On ne garde que les vraies notes chiffrées (pas Absent/Non noté…).
+        .filter(g => g.value.kind === GradeKind.Grade && g.outOf.points > 0)
+        .map(g => ({
+          subject: g.subject.name,
+          value: g.value.points,
+          max: g.outOf.points,
+          coefficient: g.coefficient,
+          date: toIsoDate(g.date),
+          label: g.comment || undefined,
+        }));
 
-      return json({ ok: true, period: period?.name, grades }, 200, env);
+      return json({ ok: true, period: period.name, grades }, 200, env);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Connexion Pronote échouée.';

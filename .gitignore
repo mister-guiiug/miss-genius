@@ -5,5 +5,10 @@ dev-dist/
 *.log
 .env
 .env.*
+!.env.example
 coverage/
 .vite/
+
+# Cloudflare Worker (proxy Pronote)
+worker/.wrangler/
+worker/.wrangler-dryrun/
