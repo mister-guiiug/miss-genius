@@ -17,6 +17,7 @@ import type {
   Settings,
   Subject,
 } from '../shared/types/domain.ts';
+import type { ImportPlan } from '../shared/types/import.ts';
 import { createId } from '../shared/lib/id.ts';
 import { normalizeSubjectName } from '../shared/lib/subjectName.ts';
 import {
@@ -59,6 +60,15 @@ interface AppState {
   ) => void;
   updateGrade: (id: string, patch: Partial<Omit<Grade, 'id'>>) => void;
   deleteGrade: (id: string) => void;
+
+  /**
+   * Import en lot (Pronote, démo, …) : crée les matières manquantes (dédup par
+   * nom) puis ajoute les notes dans `periodId`. Renvoie un récapitulatif.
+   */
+  importSubjectsAndGrades: (
+    plan: ImportPlan,
+    periodId: string
+  ) => { subjectsCreated: number; gradesAdded: number };
 
   // Périodes (scénario actif)
   setActivePeriod: (id: string) => void;
@@ -253,6 +263,49 @@ export const useAppStore = create<AppState>((set, get) => {
           })),
         ],
       })),
+
+    importSubjectsAndGrades: (plan, periodId) => {
+      let subjectsCreated = 0;
+      let gradesAdded = 0;
+      mutateActive(sc => {
+        const byName = new Map(
+          sc.subjects.map(s => [normalizeSubjectName(s.name), s])
+        );
+        const newSubjects: Subject[] = [];
+        for (const sub of plan.subjects) {
+          const key = normalizeSubjectName(sub.name);
+          if (!key || byName.has(key)) continue;
+          const created = { ...sub, id: createId('sub') };
+          byName.set(key, created);
+          newSubjects.push(created);
+        }
+        subjectsCreated = newSubjects.length;
+
+        const target = sc.periods.some(p => p.id === periodId)
+          ? periodId
+          : sc.activePeriodId;
+        const newGrades: Grade[] = [];
+        for (const g of plan.grades) {
+          const subj = byName.get(normalizeSubjectName(g.subjectName));
+          if (!subj) continue; // matière introuvable -> note ignorée
+          const { subjectName: _name, ...rest } = g;
+          newGrades.push({
+            ...rest,
+            id: createId('grd'),
+            subjectId: subj.id,
+            periodId: target,
+          });
+        }
+        gradesAdded = newGrades.length;
+
+        return {
+          ...sc,
+          subjects: [...sc.subjects, ...newSubjects],
+          grades: [...sc.grades, ...newGrades],
+        };
+      });
+      return { subjectsCreated, gradesAdded };
+    },
 
     updateGrade: (id, patch) =>
       mutateActive(sc => ({

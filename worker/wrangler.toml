@@ -1,0 +1,9 @@
+name = "miss-genius-pronote-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Restreindre les origines autorisées au déploiement de l'app (recommandé).
+# Laisser "*" pour tester, puis fixer l'URL GitHub Pages en production.
+[vars]
+ALLOWED_ORIGIN = "*"

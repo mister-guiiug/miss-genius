@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Download, RefreshCw, Upload } from 'lucide-react';
+import { Download, GraduationCap, RefreshCw, Upload } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
 import type { GradeSort, RoundingMode } from '../../shared/types/domain.ts';
 import { exportData, importData } from '../../shared/lib/storage.ts';
@@ -9,6 +9,7 @@ import { Button } from '../../shared/components/Button.tsx';
 import { SelectField } from '../../shared/components/Field.tsx';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog.tsx';
 import { AppFooter } from '../../shared/components/AppFooter.tsx';
+import { PronoteSheet } from '../pronote/PronoteSheet.tsx';
 
 declare const __APP_VERSION__: string;
 
@@ -22,6 +23,7 @@ export function SettingsScreen() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [pronote, setPronote] = useState(false);
   const [feedback, setFeedback] = useState<string>();
 
   function handleExport() {
@@ -118,6 +120,17 @@ export function SettingsScreen() {
       </Card>
 
       <Card className="flex flex-col gap-3">
+        <h2 className="font-bold">Sources de notes</h2>
+        <p className="text-sm text-[var(--mg-text-soft)]">
+          Importe automatiquement tes notes depuis Pronote dans la période
+          active.
+        </p>
+        <Button variant="secondary" onClick={() => setPronote(true)}>
+          <GraduationCap size={16} aria-hidden="true" /> Connecter Pronote
+        </Button>
+      </Card>
+
+      <Card className="flex flex-col gap-3">
         <h2 className="font-bold">Sauvegarde locale</h2>
         <p className="text-sm text-[var(--mg-text-soft)]">
           Tes données restent sur cet appareil. Exporte-les pour les conserver
@@ -200,6 +213,8 @@ export function SettingsScreen() {
           setFeedback('Données réinitialisées.');
         }}
       />
+
+      <PronoteSheet open={pronote} onClose={() => setPronote(false)} />
     </div>
   );
 }

@@ -1,0 +1,19 @@
+{
+  "name": "miss-genius-pronote-proxy",
+  "private": true,
+  "type": "module",
+  "description": "Proxy Cloudflare Worker : se connecte à Pronote via pawnote et renvoie les notes normalisées (contourne CORS pour le PWA Miss Genius).",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pawnote": "^6.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240000.0",
+    "typescript": "~5.6.0",
+    "wrangler": "^3.80.0"
+  }
+}
