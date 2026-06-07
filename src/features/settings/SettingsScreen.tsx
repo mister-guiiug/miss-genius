@@ -9,6 +9,7 @@ import { Button } from '../../shared/components/Button.tsx';
 import { SelectField } from '../../shared/components/Field.tsx';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog.tsx';
 import { AppFooter } from '../../shared/components/AppFooter.tsx';
+import { FamilyApps } from '@mister-guiiug/dev-wpa-config/react';
 import { PronoteSheet } from '../pronote/PronoteSheet.tsx';
 
 declare const __APP_VERSION__: string;
@@ -193,6 +194,15 @@ export function SettingsScreen() {
           />
           {updating ? 'Mise à jour…' : 'Forcer la mise à jour'}
         </Button>
+      </Card>
+
+      <Card className="mg-family">
+        <FamilyApps
+          currentAppId="miss-genius"
+          showSource={false}
+          showSponsor={false}
+          labels={{ otherApps: 'Nos autres applications' }}
+        />
       </Card>
 
       <AppFooter />
