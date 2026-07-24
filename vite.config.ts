@@ -12,7 +12,9 @@ const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as {
 
 // Déployé sur GitHub Pages : https://mister-guiiug.github.io/miss-genius/
 export default defineConfig(({ command }) => {
-  const basePath = command === 'build' ? '/miss-genius/' : '/';
+  // `VITE_BASE_PATH` (déploiement famille + CI Lighthouse avec « / ») prioritaire.
+  const basePath =
+    process.env.VITE_BASE_PATH || (command === 'build' ? '/miss-genius/' : '/');
 
   return {
     base: basePath,
