@@ -18,10 +18,13 @@
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc -b",
     "icons": "node scripts/generate-pwa-icons.mjs",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
-    "@mister-guiiug/dev-wpa-config": "^2.2.0",
+    "@axe-core/playwright": "^4.12.1",
+    "@mister-guiiug/dev-wpa-config": "^3.3.1",
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/vite": "^4.3.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
