@@ -16,6 +16,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
+import { useI18n } from '../../i18n';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import type { Subject } from '../../shared/types/domain.ts';
 import { Card } from '../../shared/components/Card.tsx';
@@ -32,6 +33,7 @@ import { QuickStartSheet } from './QuickStartSheet.tsx';
 import { PeriodBar } from '../periods/PeriodBar.tsx';
 
 export function SubjectsScreen() {
+  const { t } = useI18n();
   const scenario = useAppStore(selectActiveScenario);
   const settings = useAppStore(s => s.data.settings);
   const addSubject = useAppStore(s => s.addSubject);
@@ -130,10 +132,10 @@ export function SubjectsScreen() {
 
       <div className="flex gap-2">
         <Button block onClick={() => setCreating(true)}>
-          <Plus size={18} aria-hidden="true" /> Ajouter
+          <Plus size={18} aria-hidden="true" /> {t('common.add')}
         </Button>
         <Button variant="secondary" block onClick={() => setQuickStart(true)}>
-          <Sparkles size={18} aria-hidden="true" /> Par classe
+          <Sparkles size={18} aria-hidden="true" /> {t('subjects.byClass')}
         </Button>
       </div>
 
@@ -141,7 +143,7 @@ export function SubjectsScreen() {
         <div className="flex items-center gap-2">
           {!locked && (
             <p className="text-sm text-[var(--mg-text-soft)]">
-              Glisse les matières pour les réordonner.
+              {t('subjects.reorderHint')}
             </p>
           )}
           <Button
@@ -152,11 +154,12 @@ export function SubjectsScreen() {
           >
             {locked ? (
               <>
-                <ArrowUpDown size={16} aria-hidden="true" /> Réorganiser
+                <ArrowUpDown size={16} aria-hidden="true" />{' '}
+                {t('subjects.reorder')}
               </>
             ) : (
               <>
-                <Check size={16} aria-hidden="true" /> Terminer
+                <Check size={16} aria-hidden="true" /> {t('common.finish')}
               </>
             )}
           </Button>
@@ -166,12 +169,12 @@ export function SubjectsScreen() {
       {scenario.subjects.length === 0 ? (
         <EmptyState
           icon={<BookOpen size={64} className="text-primary" />}
-          title="Aucune matière"
-          description="Choisis ta classe pour activer les matières habituelles, ou ajoute-les une par une."
+          title={t('subjects.emptyTitle')}
+          description={t('subjects.emptyDescription')}
           action={
             <Button block onClick={() => setQuickStart(true)}>
-              <Sparkles size={18} aria-hidden="true" /> Démarrage rapide par
-              classe
+              <Sparkles size={18} aria-hidden="true" />{' '}
+              {t('subjects.quickStartByClass')}
             </Button>
           }
         />
@@ -189,7 +192,9 @@ export function SubjectsScreen() {
                 {!locked && (
                   <button
                     type="button"
-                    aria-label={`Réordonner ${r.subject.name}`}
+                    aria-label={t('subjects.reorderAria', {
+                      name: r.subject.name,
+                    })}
                     className="-ml-1 grid h-10 w-7 shrink-0 cursor-grab touch-none place-items-center rounded-xl text-[var(--mg-text-soft)] active:cursor-grabbing"
                     onPointerDown={e => handleDragStart(e, r.subject.id)}
                     onPointerMove={handleDragMove}
@@ -217,7 +222,7 @@ export function SubjectsScreen() {
                   <div className="min-w-0">
                     <p className="truncate font-semibold">{r.subject.name}</p>
                     <p className="text-sm text-[var(--mg-text-soft)]">
-                      coef {r.subject.weight} ·{' '}
+                      {t('common.weightShort', { weight: r.subject.weight })} ·{' '}
                       {formatAverage(
                         r.average,
                         settings.rounding,
@@ -228,14 +233,16 @@ export function SubjectsScreen() {
                 </Link>
                 <Button
                   variant="ghost"
-                  aria-label={`Modifier ${r.subject.name}`}
+                  aria-label={t('subjects.editAria', { name: r.subject.name })}
                   onClick={() => setEditing(r.subject)}
                 >
                   <Pencil size={18} aria-hidden="true" />
                 </Button>
                 <Button
                   variant="ghost"
-                  aria-label={`Supprimer ${r.subject.name}`}
+                  aria-label={t('subjects.deleteAria', {
+                    name: r.subject.name,
+                  })}
                   onClick={() => setToDelete(r.subject)}
                 >
                   <Trash2 size={18} aria-hidden="true" />
@@ -248,7 +255,7 @@ export function SubjectsScreen() {
 
       <Sheet
         open={creating}
-        title="Nouvelle matière"
+        title={t('subjects.newSubject')}
         onClose={() => setCreating(false)}
       >
         <SubjectForm
@@ -262,7 +269,7 @@ export function SubjectsScreen() {
 
       <Sheet
         open={editing !== null}
-        title="Modifier la matière"
+        title={t('subjects.editSubject')}
         onClose={() => setEditing(null)}
       >
         {editing && (
@@ -281,9 +288,9 @@ export function SubjectsScreen() {
 
       <ConfirmDialog
         open={toDelete !== null}
-        title="Supprimer la matière ?"
-        message={`« ${toDelete?.name} » et ses notes seront supprimées de ce scénario.`}
-        confirmLabel="Supprimer"
+        title={t('subjects.deleteTitle')}
+        message={t('subjects.deleteMessage', { name: toDelete?.name ?? '' })}
+        confirmLabel={t('common.delete')}
         onCancel={() => setToDelete(null)}
         onConfirm={() => {
           if (toDelete) deleteSubject(toDelete.id);

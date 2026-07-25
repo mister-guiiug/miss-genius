@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Check, Copy, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
+import { useI18n, plural } from '../../i18n';
 import type { Scenario } from '../../shared/types/domain.ts';
 import {
   computeSubjectResults,
@@ -15,6 +16,7 @@ import { TrendPill } from '../../shared/components/badges.tsx';
 import { TextField } from '../../shared/components/Field.tsx';
 
 export function ScenariosScreen() {
+  const { t, locale } = useI18n();
   const scenarios = useAppStore(s => s.data.scenarios);
   const activeId = useAppStore(s => s.data.activeScenarioId);
   const settings = useAppStore(s => s.data.settings);
@@ -62,12 +64,11 @@ export function ScenariosScreen() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Button block onClick={() => setCreating(true)}>
-        <Plus size={18} aria-hidden="true" /> Nouveau scénario
+        <Plus size={18} aria-hidden="true" /> {t('scenarios.newButton')}
       </Button>
 
       <p className="px-1 text-sm text-[var(--mg-text-soft)]">
-        Compare des hypothèses : duplique un scénario, change quelques notes, et
-        vois l'écart de moyenne générale par rapport au scénario actif.
+        {t('scenarios.intro')}
       </p>
 
       <ul className="flex flex-col gap-2">
@@ -82,15 +83,20 @@ export function ScenariosScreen() {
                       {scenario.name}
                       {isActive && (
                         <span className="rounded-full bg-primary-soft px-2 py-0.5 text-xs font-bold text-primary">
-                          actif
+                          {t('scenarios.active')}
                         </span>
                       )}
                     </p>
                     <p className="text-sm text-[var(--mg-text-soft)]">
-                      {scenario.subjects.length} matière
-                      {scenario.subjects.length > 1 ? 's' : ''} ·{' '}
-                      {scenario.grades.length} note
-                      {scenario.grades.length > 1 ? 's' : ''}
+                      {t(
+                        `common.subjectCount.${plural(locale, scenario.subjects.length)}`,
+                        { count: scenario.subjects.length }
+                      )}{' '}
+                      ·{' '}
+                      {t(
+                        `common.gradeCount.${plural(locale, scenario.grades.length)}`,
+                        { count: scenario.grades.length }
+                      )}
                     </p>
                   </div>
                   <div className="text-right">
@@ -110,24 +116,29 @@ export function ScenariosScreen() {
                       variant="secondary"
                       onClick={() => setActive(scenario.id)}
                     >
-                      <Check size={16} aria-hidden="true" /> Activer
+                      <Check size={16} aria-hidden="true" />{' '}
+                      {t('scenarios.activate')}
                     </Button>
                   )}
                   <Button
                     variant="secondary"
                     onClick={() => duplicateScenario(scenario.id)}
                   >
-                    <Copy size={16} aria-hidden="true" /> Dupliquer
+                    <Copy size={16} aria-hidden="true" />{' '}
+                    {t('scenarios.duplicate')}
                   </Button>
                   <Button
                     variant="ghost"
-                    aria-label={`Renommer ${scenario.name}`}
+                    aria-label={t('scenarios.renameAria', {
+                      name: scenario.name,
+                    })}
                     onClick={() => {
                       setRenaming(scenario);
                       setRenameValue(scenario.name);
                     }}
                   >
-                    <Pencil size={16} aria-hidden="true" /> Renommer
+                    <Pencil size={16} aria-hidden="true" />{' '}
+                    {t('scenarios.rename')}
                   </Button>
                   {scenarios.length > 1 && (
                     <Button
@@ -135,14 +146,14 @@ export function ScenariosScreen() {
                       className="text-[var(--mg-bad)]"
                       onClick={() => setToDelete(scenario)}
                     >
-                      <Trash2 size={16} aria-hidden="true" /> Supprimer
+                      <Trash2 size={16} aria-hidden="true" />{' '}
+                      {t('common.delete')}
                     </Button>
                   )}
                 </div>
                 {delta !== null && (
                   <p className="mt-2 text-sm text-[var(--mg-text-soft)]">
-                    Écart vs scénario actif :{' '}
-                    <strong>{formatDelta(delta)}</strong>
+                    {t('scenarios.delta')} <strong>{formatDelta(delta)}</strong>
                   </p>
                 )}
               </Card>
@@ -153,34 +164,34 @@ export function ScenariosScreen() {
 
       <Sheet
         open={creating}
-        title="Nouveau scénario"
+        title={t('scenarios.newTitle')}
         onClose={() => setCreating(false)}
       >
         <form
           className="flex flex-col gap-4"
           onSubmit={e => {
             e.preventDefault();
-            addScenario(newName.trim() || 'Nouveau scénario');
+            addScenario(newName.trim() || t('scenarios.defaultName'));
             setNewName('');
             setCreating(false);
           }}
         >
           <TextField
-            label="Nom du scénario"
+            label={t('scenarios.nameLabel')}
             value={newName}
             onChange={e => setNewName(e.target.value)}
-            placeholder="Si je révise les maths"
+            placeholder={t('scenarios.namePlaceholder')}
             autoFocus
           />
           <Button type="submit" block>
-            Créer
+            {t('common.create')}
           </Button>
         </form>
       </Sheet>
 
       <Sheet
         open={renaming !== null}
-        title="Renommer le scénario"
+        title={t('scenarios.renameTitle')}
         onClose={() => setRenaming(null)}
       >
         <form
@@ -193,22 +204,22 @@ export function ScenariosScreen() {
           }}
         >
           <TextField
-            label="Nom du scénario"
+            label={t('scenarios.nameLabel')}
             value={renameValue}
             onChange={e => setRenameValue(e.target.value)}
             autoFocus
           />
           <Button type="submit" block>
-            Enregistrer
+            {t('common.save')}
           </Button>
         </form>
       </Sheet>
 
       <ConfirmDialog
         open={toDelete !== null}
-        title="Supprimer le scénario ?"
-        message={`« ${toDelete?.name} » sera définitivement supprimé.`}
-        confirmLabel="Supprimer"
+        title={t('scenarios.deleteTitle')}
+        message={t('scenarios.deleteMessage', { name: toDelete?.name ?? '' })}
+        confirmLabel={t('common.delete')}
         onCancel={() => setToDelete(null)}
         onConfirm={() => {
           if (toDelete) deleteScenario(toDelete.id);

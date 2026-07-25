@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { NotebookPen, Pencil, Plus, SearchX, Trash2 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
+import { useI18n } from '../../i18n';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import type { Grade } from '../../shared/types/domain.ts';
 import { Card } from '../../shared/components/Card.tsx';
@@ -19,6 +20,7 @@ import { GradeForm } from './GradeForm.tsx';
 import { FutureGradeSimulator } from './FutureGradeSimulator.tsx';
 
 export function SubjectDetailScreen() {
+  const { t } = useI18n();
   const { subjectId = '' } = useParams();
   const scenario = useAppStore(selectActiveScenario);
   const settings = useAppStore(s => s.data.settings);
@@ -36,11 +38,11 @@ export function SubjectDetailScreen() {
     return (
       <EmptyState
         icon={<SearchX size={64} className="text-primary" />}
-        title="Matière introuvable"
-        description="Cette matière n'existe pas dans le scénario actif."
+        title={t('subjectDetail.notFoundTitle')}
+        description={t('subjectDetail.notFoundDescription')}
         action={
           <Link to="/subjects">
-            <Button block>Retour aux matières</Button>
+            <Button block>{t('subjectDetail.backToSubjects')}</Button>
           </Link>
         }
       />
@@ -74,7 +76,7 @@ export function SubjectDetailScreen() {
         <div className="flex-1">
           <h1 className="font-display text-xl font-bold">{subject.name}</h1>
           <p className="text-sm text-[var(--mg-text-soft)]">
-            coef {subject.weight}
+            {t('common.weightShort', { weight: subject.weight })}
           </p>
         </div>
         <p className="font-display text-2xl font-bold tabular-nums">
@@ -83,14 +85,14 @@ export function SubjectDetailScreen() {
       </Card>
 
       <Button block onClick={() => setCreating(true)}>
-        <Plus size={18} aria-hidden="true" /> Ajouter une note
+        <Plus size={18} aria-hidden="true" /> {t('subjectDetail.addGrade')}
       </Button>
 
       {grades.length === 0 ? (
         <EmptyState
           icon={<NotebookPen size={64} className="text-primary" />}
-          title="Aucune note"
-          description="Ajoute une première note pour calculer ta moyenne dans cette matière."
+          title={t('subjectDetail.noGradesTitle')}
+          description={t('subjectDetail.noGradesDescription')}
         />
       ) : (
         <ul className="flex flex-col gap-2">
@@ -105,25 +107,35 @@ export function SubjectDetailScreen() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">
-                    {g.label ?? g.type ?? 'Note'}
+                    {g.label ??
+                      (g.type
+                        ? t(`grades.type.${g.type}`)
+                        : t('grades.defaultLabel'))}
                   </p>
                   <p className="text-sm text-[var(--mg-text-soft)]">
-                    coef {g.weight}
+                    {t('common.weightShort', { weight: g.weight })}
                     {g.max !== settings.referenceBase &&
-                      ` · soit ${normalizeValue(g.value, g.max, settings.referenceBase).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}/${settings.referenceBase}`}
+                      ` · ${t('subjectDetail.normalized', {
+                        value: normalizeValue(
+                          g.value,
+                          g.max,
+                          settings.referenceBase
+                        ).toLocaleString('fr-FR', { maximumFractionDigits: 2 }),
+                        base: settings.referenceBase,
+                      })}`}
                     {g.date && ` · ${g.date}`}
                   </p>
                 </div>
                 <Button
                   variant="ghost"
-                  aria-label="Modifier la note"
+                  aria-label={t('subjectDetail.editGradeAria')}
                   onClick={() => setEditing(g)}
                 >
                   <Pencil size={18} aria-hidden="true" />
                 </Button>
                 <Button
                   variant="ghost"
-                  aria-label="Supprimer la note"
+                  aria-label={t('subjectDetail.deleteGradeAria')}
                   onClick={() => setToDelete(g)}
                 >
                   <Trash2 size={18} aria-hidden="true" />
@@ -142,7 +154,7 @@ export function SubjectDetailScreen() {
 
       <Sheet
         open={creating}
-        title="Nouvelle note"
+        title={t('subjectDetail.newGrade')}
         onClose={() => setCreating(false)}
       >
         <GradeForm
@@ -158,7 +170,7 @@ export function SubjectDetailScreen() {
 
       <Sheet
         open={editing !== null}
-        title="Modifier la note"
+        title={t('subjectDetail.editGrade')}
         onClose={() => setEditing(null)}
       >
         {editing && (
@@ -177,9 +189,9 @@ export function SubjectDetailScreen() {
 
       <ConfirmDialog
         open={toDelete !== null}
-        title="Supprimer la note ?"
-        message="Cette note sera définitivement retirée de la matière."
-        confirmLabel="Supprimer"
+        title={t('subjectDetail.deleteTitle')}
+        message={t('subjectDetail.deleteMessage')}
+        confirmLabel={t('common.delete')}
         onCancel={() => setToDelete(null)}
         onConfirm={() => {
           if (toDelete) deleteGrade(toDelete.id);

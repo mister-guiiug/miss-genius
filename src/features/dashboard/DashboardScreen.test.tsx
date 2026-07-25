@@ -2,18 +2,24 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { DashboardScreen } from './DashboardScreen.tsx';
+import { I18nProvider } from '../../i18n';
 import { useAppStore } from '../../store/useAppStore.ts';
 
 function renderDashboard() {
   return render(
-    <MemoryRouter>
-      <DashboardScreen />
-    </MemoryRouter>
+    <I18nProvider>
+      <MemoryRouter>
+        <DashboardScreen />
+      </MemoryRouter>
+    </I18nProvider>
   );
 }
 
 beforeEach(() => {
   localStorage.clear();
+  // Force la locale FR (jsdom rapporte `navigator.language = en-US`) : le
+  // provider lit `genius_locale` dans localStorage avant `navigator.language`.
+  localStorage.setItem('genius_locale', 'fr');
   act(() => useAppStore.getState().resetAll());
 });
 

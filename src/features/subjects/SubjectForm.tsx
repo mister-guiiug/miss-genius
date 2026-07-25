@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Check } from 'lucide-react';
 import type { Subject, SubjectColor } from '../../shared/types/domain.ts';
 import { SUBJECT_COLORS } from '../../shared/types/domain.ts';
+import { useI18n } from '../../i18n';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
 import { cn } from '../../shared/lib/cn.ts';
 import { TextField } from '../../shared/components/Field.tsx';
@@ -32,6 +33,7 @@ export function SubjectForm({
   existingSubjects,
   onSubmit,
 }: SubjectFormProps) {
+  const { t } = useI18n();
   const [name, setName] = useState(initial?.name ?? '');
   const [weight, setWeight] = useState(String(initial?.weight ?? 1));
   const [color, setColor] = useState<SubjectColor>(initial?.color ?? 'violet');
@@ -50,14 +52,14 @@ export function SubjectForm({
 
     let valid = true;
     if (!trimmed) {
-      setNameError('Donne un nom à la matière.');
+      setNameError(t('subjects.form.errorNameRequired'));
       valid = false;
     } else if (subjectNameTaken(existingSubjects, trimmed, initial?.id)) {
-      setNameError('Une matière porte déjà ce nom.');
+      setNameError(t('subjects.form.errorNameTaken'));
       valid = false;
     }
     if (!(w > 0)) {
-      setWeightError('Le coefficient doit être supérieur à 0.');
+      setWeightError(t('subjects.form.errorWeight'));
       valid = false;
     }
     if (!valid) return;
@@ -68,33 +70,35 @@ export function SubjectForm({
   return (
     <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
       <TextField
-        label="Nom de la matière"
+        label={t('subjects.form.nameLabel')}
         value={name}
         onChange={e => setName(e.target.value)}
-        placeholder="Mathématiques"
+        placeholder={t('subjects.form.namePlaceholder')}
         autoFocus
         error={nameError}
       />
       <TextField
-        label="Coefficient de la matière"
+        label={t('subjects.form.weightLabel')}
         type="number"
         inputMode="decimal"
         min="0"
         step="0.5"
         value={weight}
         onChange={e => setWeight(e.target.value)}
-        hint="Poids de la matière dans la moyenne générale."
+        hint={t('subjects.form.weightHint')}
         error={weightError}
       />
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="text-sm font-semibold">Couleur</legend>
+        <legend className="text-sm font-semibold">
+          {t('subjects.form.colorLegend')}
+        </legend>
         <div className="flex flex-wrap gap-2">
           {SUBJECT_COLORS.map(c => (
             <button
               key={c}
               type="button"
-              aria-label={`Couleur ${c}`}
+              aria-label={t('subjects.form.colorAria', { color: c })}
               aria-pressed={color === c}
               onClick={() => setColor(c)}
               className={cn(
@@ -112,13 +116,15 @@ export function SubjectForm({
       </fieldset>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="text-sm font-semibold">Icône</legend>
+        <legend className="text-sm font-semibold">
+          {t('subjects.form.iconLegend')}
+        </legend>
         <div className="flex flex-wrap gap-2">
           {SUBJECT_ICON_KEYS.map(key => (
             <button
               key={key}
               type="button"
-              aria-label={`Icône ${key}`}
+              aria-label={t('subjects.form.iconAria', { icon: key })}
               aria-pressed={icon === key}
               onClick={() => setIcon(key)}
               className={cn(
@@ -139,7 +145,7 @@ export function SubjectForm({
       </fieldset>
 
       <Button type="submit" block>
-        {initial ? 'Enregistrer' : 'Ajouter la matière'}
+        {initial ? t('common.save') : t('subjects.form.submitAdd')}
       </Button>
     </form>
   );

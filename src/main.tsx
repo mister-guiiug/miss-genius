@@ -7,6 +7,7 @@ import {
   recordError,
 } from '@mister-guiiug/dev-wpa-config/react/observability';
 import { App } from './App.tsx';
+import { I18nProvider } from './i18n';
 import { useAppStore } from './store/useAppStore.ts';
 import './index.css';
 
@@ -30,7 +31,9 @@ createRoot(rootEl).render(
         recordError(error, { source: 'error-boundary' });
       }}
     >
-      <App />
+      <I18nProvider>
+        <App />
+      </I18nProvider>
     </ErrorBoundary>
   </StrictMode>
 );

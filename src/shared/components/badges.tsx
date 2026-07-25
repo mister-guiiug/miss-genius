@@ -1,11 +1,13 @@
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import { cn } from '../lib/cn.ts';
 import { deltaTrend, formatDelta, type Trend } from '../lib/format.ts';
+import { useI18n } from '../../i18n';
 
 const TREND_ICON = { up: ArrowUp, down: ArrowDown, flat: Minus } as const;
 
 /** Pastille de tendance — ne repose pas que sur la couleur (icône + signe). */
 export function TrendPill({ delta }: { delta: number | null }) {
+  const { t } = useI18n();
   const trend: Trend = deltaTrend(delta);
   const Icon = TREND_ICON[trend];
   const styles: Record<Trend, string> = {
@@ -13,8 +15,7 @@ export function TrendPill({ delta }: { delta: number | null }) {
     down: 'bg-[var(--mg-bad)]/12 text-[var(--mg-bad)]',
     flat: 'bg-[var(--mg-text-soft)]/12 text-[var(--mg-text-soft)]',
   };
-  const wording =
-    trend === 'up' ? 'en hausse' : trend === 'down' ? 'en baisse' : 'stable';
+  const wording = t(`common.trend.${trend}`);
   return (
     <span
       className={cn(

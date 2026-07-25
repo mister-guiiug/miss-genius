@@ -7,6 +7,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore.ts';
+import { useI18n } from './i18n';
 import { AppHeader } from './shared/components/AppHeader.tsx';
 import { BottomNav } from './shared/components/BottomNav.tsx';
 import { Onboarding } from './features/onboarding/Onboarding.tsx';
@@ -40,19 +41,20 @@ const SettingsScreen = lazy(() =>
   }))
 );
 
-const TITLES: Record<string, string> = {
-  '/': 'Miss Genius',
-  '/subjects': 'Matières',
-  '/scenarios': 'Scénarios',
-  '/goal': 'Objectif',
-  '/settings': 'Réglages',
-};
-
 function Shell() {
   const { pathname } = useLocation();
+  const { t } = useI18n();
+  // 'Miss Genius' est un nom propre (identique dans toutes les langues).
+  const titles: Record<string, string> = {
+    '/': 'Miss Genius',
+    '/subjects': t('nav.subjects'),
+    '/scenarios': t('nav.scenarios'),
+    '/goal': t('nav.goal'),
+    '/settings': t('nav.settings'),
+  };
   const title =
-    TITLES[pathname] ??
-    (pathname.startsWith('/subjects/') ? 'Matière' : 'Miss Genius');
+    titles[pathname] ??
+    (pathname.startsWith('/subjects/') ? t('app.subjectTitle') : 'Miss Genius');
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col">
@@ -61,7 +63,7 @@ function Shell() {
         <Suspense
           fallback={
             <p className="p-8 text-center text-[var(--mg-text-soft)]">
-              Chargement…
+              {t('common.loading')}
             </p>
           }
         >

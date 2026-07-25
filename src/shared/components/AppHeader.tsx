@@ -1,9 +1,11 @@
 import { Brain, Moon, Sun } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
+import { useI18n } from '../../i18n';
 import { Button } from './Button.tsx';
 
 /** En-tête : titre de page + bascule de thème. */
 export function AppHeader({ title }: { title: string }) {
+  const { t } = useI18n();
   const theme = useAppStore(s => s.data.settings.theme);
   const setTheme = useAppStore(s => s.setTheme);
   const isDark = theme === 'dark';
@@ -16,7 +18,9 @@ export function AppHeader({ title }: { title: string }) {
       </div>
       <Button
         variant="ghost"
-        aria-label={isDark ? 'Passer en clair' : 'Passer en sombre'}
+        aria-label={
+          isDark ? t('header.switchToLight') : t('header.switchToDark')
+        }
         aria-pressed={isDark}
         onClick={() => setTheme(isDark ? 'light' : 'dark')}
       >

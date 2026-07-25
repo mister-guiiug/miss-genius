@@ -1,12 +1,14 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { CircleCheck, Sparkles } from 'lucide-react';
 import { Button } from '../shared/components/Button.tsx';
+import { useI18n } from '../i18n';
 
 /**
  * Bandeau PWA : informe quand une nouvelle version est disponible (registerType
  * 'prompt') et propose de recharger. Affiche aussi le passage en mode hors ligne.
  */
 export function UpdatePrompt() {
+  const { t } = useI18n();
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -34,7 +36,7 @@ export function UpdatePrompt() {
               className="shrink-0 text-primary"
               aria-hidden="true"
             />
-            Une nouvelle version de Miss Genius est prête.
+            {t('pwa.updateReady')}
           </>
         ) : (
           <>
@@ -43,18 +45,18 @@ export function UpdatePrompt() {
               className="shrink-0 text-[var(--mg-good)]"
               aria-hidden="true"
             />
-            Miss Genius fonctionne maintenant hors ligne.
+            {t('pwa.offlineReady')}
           </>
         )}
       </p>
       <div className="flex gap-2">
         {needRefresh && (
           <Button block onClick={() => updateServiceWorker(true)}>
-            Mettre à jour
+            {t('pwa.update')}
           </Button>
         )}
         <Button variant="secondary" block onClick={close}>
-          {needRefresh ? 'Plus tard' : 'OK'}
+          {needRefresh ? t('pwa.later') : t('pwa.ok')}
         </Button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { Coffee } from 'lucide-react';
 import { REPO_URL, SPONSOR_URL } from '../lib/links.ts';
+import { useI18n } from '../../i18n';
 
 /** Marque GitHub en SVG inline (lucide 1.x ne fournit plus d'icône de marque). */
 function GithubMark() {
@@ -22,10 +23,11 @@ const linkClass =
 
 /** Liens externes de l'app : code source + sponsor (règle famille). */
 export function AppFooter() {
+  const { t } = useI18n();
   return (
     <footer className="flex flex-col items-center gap-3">
       <p className="text-center text-xs text-[var(--mg-text-soft)]">
-        Miss Genius est gratuit, local et open source.
+        {t('footer.tagline')}
       </p>
       <div className="flex w-full flex-wrap justify-center gap-2">
         <a
@@ -35,7 +37,7 @@ export function AppFooter() {
           className={linkClass}
         >
           <GithubMark />
-          Code source
+          {t('footer.sourceCode')}
         </a>
         <a
           href={SPONSOR_URL}
@@ -44,7 +46,7 @@ export function AppFooter() {
           className={linkClass}
         >
           <Coffee size={16} aria-hidden="true" />
-          M'offrir un café
+          {t('footer.buyCoffee')}
         </a>
       </div>
     </footer>

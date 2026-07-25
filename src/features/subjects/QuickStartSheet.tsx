@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
+import { useI18n, plural } from '../../i18n';
 import { Button } from '../../shared/components/Button.tsx';
 import { Sheet } from '../../shared/components/Sheet.tsx';
 import { SelectField } from '../../shared/components/Field.tsx';
@@ -24,6 +25,7 @@ export function QuickStartSheet({
   onClose,
   onDone,
 }: QuickStartSheetProps) {
+  const { t, locale } = useI18n();
   const addSubjects = useAppStore(s => s.addSubjects);
   const existingSubjects = useAppStore(selectActiveScenario).subjects;
   const [classId, setClassId] = useState(CLASS_LEVELS[0]!.id);
@@ -81,14 +83,13 @@ export function QuickStartSheet({
   }, []);
 
   return (
-    <Sheet open={open} title="Démarrage rapide" onClose={onClose}>
+    <Sheet open={open} title={t('subjects.quickStart.title')} onClose={onClose}>
       <p className="mb-4 text-sm text-[var(--mg-text-soft)]">
-        Choisis ta classe : on te propose les matières habituelles. Tu pourras
-        ajuster coefficients et notes ensuite.
+        {t('subjects.quickStart.intro')}
       </p>
 
       <SelectField
-        label="Ma classe"
+        label={t('subjects.quickStart.myClass')}
         value={classId}
         onChange={e => changeClass(e.target.value)}
       >
@@ -137,11 +138,11 @@ export function QuickStartSheet({
                 </span>
                 {locked ? (
                   <span className="text-xs font-semibold text-[var(--mg-text-soft)]">
-                    déjà ajoutée
+                    {t('subjects.quickStart.alreadyAdded')}
                   </span>
                 ) : (
                   <span className="text-xs text-[var(--mg-text-soft)]">
-                    coef {subject.weight}
+                    {t('common.weightShort', { weight: subject.weight })}
                   </span>
                 )}
               </label>
@@ -153,10 +154,13 @@ export function QuickStartSheet({
       <div className="sticky bottom-0 mt-4 bg-[var(--mg-surface)] pt-2">
         <Button block onClick={activate} disabled={selectedCount === 0}>
           {selectedCount > 0
-            ? `Activer ${selectedCount} matière${selectedCount > 1 ? 's' : ''}`
+            ? t(
+                `subjects.quickStart.activate.${plural(locale, selectedCount)}`,
+                { count: selectedCount }
+              )
             : allAlreadyAdded
-              ? 'Toutes ces matières sont déjà ajoutées'
-              : 'Sélectionne au moins une matière'}
+              ? t('subjects.quickStart.allAdded')
+              : t('subjects.quickStart.selectAtLeastOne')}
         </Button>
       </div>
     </Sheet>

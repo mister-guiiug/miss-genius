@@ -11,6 +11,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
+import { useI18n, plural } from '../../i18n';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '../../shared/components/Button.tsx';
@@ -23,6 +24,7 @@ import { formatAverage } from '../../shared/lib/format.ts';
 import { appreciation, SUBJECT_HEX } from '../../shared/lib/colors.ts';
 
 export function DashboardScreen() {
+  const { t, locale } = useI18n();
   const scenario = useAppStore(selectActiveScenario);
   const settings = useAppStore(s => s.data.settings);
   const scenarioCount = useAppStore(s => s.data.scenarios.length);
@@ -32,12 +34,13 @@ export function DashboardScreen() {
     return (
       <EmptyState
         icon={<Sparkles size={64} className="text-primary" />}
-        title="Bienvenue dans Miss Genius"
-        description="Choisis ta classe pour activer tes matières en un instant, puis simule tes moyennes."
+        title={t('dashboard.emptyTitle')}
+        description={t('dashboard.emptyDescription')}
         action={
           <Link to="/subjects">
             <Button block>
-              <Sparkles size={18} aria-hidden="true" /> Choisir mes matières
+              <Sparkles size={18} aria-hidden="true" />{' '}
+              {t('dashboard.chooseSubjects')}
             </Button>
           </Link>
         }
@@ -75,18 +78,19 @@ export function DashboardScreen() {
       <Card className="flex items-center gap-4 bg-gradient-to-br from-primary to-[color:var(--color-accent)] text-white border-0">
         <RiveBadge
           fallback={<HeroIcon size={48} className="text-white" />}
-          label="Niveau de la moyenne générale"
+          label={t('dashboard.heroBadgeLabel')}
           size={92}
         />
         <div className="min-w-0">
           <p className="text-sm/5 font-medium opacity-90">
-            Moyenne générale{activePeriod ? ` · ${activePeriod.name}` : ''}
+            {t('dashboard.overallAverage')}
+            {activePeriod ? ` · ${activePeriod.name}` : ''}
           </p>
           <p className="font-display text-4xl font-bold tabular-nums">
             {formatAverage(general, settings.rounding, settings.referenceBase)}
           </p>
           <p className="truncate text-sm opacity-90">
-            Scénario : {scenario.name}
+            {t('dashboard.scenarioName', { name: scenario.name })}
           </p>
         </div>
       </Card>
@@ -99,9 +103,11 @@ export function DashboardScreen() {
               className="text-primary"
               aria-hidden="true"
             />
-            <span className="font-semibold">Scénarios</span>
+            <span className="font-semibold">{t('nav.scenarios')}</span>
             <span className="text-sm text-[var(--mg-text-soft)]">
-              {scenarioCount} enregistré{scenarioCount > 1 ? 's' : ''}
+              {t(`dashboard.scenariosSaved.${plural(locale, scenarioCount)}`, {
+                count: scenarioCount,
+              })}
             </span>
           </Card>
         </Link>
@@ -112,9 +118,11 @@ export function DashboardScreen() {
               className="text-[var(--color-accent)]"
               aria-hidden="true"
             />
-            <span className="font-semibold">Objectif</span>
+            <span className="font-semibold">{t('nav.goal')}</span>
             <span className="text-sm text-[var(--mg-text-soft)]">
-              {scenario.goal ? 'Défini' : 'À définir'}
+              {scenario.goal
+                ? t('dashboard.goalDefined')
+                : t('dashboard.goalToDefine')}
             </span>
           </Card>
         </Link>
@@ -130,7 +138,7 @@ export function DashboardScreen() {
                   className="text-[var(--mg-good)]"
                   aria-hidden="true"
                 />{' '}
-                Tes points forts
+                {t('dashboard.strengths')}
               </h2>
               <ul className="flex flex-wrap gap-2">
                 {strong.map(r => (
@@ -156,7 +164,7 @@ export function DashboardScreen() {
                   className="text-[var(--color-accent)]"
                   aria-hidden="true"
                 />{' '}
-                À renforcer en priorité
+                {t('dashboard.toImprove')}
               </h2>
               <ul className="flex flex-wrap gap-2">
                 {weak.map(r => (
@@ -182,7 +190,7 @@ export function DashboardScreen() {
         className="flex flex-col gap-2"
       >
         <h2 id="subjects-heading" className="px-1 font-bold">
-          Par matière
+          {t('dashboard.bySubject')}
         </h2>
         {subjectResults.map(r => {
           const appr = appreciation(r.average);
@@ -207,8 +215,10 @@ export function DashboardScreen() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{r.subject.name}</p>
                   <p className="text-sm text-[var(--mg-text-soft)]">
-                    {r.gradeCount} note{r.gradeCount > 1 ? 's' : ''} · coef{' '}
-                    {r.subject.weight}
+                    {t(`common.gradeCount.${plural(locale, r.gradeCount)}`, {
+                      count: r.gradeCount,
+                    })}{' '}
+                    · {t('common.weightShort', { weight: r.subject.weight })}
                   </p>
                 </div>
                 <div className="text-right">
@@ -219,7 +229,9 @@ export function DashboardScreen() {
                       settings.referenceBase
                     )}
                   </p>
-                  <Tag tone={appr.tone}>{appr.label}</Tag>
+                  <Tag tone={appr.tone}>
+                    {t(`dashboard.appreciation.${appr.tone}`)}
+                  </Tag>
                 </div>
               </Card>
             </Link>

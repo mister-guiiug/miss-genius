@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CalendarDays, Settings2 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
+import { useI18n } from '../../i18n';
 import { cn } from '../../shared/lib/cn.ts';
 import { PeriodManagerSheet } from './PeriodManagerSheet.tsx';
 
@@ -9,6 +10,7 @@ import { PeriodManagerSheet } from './PeriodManagerSheet.tsx';
  * gestionnaire de périodes. À placer en haut des écrans dépendant d'une période.
  */
 export function PeriodBar() {
+  const { t } = useI18n();
   const scenario = useAppStore(selectActiveScenario);
   const setActivePeriod = useAppStore(s => s.setActivePeriod);
   const [manage, setManage] = useState(false);
@@ -22,7 +24,7 @@ export function PeriodBar() {
       />
       <div
         role="tablist"
-        aria-label="Période"
+        aria-label={t('periods.tablistLabel')}
         className="flex flex-1 gap-1 overflow-x-auto"
       >
         {scenario.periods.map(p => {
@@ -47,7 +49,7 @@ export function PeriodBar() {
       </div>
       <button
         type="button"
-        aria-label="Gérer les périodes"
+        aria-label={t('periods.manageAria')}
         onClick={() => setManage(true)}
         className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[var(--mg-border)] bg-[var(--mg-surface-2)] text-[var(--mg-text-soft)]"
       >
