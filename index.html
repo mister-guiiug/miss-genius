@@ -2,16 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <!--
-      Content-Security-Policy en défense en profondeur.
-      'unsafe-inline' : script anti-FOUC + styles Tailwind/vite-plugin-pwa.
-      Tiers autorisés : Google Fonts (styles/polices) et le proxy Pronote
-      (Cloudflare Worker, connect-src *.workers.dev — cf. VITE_PRONOTE_PROXY_URL).
-    -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.workers.dev; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
-    />
+    <!-- CSP injected at build by cspPlugin (@mister-guiiug/dev-wpa-config/vite-csp) -->
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
