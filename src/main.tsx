@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { ErrorBoundary } from '@mister-guiiug/dev-wpa-config/react';
 import {
   installErrorReporter,
+  initSentry,
   recordError,
 } from '@mister-guiiug/dev-wpa-config/react/observability';
 import { App } from './App.tsx';
@@ -10,6 +11,10 @@ import { useAppStore } from './store/useAppStore.ts';
 import './index.css';
 
 installErrorReporter();
+void initSentry({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  environment: import.meta.env.MODE,
+});
 
 // Applique le thème persisté au plus tôt (complète le script anti-FOUC).
 document.documentElement.dataset.theme =
