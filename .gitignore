@@ -12,3 +12,7 @@ coverage/
 # Cloudflare Worker (proxy Pronote)
 worker/.wrangler/
 worker/.wrangler-dryrun/
+
+# Playwright
+test-results/
+playwright-report/

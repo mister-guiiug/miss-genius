@@ -4,4 +4,5 @@
 interface ImportMetaEnv {
   /** URL du proxy Pronote (Cloudflare Worker). Vide = connecteur désactivé. */
   readonly VITE_PRONOTE_PROXY_URL?: string;
+  readonly VITE_SENTRY_DSN?: string;
 }

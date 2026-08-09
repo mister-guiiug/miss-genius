@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { Button } from './Button.tsx';
+import { useI18n } from '../../i18n';
 
 interface SheetProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface SheetProps {
  * fermeture par Échap, focus déplacé à l'ouverture, scroll de fond verrouillé.
  */
 export function Sheet({ open, title, onClose, children }: SheetProps) {
+  const { t } = useI18n();
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,7 +56,11 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-lg font-bold">{title}</h2>
-          <Button variant="ghost" aria-label="Fermer" onClick={onClose}>
+          <Button
+            variant="ghost"
+            aria-label={t('common.close')}
+            onClick={onClose}
+          >
             <X size={20} aria-hidden="true" />
           </Button>
         </div>

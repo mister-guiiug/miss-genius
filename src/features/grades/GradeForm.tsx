@@ -1,16 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import type { Grade, GradeType, Period } from '../../shared/types/domain.ts';
 import { GRADE_TYPES } from '../../shared/types/domain.ts';
+import { useI18n } from '../../i18n';
 import { TextField, SelectField } from '../../shared/components/Field.tsx';
 import { Button } from '../../shared/components/Button.tsx';
-
-const TYPE_LABELS: Record<GradeType, string> = {
-  controle: 'Contrôle',
-  'devoir-maison': 'Devoir maison',
-  oral: 'Oral',
-  examen: 'Examen',
-  autre: 'Autre',
-};
 
 export interface GradeDraft {
   value: number;
@@ -39,6 +32,7 @@ export function GradeForm({
   defaultPeriodId,
   onSubmit,
 }: GradeFormProps) {
+  const { t } = useI18n();
   const [value, setValue] = useState(String(initial?.value ?? ''));
   const [max, setMax] = useState(String(initial?.max ?? defaultMax));
   const [weight, setWeight] = useState(String(initial?.weight ?? 1));
@@ -55,10 +49,10 @@ export function GradeForm({
     const v = Number(value.replace(',', '.'));
     const m = Number(max.replace(',', '.'));
     const w = Number(weight.replace(',', '.'));
-    if (!(m > 0)) return setError('Le barème doit être supérieur à 0.');
+    if (!(m > 0)) return setError(t('grades.form.errorMax'));
     if (!Number.isFinite(v) || v < 0 || v > m)
-      return setError(`La note doit être comprise entre 0 et ${m}.`);
-    if (!(w > 0)) return setError('Le coefficient doit être supérieur à 0.');
+      return setError(t('grades.form.errorValue', { max: m }));
+    if (!(w > 0)) return setError(t('grades.form.errorWeight'));
     onSubmit({
       value: v,
       max: m,
@@ -74,17 +68,17 @@ export function GradeForm({
     <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
       <div className="grid grid-cols-2 gap-3">
         <TextField
-          label="Note obtenue"
+          label={t('grades.form.valueLabel')}
           type="number"
           inputMode="decimal"
           min="0"
           step="0.25"
           value={value}
           onChange={e => setValue(e.target.value)}
-          placeholder="14"
+          placeholder={t('grades.form.valuePlaceholder')}
         />
         <TextField
-          label="Barème"
+          label={t('grades.form.maxLabel')}
           type="number"
           inputMode="decimal"
           min="1"
@@ -94,7 +88,7 @@ export function GradeForm({
         />
       </div>
       <TextField
-        label="Coefficient de la note"
+        label={t('grades.form.weightLabel')}
         type="number"
         inputMode="decimal"
         min="0"
@@ -104,20 +98,20 @@ export function GradeForm({
         error={error}
       />
       <SelectField
-        label="Type d'évaluation (facultatif)"
+        label={t('grades.form.typeLabel')}
         value={type}
         onChange={e => setType(e.target.value as GradeType | '')}
       >
-        <option value="">Non précisé</option>
-        {GRADE_TYPES.map(t => (
-          <option key={t} value={t}>
-            {TYPE_LABELS[t]}
+        <option value="">{t('grades.form.typeNone')}</option>
+        {GRADE_TYPES.map(gradeType => (
+          <option key={gradeType} value={gradeType}>
+            {t(`grades.type.${gradeType}`)}
           </option>
         ))}
       </SelectField>
       {periods.length > 1 && (
         <SelectField
-          label="Période"
+          label={t('grades.form.periodLabel')}
           value={periodId}
           onChange={e => setPeriodId(e.target.value)}
         >
@@ -129,19 +123,19 @@ export function GradeForm({
         </SelectField>
       )}
       <TextField
-        label="Intitulé (facultatif)"
+        label={t('grades.form.titleLabel')}
         value={label}
         onChange={e => setLabel(e.target.value)}
-        placeholder="Chapitre 3 — fractions"
+        placeholder={t('grades.form.titlePlaceholder')}
       />
       <TextField
-        label="Date (facultative)"
+        label={t('grades.form.dateLabel')}
         type="date"
         value={date}
         onChange={e => setDate(e.target.value)}
       />
       <Button type="submit" block>
-        {initial ? 'Enregistrer' : 'Ajouter la note'}
+        {initial ? t('common.save') : t('grades.form.submitAdd')}
       </Button>
     </form>
   );

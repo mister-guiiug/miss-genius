@@ -1,15 +1,12 @@
 import type { Period } from '../types/domain.ts';
 import { createId } from './id.ts';
 
-/** Modèles de découpage de l'année. */
+/**
+ * Modèles de découpage de l'année. Les libellés affichés sont traduits côté
+ * composant via i18n (`periods.preset.<preset>`).
+ */
 export const PERIOD_PRESETS = ['trimestres', 'semestres', 'annee'] as const;
 export type PeriodPreset = (typeof PERIOD_PRESETS)[number];
-
-export const PERIOD_PRESET_LABELS: Record<PeriodPreset, string> = {
-  trimestres: '3 trimestres',
-  semestres: '2 semestres',
-  annee: 'Année (1 période)',
-};
 
 function period(name: string): Period {
   return { id: createId('per'), name };

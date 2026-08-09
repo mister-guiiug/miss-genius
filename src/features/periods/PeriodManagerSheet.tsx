@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
-import {
-  PERIOD_PRESETS,
-  PERIOD_PRESET_LABELS,
-  type PeriodPreset,
-} from '../../shared/lib/periods.ts';
+import { useI18n } from '../../i18n';
+import { PERIOD_PRESETS, type PeriodPreset } from '../../shared/lib/periods.ts';
 import { Sheet } from '../../shared/components/Sheet.tsx';
 import { Button } from '../../shared/components/Button.tsx';
 import { TextField } from '../../shared/components/Field.tsx';
@@ -18,6 +15,7 @@ interface PeriodManagerSheetProps {
 
 /** Gestion des périodes : preset, renommage, ajout, suppression. */
 export function PeriodManagerSheet({ open, onClose }: PeriodManagerSheetProps) {
+  const { t } = useI18n();
   const scenario = useAppStore(selectActiveScenario);
   const renamePeriod = useAppStore(s => s.renamePeriod);
   const addPeriod = useAppStore(s => s.addPeriod);
@@ -30,10 +28,12 @@ export function PeriodManagerSheet({ open, onClose }: PeriodManagerSheetProps) {
   const hasGrades = scenario.grades.length > 0;
 
   return (
-    <Sheet open={open} title="Périodes" onClose={onClose}>
+    <Sheet open={open} title={t('periods.managerTitle')} onClose={onClose}>
       <div className="flex flex-col gap-4">
         <div>
-          <p className="mb-2 text-sm font-semibold">Modèle</p>
+          <p className="mb-2 text-sm font-semibold">
+            {t('periods.modelLabel')}
+          </p>
           <div className="flex flex-wrap gap-2">
             {PERIOD_PRESETS.map(preset => (
               <Button
@@ -45,18 +45,18 @@ export function PeriodManagerSheet({ open, onClose }: PeriodManagerSheetProps) {
                     : applyPeriodPreset(preset)
                 }
               >
-                {PERIOD_PRESET_LABELS[preset]}
+                {t(`periods.preset.${preset}`)}
               </Button>
             ))}
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-semibold">Mes périodes</p>
+          <p className="text-sm font-semibold">{t('periods.myPeriods')}</p>
           {scenario.periods.map(p => (
             <div key={p.id} className="flex items-center gap-2">
               <input
-                aria-label={`Nom de la période ${p.name}`}
+                aria-label={t('periods.nameAria', { name: p.name })}
                 value={p.name}
                 onChange={e => renamePeriod(p.id, e.target.value)}
                 className="min-h-11 flex-1 rounded-2xl border border-[var(--mg-border)] bg-[var(--mg-surface-2)] px-4 text-[16px]"
@@ -64,7 +64,7 @@ export function PeriodManagerSheet({ open, onClose }: PeriodManagerSheetProps) {
               {scenario.periods.length > 1 && (
                 <Button
                   variant="ghost"
-                  aria-label={`Supprimer la période ${p.name}`}
+                  aria-label={t('periods.deleteAria', { name: p.name })}
                   onClick={() => deletePeriod(p.id)}
                 >
                   <Trash2 size={18} aria-hidden="true" />
@@ -85,28 +85,27 @@ export function PeriodManagerSheet({ open, onClose }: PeriodManagerSheetProps) {
         >
           <div className="flex-1">
             <TextField
-              label="Ajouter une période"
+              label={t('periods.addLabel')}
               value={newName}
               onChange={e => setNewName(e.target.value)}
-              placeholder="Trimestre 4, Rattrapage…"
+              placeholder={t('periods.addPlaceholder')}
             />
           </div>
-          <Button type="submit" aria-label="Ajouter la période">
+          <Button type="submit" aria-label={t('periods.addAria')}>
             <Plus size={18} aria-hidden="true" />
           </Button>
         </form>
 
         <p className="text-xs text-[var(--mg-text-soft)]">
-          Supprimer une période rattache ses notes à la première période
-          restante (aucune note n'est perdue).
+          {t('periods.deleteNote')}
         </p>
       </div>
 
       <ConfirmDialog
         open={pendingPreset !== null}
-        title="Changer le modèle de périodes ?"
-        message="Toutes les notes existantes seront regroupées dans la première période du nouveau modèle. Tu pourras les réaffecter ensuite."
-        confirmLabel="Appliquer"
+        title={t('periods.changeModelTitle')}
+        message={t('periods.changeModelMessage')}
+        confirmLabel={t('periods.apply')}
         onCancel={() => setPendingPreset(null)}
         onConfirm={() => {
           if (pendingPreset) applyPeriodPreset(pendingPreset);

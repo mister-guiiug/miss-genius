@@ -6,6 +6,7 @@ import {
   simulateFutureGrade,
 } from '../../shared/lib/simulate.ts';
 import { formatAverage, formatDelta } from '../../shared/lib/format.ts';
+import { useI18n } from '../../i18n';
 import { TrendPill } from '../../shared/components/badges.tsx';
 import { Card } from '../../shared/components/Card.tsx';
 import { TextField } from '../../shared/components/Field.tsx';
@@ -18,6 +19,7 @@ interface Props {
 
 /** Widget « impact d'une future note » sur la matière et la moyenne générale. */
 export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
+  const { t } = useI18n();
   const [value, setValue] = useState('15');
   const [max, setMax] = useState(String(settings.referenceBase));
   const [weight, setWeight] = useState('1');
@@ -47,12 +49,12 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
   return (
     <Card className="flex flex-col gap-3">
       <h2 className="flex items-center gap-2 font-bold">
-        <Sparkles size={18} className="text-primary" aria-hidden="true" /> Et si
-        j'avais cette note ?
+        <Sparkles size={18} className="text-primary" aria-hidden="true" />{' '}
+        {t('grades.simulator.title')}
       </h2>
       <div className="grid grid-cols-3 gap-2">
         <TextField
-          label="Note"
+          label={t('grades.simulator.gradeLabel')}
           type="number"
           inputMode="decimal"
           min="0"
@@ -60,7 +62,7 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
           onChange={e => setValue(e.target.value)}
         />
         <TextField
-          label="Barème"
+          label={t('grades.simulator.maxLabel')}
           type="number"
           inputMode="decimal"
           min="1"
@@ -68,7 +70,7 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
           onChange={e => setMax(e.target.value)}
         />
         <TextField
-          label="Coef"
+          label={t('grades.simulator.weightLabel')}
           type="number"
           inputMode="decimal"
           min="0"
@@ -79,13 +81,13 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
 
       {impact === null ? (
         <p className="text-sm text-[var(--mg-bad)]" role="alert">
-          Saisis une note valide pour voir l'impact.
+          {t('grades.simulator.invalid')}
         </p>
       ) : (
         <dl className="grid grid-cols-2 gap-3" aria-live="polite">
           <div className="rounded-2xl bg-[var(--mg-surface-2)] p-3">
             <dt className="text-xs text-[var(--mg-text-soft)]">
-              Moyenne de la matière
+              {t('grades.simulator.subjectAverage')}
             </dt>
             <dd className="flex items-center gap-2">
               <span className="font-display text-lg font-bold tabular-nums">
@@ -100,7 +102,7 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
           </div>
           <div className="rounded-2xl bg-[var(--mg-surface-2)] p-3">
             <dt className="text-xs text-[var(--mg-text-soft)]">
-              Moyenne générale
+              {t('dashboard.overallAverage')}
             </dt>
             <dd className="flex items-center gap-2">
               <span className="font-display text-lg font-bold tabular-nums">
@@ -117,8 +119,9 @@ export function FutureGradeSimulator({ scenario, subjectId, settings }: Props) {
       )}
       {impact?.generalDelta != null && (
         <p className="text-sm text-[var(--mg-text-soft)]">
-          Cette note ferait varier ta moyenne générale de{' '}
-          <strong>{formatDelta(impact.generalDelta)}</strong> point.
+          {t('grades.simulator.impact', {
+            delta: formatDelta(impact.generalDelta),
+          })}
         </p>
       )}
     </Card>

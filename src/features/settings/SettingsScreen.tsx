@@ -1,19 +1,23 @@
 import { useRef, useState } from 'react';
 import { Download, GraduationCap, RefreshCw, Upload } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
+import { useI18n } from '../../i18n';
 import type { GradeSort, RoundingMode } from '../../shared/types/domain.ts';
 import { exportData, importData } from '../../shared/lib/storage.ts';
 import { forceUpdate } from '../../pwa/forceUpdate.ts';
+import { cn } from '../../shared/lib/cn.ts';
 import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '../../shared/components/Button.tsx';
 import { SelectField } from '../../shared/components/Field.tsx';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog.tsx';
 import { AppFooter } from '../../shared/components/AppFooter.tsx';
+import { FamilyApps } from '@mister-guiiug/dev-wpa-config/react';
 import { PronoteSheet } from '../pronote/PronoteSheet.tsx';
 
 declare const __APP_VERSION__: string;
 
 export function SettingsScreen() {
+  const { t, locale, setLocale, locales } = useI18n();
   const data = useAppStore(s => s.data);
   const settings = data.settings;
   const updateSettings = useAppStore(s => s.updateSettings);
@@ -34,29 +38,54 @@ export function SettingsScreen() {
     a.download = `miss-genius-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setFeedback('Sauvegarde exportée.');
+    setFeedback(t('settings.exportDone'));
   }
 
   async function handleImport(file: File) {
     try {
       const text = await file.text();
       replaceData(importData(text));
-      setFeedback('Données importées avec succès.');
-    } catch (err) {
-      setFeedback(
-        err instanceof Error
-          ? err.message
-          : 'Import impossible : fichier invalide.'
-      );
+      setFeedback(t('settings.importDone'));
+    } catch {
+      setFeedback(t('settings.importError'));
     }
   }
 
   return (
     <div className="flex flex-col gap-4 p-4">
+      <Card className="flex flex-col gap-3">
+        <h2 className="font-bold">{t('settings.language')}</h2>
+        <div
+          role="group"
+          aria-label={t('settings.languageAria')}
+          className="flex gap-2"
+        >
+          {locales.map(loc => {
+            const active = loc === locale;
+            return (
+              <button
+                key={loc}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setLocale(loc)}
+                className={cn(
+                  'min-h-11 flex-1 rounded-2xl px-4 text-sm font-semibold',
+                  active
+                    ? 'bg-primary text-white'
+                    : 'bg-[var(--mg-surface-2)] text-[var(--mg-text-soft)] border border-[var(--mg-border)]'
+                )}
+              >
+                {t(`language.${loc}`)}
+              </button>
+            );
+          })}
+        </div>
+      </Card>
+
       <Card className="flex flex-col gap-4">
-        <h2 className="font-bold">Calcul des moyennes</h2>
+        <h2 className="font-bold">{t('settings.averagesTitle')}</h2>
         <SelectField
-          label="Arrondi affiché"
+          label={t('settings.roundingLabel')}
           value={settings.rounding.mode}
           onChange={e =>
             updateSettings({
@@ -67,13 +96,13 @@ export function SettingsScreen() {
             })
           }
         >
-          <option value="nearest">Au plus proche</option>
-          <option value="floor">Au plancher (inférieur)</option>
-          <option value="ceil">Au plafond (supérieur)</option>
-          <option value="none">Exact (aucun)</option>
+          <option value="nearest">{t('settings.roundingNearest')}</option>
+          <option value="floor">{t('settings.roundingFloor')}</option>
+          <option value="ceil">{t('settings.roundingCeil')}</option>
+          <option value="none">{t('settings.roundingNone')}</option>
         </SelectField>
         <SelectField
-          label="Décimales"
+          label={t('settings.decimalsLabel')}
           value={String(settings.rounding.decimals)}
           onChange={e =>
             updateSettings({
@@ -92,7 +121,7 @@ export function SettingsScreen() {
         </SelectField>
         <label className="flex items-center justify-between gap-3">
           <span className="text-sm font-semibold">
-            Normaliser les notes sur d'autres bases
+            {t('settings.normalizeLabel')}
           </span>
           <input
             type="checkbox"
@@ -104,44 +133,42 @@ export function SettingsScreen() {
       </Card>
 
       <Card className="flex flex-col gap-3">
-        <h2 className="font-bold">Affichage</h2>
+        <h2 className="font-bold">{t('settings.displayTitle')}</h2>
         <SelectField
-          label="Ordre des notes (par matière)"
+          label={t('settings.gradeSortLabel')}
           value={settings.gradeSort}
           onChange={e =>
             updateSettings({ gradeSort: e.target.value as GradeSort })
           }
         >
-          <option value="date-desc">Date — plus récente d'abord</option>
-          <option value="date-asc">Date — plus ancienne d'abord</option>
-          <option value="value-desc">Note — meilleure d'abord</option>
-          <option value="added">Ordre d'ajout</option>
+          <option value="date-desc">{t('settings.sortDateDesc')}</option>
+          <option value="date-asc">{t('settings.sortDateAsc')}</option>
+          <option value="value-desc">{t('settings.sortValueDesc')}</option>
+          <option value="added">{t('settings.sortAdded')}</option>
         </SelectField>
       </Card>
 
       <Card className="flex flex-col gap-3">
-        <h2 className="font-bold">Sources de notes</h2>
+        <h2 className="font-bold">{t('settings.sourcesTitle')}</h2>
         <p className="text-sm text-[var(--mg-text-soft)]">
-          Importe automatiquement tes notes depuis Pronote dans la période
-          active.
+          {t('settings.sourcesText')}
         </p>
         <Button variant="secondary" onClick={() => setPronote(true)}>
-          <GraduationCap size={16} aria-hidden="true" /> Connecter Pronote
+          <GraduationCap size={16} aria-hidden="true" /> {t('pronote.title')}
         </Button>
       </Card>
 
       <Card className="flex flex-col gap-3">
-        <h2 className="font-bold">Sauvegarde locale</h2>
+        <h2 className="font-bold">{t('settings.backupTitle')}</h2>
         <p className="text-sm text-[var(--mg-text-soft)]">
-          Tes données restent sur cet appareil. Exporte-les pour les conserver
-          ou les transférer.
+          {t('settings.backupText')}
         </p>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={handleExport}>
-            <Download size={16} aria-hidden="true" /> Exporter (JSON)
+            <Download size={16} aria-hidden="true" /> {t('settings.exportJson')}
           </Button>
           <Button variant="secondary" onClick={() => fileRef.current?.click()}>
-            <Upload size={16} aria-hidden="true" /> Importer (JSON)
+            <Upload size={16} aria-hidden="true" /> {t('settings.importJson')}
           </Button>
           <input
             ref={fileRef}
@@ -166,17 +193,18 @@ export function SettingsScreen() {
       </Card>
 
       <Card className="flex flex-col gap-3">
-        <h2 className="font-bold text-[var(--mg-bad)]">Zone sensible</h2>
+        <h2 className="font-bold text-[var(--mg-bad)]">
+          {t('settings.dangerTitle')}
+        </h2>
         <Button variant="danger" onClick={() => setConfirmReset(true)}>
-          Réinitialiser toutes les données
+          {t('settings.resetAll')}
         </Button>
       </Card>
 
       <Card className="flex flex-col gap-3">
-        <h2 className="font-bold">Application</h2>
+        <h2 className="font-bold">{t('settings.appTitle')}</h2>
         <p className="text-sm text-[var(--mg-text-soft)]">
-          Récupère la dernière version (recharge l'app sans toucher à tes
-          données).
+          {t('settings.appText')}
         </p>
         <Button
           variant="secondary"
@@ -191,26 +219,35 @@ export function SettingsScreen() {
             aria-hidden="true"
             className={updating ? 'animate-spin' : undefined}
           />
-          {updating ? 'Mise à jour…' : 'Forcer la mise à jour'}
+          {updating ? t('settings.updating') : t('settings.forceUpdate')}
         </Button>
+      </Card>
+
+      <Card className="mg-family">
+        <FamilyApps
+          currentAppId="miss-genius"
+          showSource={false}
+          showSponsor={false}
+          labels={{ otherApps: t('settings.otherApps') }}
+        />
       </Card>
 
       <AppFooter />
 
       <p className="text-center text-xs text-[var(--mg-text-soft)]">
-        Miss Genius v{__APP_VERSION__}
+        {t('settings.version', { version: __APP_VERSION__ })}
       </p>
 
       <ConfirmDialog
         open={confirmReset}
-        title="Tout réinitialiser ?"
-        message="Tous les scénarios, matières et notes seront effacés. Cette action est irréversible."
-        confirmLabel="Tout effacer"
+        title={t('settings.resetConfirmTitle')}
+        message={t('settings.resetConfirmMessage')}
+        confirmLabel={t('settings.resetConfirmButton')}
         onCancel={() => setConfirmReset(false)}
         onConfirm={() => {
           resetAll();
           setConfirmReset(false);
-          setFeedback('Données réinitialisées.');
+          setFeedback(t('settings.resetDone'));
         }}
       />
 

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { CircleCheck, DownloadCloud, TriangleAlert } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
+import { useI18n, plural } from '../../i18n';
 import type { ImportPlan } from '../../shared/types/import.ts';
 import { Sheet } from '../../shared/components/Sheet.tsx';
 import { Button } from '../../shared/components/Button.tsx';
@@ -18,6 +19,7 @@ type Phase = 'form' | 'loading' | 'preview' | 'done';
 
 /** Connexion / import Pronote. Importe les notes dans la période active. */
 export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
+  const { t, locale } = useI18n();
   const scenario = useAppStore(selectActiveScenario);
   const importSubjectsAndGrades = useAppStore(s => s.importSubjectsAndGrades);
   const configured = isPronoteConfigured();
@@ -56,10 +58,8 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
       const resp = await fetchPronoteGrades({ url, username, password });
       setPlan(planFromPronote(resp));
       setPhase('preview');
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Échec de la récupération.'
-      );
+    } catch {
+      setError(t('pronote.errorFetch'));
       setPhase('form');
     }
   }
@@ -78,7 +78,7 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
   }
 
   return (
-    <Sheet open={open} title="Connecter Pronote" onClose={close}>
+    <Sheet open={open} title={t('pronote.title')} onClose={close}>
       {phase === 'done' && result ? (
         <div className="flex flex-col items-center gap-3 py-4 text-center">
           <CircleCheck
@@ -86,26 +86,32 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
             className="text-[var(--mg-good)]"
             aria-hidden="true"
           />
-          <p className="font-semibold">Import terminé</p>
+          <p className="font-semibold">{t('pronote.doneTitle')}</p>
           <p className="text-sm text-[var(--mg-text-soft)]">
-            {result.gradesAdded} note{result.gradesAdded > 1 ? 's' : ''} ajoutée
-            {result.gradesAdded > 1 ? 's' : ''} dans «&nbsp;
-            {activePeriod?.name}&nbsp;» ({result.subjectsCreated} matière
-            {result.subjectsCreated > 1 ? 's' : ''} créée
-            {result.subjectsCreated > 1 ? 's' : ''}).
+            {t(`pronote.done.grades.${plural(locale, result.gradesAdded)}`, {
+              count: result.gradesAdded,
+              period: activePeriod?.name ?? '',
+            })}{' '}
+            {t(
+              `pronote.done.subjects.${plural(locale, result.subjectsCreated)}`,
+              { count: result.subjectsCreated }
+            )}
           </p>
           <Button block onClick={close}>
-            Terminer
+            {t('common.finish')}
           </Button>
         </div>
       ) : phase === 'preview' && plan ? (
         <div className="flex flex-col gap-4">
           <p className="text-[15px]">
-            <strong>{plan.grades.length}</strong> note
-            {plan.grades.length > 1 ? 's' : ''} sur{' '}
-            <strong>{plan.subjects.length}</strong> matière
-            {plan.subjects.length > 1 ? 's' : ''} prêtes à importer dans «&nbsp;
-            {activePeriod?.name}&nbsp;».
+            {t(`pronote.preview.grades.${plural(locale, plan.grades.length)}`, {
+              count: plan.grades.length,
+              period: activePeriod?.name ?? '',
+            })}{' '}
+            {t(
+              `pronote.preview.subjects.${plural(locale, plan.subjects.length)}`,
+              { count: plan.subjects.length }
+            )}
           </p>
           <ul className="flex flex-wrap gap-2">
             {plan.subjects.map(s => (
@@ -118,15 +124,15 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
             ))}
           </ul>
           <p className="text-xs text-[var(--mg-text-soft)]">
-            Les matières déjà présentes ne sont pas dupliquées ; les notes
-            s'ajoutent à la période active.
+            {t('pronote.previewNote')}
           </p>
           <div className="flex gap-2">
             <Button variant="secondary" block onClick={reset}>
-              Retour
+              {t('common.back')}
             </Button>
             <Button block onClick={applyImport}>
-              <DownloadCloud size={18} aria-hidden="true" /> Importer
+              <DownloadCloud size={18} aria-hidden="true" />{' '}
+              {t('pronote.import')}
             </Button>
           </div>
         </div>
@@ -139,12 +145,7 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
                 className="mt-0.5 shrink-0 text-[var(--color-amber)]"
                 aria-hidden="true"
               />
-              <p>
-                Le connecteur Pronote n'est pas configuré sur ce déploiement
-                (variable <code>VITE_PRONOTE_PROXY_URL</code> + Worker à
-                déployer). Tu peux essayer l'import avec des données de
-                démonstration.
-              </p>
+              <p>{t('pronote.notConfigured')}</p>
             </div>
           )}
 
@@ -155,7 +156,7 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
               noValidate
             >
               <TextField
-                label="Adresse Pronote"
+                label={t('pronote.urlLabel')}
                 type="url"
                 inputMode="url"
                 value={url}
@@ -164,18 +165,18 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
                 autoComplete="off"
               />
               <TextField
-                label="Identifiant"
+                label={t('pronote.usernameLabel')}
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 autoComplete="username"
               />
               <TextField
-                label="Mot de passe"
+                label={t('pronote.passwordLabel')}
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 autoComplete="current-password"
-                hint="Transmis au connecteur uniquement le temps de la requête, jamais enregistré."
+                hint={t('pronote.passwordHint')}
               />
               {error && (
                 <p role="alert" className="text-sm text-[var(--mg-bad)]">
@@ -183,7 +184,9 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
                 </p>
               )}
               <Button type="submit" block disabled={phase === 'loading'}>
-                {phase === 'loading' ? 'Connexion…' : 'Récupérer mes notes'}
+                {phase === 'loading'
+                  ? t('pronote.connecting')
+                  : t('pronote.fetch')}
               </Button>
             </form>
           )}
@@ -195,7 +198,7 @@ export function PronoteSheet({ open, onClose }: PronoteSheetProps) {
           )}
 
           <Button variant="secondary" block onClick={loadDemo}>
-            Essayer avec des données de démo
+            {t('pronote.tryDemo')}
           </Button>
         </div>
       )}

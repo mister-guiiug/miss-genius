@@ -12,13 +12,17 @@ export const SUBJECT_HEX: Record<SubjectColor, string> = {
   lime: '#65a30d',
 };
 
-/** Seuils pédagogiques d'appréciation d'une moyenne (base 20). */
-export function appreciation(avg: number | null): {
-  label: string;
-  tone: 'good' | 'mid' | 'low' | 'none';
-} {
-  if (avg === null) return { label: 'Pas encore de note', tone: 'none' };
-  if (avg >= 14) return { label: 'Point fort', tone: 'good' };
-  if (avg >= 10) return { label: 'En bonne voie', tone: 'mid' };
-  return { label: 'À renforcer', tone: 'low' };
+/** Tonalité d'appréciation d'une matière (seuils pédagogiques, base 20). */
+export type AppreciationTone = 'good' | 'mid' | 'low' | 'none';
+
+/**
+ * Seuils pédagogiques d'appréciation d'une moyenne (base 20). Renvoie une
+ * *tonalité* sémantique ; le libellé affiché est résolu côté composant via i18n
+ * (`dashboard.appreciation.<tone>`).
+ */
+export function appreciation(avg: number | null): { tone: AppreciationTone } {
+  if (avg === null) return { tone: 'none' };
+  if (avg >= 14) return { tone: 'good' };
+  if (avg >= 10) return { tone: 'mid' };
+  return { tone: 'low' };
 }

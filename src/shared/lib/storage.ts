@@ -66,8 +66,8 @@ const migrations: Record<number, (data: unknown) => unknown> = {
 function runMigrations(raw: unknown): unknown {
   let data = raw as { version?: number };
   let version = typeof data.version === 'number' ? data.version : 0;
-  // La migration est liée à une const : l'indexation d'un Record ne se narrow
-  // pas d'une itération à l'autre (noUncheckedIndexedAccess).
+  // Capture de la fonction : narrowing impossible sur un accès indexé répété
+  // (noUncheckedIndexedAccess).
   let migrate = migrations[version];
   while (version < SCHEMA_VERSION && migrate) {
     data = migrate(data) as { version?: number };
