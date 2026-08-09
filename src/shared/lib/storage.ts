@@ -66,9 +66,13 @@ const migrations: Record<number, (data: unknown) => unknown> = {
 function runMigrations(raw: unknown): unknown {
   let data = raw as { version?: number };
   let version = typeof data.version === 'number' ? data.version : 0;
-  while (version < SCHEMA_VERSION && migrations[version]) {
-    data = migrations[version](data) as { version?: number };
+  // La migration est liée à une const : l'indexation d'un Record ne se narrow
+  // pas d'une itération à l'autre (noUncheckedIndexedAccess).
+  let migrate = migrations[version];
+  while (version < SCHEMA_VERSION && migrate) {
+    data = migrate(data) as { version?: number };
     version = typeof data.version === 'number' ? data.version : version + 1;
+    migrate = migrations[version];
   }
   return data;
 }
