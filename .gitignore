@@ -16,3 +16,6 @@ worker/.wrangler-dryrun/
 # Playwright
 test-results/
 playwright-report/
+
+# Lighthouse CI (rapports locaux)
+.lighthouseci/
