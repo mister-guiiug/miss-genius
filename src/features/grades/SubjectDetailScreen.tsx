@@ -9,7 +9,7 @@ import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { Sheet } from '@mister-guiiug/dev-wpa-config/react/sheet';
 import { ConfirmDialog } from '@mister-guiiug/dev-wpa-config/react/confirm-dialog';
-import { EmptyState } from '../../shared/components/EmptyState.tsx';
+import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { formatAverage } from '../../shared/lib/format.ts';
 import { normalizeValue } from '../../shared/lib/average.ts';
@@ -36,7 +36,7 @@ export function SubjectDetailScreen() {
 
   if (!result) {
     return (
-      <EmptyState
+      <RiveEmptyState
         icon={<SearchX size={64} className="text-primary" />}
         title={t('subjectDetail.notFoundTitle')}
         description={t('subjectDetail.notFoundDescription')}
@@ -89,7 +89,7 @@ export function SubjectDetailScreen() {
       </Button>
 
       {grades.length === 0 ? (
-        <EmptyState
+        <RiveEmptyState
           icon={<NotebookPen size={64} className="text-primary" />}
           title={t('subjectDetail.noGradesTitle')}
           description={t('subjectDetail.noGradesDescription')}

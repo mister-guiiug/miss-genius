@@ -23,7 +23,7 @@ import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { Sheet } from '@mister-guiiug/dev-wpa-config/react/sheet';
 import { ConfirmDialog } from '@mister-guiiug/dev-wpa-config/react/confirm-dialog';
-import { EmptyState } from '../../shared/components/EmptyState.tsx';
+import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { formatAverage } from '../../shared/lib/format.ts';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
@@ -167,7 +167,7 @@ export function SubjectsScreen() {
       )}
 
       {scenario.subjects.length === 0 ? (
-        <EmptyState
+        <RiveEmptyState
           icon={<BookOpen size={64} className="text-primary" />}
           title={t('subjects.emptyTitle')}
           description={t('subjects.emptyDescription')}

@@ -16,7 +16,7 @@ import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { Tag } from '../../shared/components/badges.tsx';
-import { EmptyState } from '../../shared/components/EmptyState.tsx';
+import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { PeriodBar } from '../periods/PeriodBar.tsx';
@@ -32,7 +32,7 @@ export function DashboardScreen() {
 
   if (scenario.subjects.length === 0) {
     return (
-      <EmptyState
+      <RiveEmptyState
         icon={<Sparkles size={64} className="text-primary" />}
         title={t('dashboard.emptyTitle')}
         description={t('dashboard.emptyDescription')}

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { EmptyState as BaseEmptyState } from '@mister-guiiug/dev-wpa-config/react/empty-state';
 import { RiveBadge } from './RiveBadge.tsx';
 
-interface EmptyStateProps {
+interface RiveEmptyStateProps {
   /** Illustration (icône Lucide) servant aussi de fallback Rive. */
   icon: ReactNode;
   title: string;
@@ -20,13 +20,20 @@ interface EmptyStateProps {
  * charge pas. Passer `RiveBadge` en `icon` à chacun des quatre appelants
  * disperserait la même ligne quatre fois ; la garder ici la tient à un seul
  * endroit.
+ *
+ * ET POURQUOI ELLE NE S'APPELLE PLUS `EmptyState.tsx`. Le relevé d'adoption
+ * repère les recopies PAR NOM DE FICHIER : tant qu'il lisait `EmptyState.tsx`,
+ * il comptait un doublon qui n'en est plus un, et `adopt.mjs` proposait de
+ * réécrire les quatre appelants vers le paquet — ce qui aurait sauté cette
+ * enveloppe et, avec elle, l'animation. Le nom dit maintenant ce que le
+ * fichier ajoute.
  */
-export function EmptyState({
+export function RiveEmptyState({
   icon,
   title,
   description,
   action,
-}: EmptyStateProps) {
+}: RiveEmptyStateProps) {
   return (
     <BaseEmptyState
       icon={<RiveBadge fallback={icon} label={title} size={132} />}
