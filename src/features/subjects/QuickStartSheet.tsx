@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useI18n, plural } from '../../i18n';
-import { Button } from '../../shared/components/Button.tsx';
-import { Sheet } from '../../shared/components/Sheet.tsx';
-import { SelectField } from '../../shared/components/Field.tsx';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
+import { Sheet } from '@mister-guiiug/dev-wpa-config/react/sheet';
+import { SelectField } from '@mister-guiiug/dev-wpa-config/react/field';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
 import { subjectNameTaken } from '../../shared/lib/subjectName.ts';

@@ -2,8 +2,11 @@ import { useState, type FormEvent } from 'react';
 import type { Grade, GradeType, Period } from '../../shared/types/domain.ts';
 import { GRADE_TYPES } from '../../shared/types/domain.ts';
 import { useI18n } from '../../i18n';
-import { TextField, SelectField } from '../../shared/components/Field.tsx';
-import { Button } from '../../shared/components/Button.tsx';
+import {
+  TextField,
+  SelectField,
+} from '@mister-guiiug/dev-wpa-config/react/field';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 
 export interface GradeDraft {
   value: number;

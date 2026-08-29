@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Brain, GraduationCap, Target, type LucideIcon } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
-import { Button } from '../../shared/components/Button.tsx';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
 
 interface Step {

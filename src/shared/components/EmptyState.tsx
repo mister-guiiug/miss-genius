@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { EmptyState as BaseEmptyState } from '@mister-guiiug/dev-wpa-config/react/empty-state';
 import { RiveBadge } from './RiveBadge.tsx';
 
 interface EmptyStateProps {
@@ -9,7 +10,17 @@ interface EmptyStateProps {
   action?: ReactNode;
 }
 
-/** État vide utile : illustration (Rive ou fallback), message, action claire. */
+/**
+ * État vide du socle, avec le badge animé de Miss Genius en illustration.
+ *
+ * POURQUOI CETTE ENVELOPPE SURVIT. La structure, les rôles et l'action de
+ * l'état vide viennent maintenant du paquet — c'est la partie qui était
+ * recopiée. Ce qui reste ici est ce que le socle ne fait pas et n'a pas à
+ * faire : l'illustration Rive, avec l'icône en repli quand l'animation ne
+ * charge pas. Passer `RiveBadge` en `icon` à chacun des quatre appelants
+ * disperserait la même ligne quatre fois ; la garder ici la tient à un seul
+ * endroit.
+ */
 export function EmptyState({
   icon,
   title,
@@ -17,13 +28,12 @@ export function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center gap-3 px-6 py-10 text-center mg-rise">
-      <RiveBadge fallback={icon} label={title} size={132} />
-      <h2 className="text-xl font-bold">{title}</h2>
-      <p className="max-w-xs text-[15px] text-[var(--mg-text-soft)]">
-        {description}
-      </p>
-      {action && <div className="mt-2 w-full max-w-xs">{action}</div>}
-    </div>
+    <BaseEmptyState
+      icon={<RiveBadge fallback={icon} label={title} size={132} />}
+      title={title}
+      description={description}
+      action={action}
+      className="mg-rise"
+    />
   );
 }

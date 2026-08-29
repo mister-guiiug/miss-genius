@@ -7,10 +7,11 @@ import { exportData, importData } from '../../shared/lib/storage.ts';
 import { forceUpdate } from '../../pwa/forceUpdate.ts';
 import { cn } from '../../shared/lib/cn.ts';
 import { Card } from '../../shared/components/Card.tsx';
-import { Button } from '../../shared/components/Button.tsx';
-import { SelectField } from '../../shared/components/Field.tsx';
-import { ConfirmDialog } from '../../shared/components/ConfirmDialog.tsx';
-import { AppFooter } from '../../shared/components/AppFooter.tsx';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
+import { SelectField } from '@mister-guiiug/dev-wpa-config/react/field';
+import { ConfirmDialog } from '@mister-guiiug/dev-wpa-config/react/confirm-dialog';
+import { AppFooter } from '@mister-guiiug/dev-wpa-config/react/app-footer';
+import { repoUrl } from '@mister-guiiug/dev-wpa-config/apps-catalog';
 import { FamilyApps } from '@mister-guiiug/dev-wpa-config/react';
 import { PronoteSheet } from '../pronote/PronoteSheet.tsx';
 
@@ -232,7 +233,16 @@ export function SettingsScreen() {
         />
       </Card>
 
-      <AppFooter />
+      {/* La phrase d'accroche reste ici : le pied de page du socle ne porte
+          que les deux liens de la règle famille (source, sponsor). */}
+      <p className="text-center text-xs text-[var(--mg-text-soft)]">
+        {t('footer.tagline')}
+      </p>
+      <AppFooter
+        repoUrl={repoUrl('miss-genius')}
+        sourceLabel={t('footer.sourceCode')}
+        sponsorLabel={t('footer.buyCoffee')}
+      />
 
       <p className="text-center text-xs text-[var(--mg-text-soft)]">
         {t('settings.version', { version: __APP_VERSION__ })}

@@ -9,9 +9,12 @@ import {
   type RequiredReason,
 } from '../../shared/lib/simulate.ts';
 import { Card } from '../../shared/components/Card.tsx';
-import { Button } from '../../shared/components/Button.tsx';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { EmptyState } from '../../shared/components/EmptyState.tsx';
-import { TextField, SelectField } from '../../shared/components/Field.tsx';
+import {
+  TextField,
+  SelectField,
+} from '@mister-guiiug/dev-wpa-config/react/field';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
 
 type Translate = ReturnType<typeof useI18n>['t'];

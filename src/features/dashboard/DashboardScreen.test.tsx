@@ -28,9 +28,13 @@ afterEach(cleanup);
 describe('DashboardScreen', () => {
   it('affiche l’état vide quand il n’y a aucune matière', () => {
     renderDashboard();
-    expect(
-      screen.getByRole('heading', { name: /Bienvenue dans Miss Genius/i })
-    ).toBeInTheDocument();
+    // L'état vient du socle depuis l'adoption de `react/empty-state` : c'est
+    // un `role="note"` dont le titre est un paragraphe, là où la version
+    // recopiée posait un `<h2>`. Le test suit la structure réelle plutôt que
+    // l'ancienne.
+    expect(screen.getByRole('note')).toHaveTextContent(
+      /Bienvenue dans Miss Genius/i
+    );
   });
 
   it('affiche la moyenne générale pondérée une fois des notes saisies', () => {
