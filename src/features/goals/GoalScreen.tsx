@@ -10,7 +10,7 @@ import {
 } from '../../shared/lib/simulate.ts';
 import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
-import { EmptyState } from '../../shared/components/EmptyState.tsx';
+import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';
 import {
   TextField,
   SelectField,
@@ -130,7 +130,7 @@ export function GoalScreen() {
 
   if (scenario.subjects.length === 0) {
     return (
-      <EmptyState
+      <RiveEmptyState
         icon={<Target size={64} className="text-primary" />}
         title={t('goal.emptyTitle')}
         description={t('goal.emptyDescription')}
