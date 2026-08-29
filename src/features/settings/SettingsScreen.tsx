@@ -4,7 +4,8 @@ import { useAppStore } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
 import type { GradeSort, RoundingMode } from '../../shared/types/domain.ts';
 import { exportData, importData } from '../../shared/lib/storage.ts';
-import { forceUpdate } from '../../pwa/forceUpdate.ts';
+import { applyUpdate } from '@mister-guiiug/dev-wpa-config/sw-update';
+import { dateSlug, downloadText } from '@mister-guiiug/dev-wpa-config/download';
 import { cn } from '../../shared/lib/cn.ts';
 import { Card } from '../../shared/components/Card.tsx';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
@@ -32,13 +33,13 @@ export function SettingsScreen() {
   const [feedback, setFeedback] = useState<string>();
 
   function handleExport() {
-    const blob = new Blob([exportData(data)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `miss-genius-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // La forme des données reste définie par `exportData` (storage.ts) : le
+    // socle ne fournit que la mécanique de téléchargement.
+    downloadText(
+      exportData(data),
+      `miss-genius-${dateSlug()}.json`,
+      'application/json'
+    );
     setFeedback(t('settings.exportDone'));
   }
 
@@ -212,7 +213,9 @@ export function SettingsScreen() {
           disabled={updating}
           onClick={() => {
             setUpdating(true);
-            void forceUpdate();
+            // Même stratégie que l'ancien `forceUpdate` local (activation du
+            // worker en attente, purge sinon), avec plafonds de temps en plus.
+            void applyUpdate();
           }}
         >
           <RefreshCw

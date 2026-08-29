@@ -1,25 +1,32 @@
-import { useRegisterSW } from 'virtual:pwa-register/react';
+import { useState } from 'react';
+import { registerSW } from 'virtual:pwa-register';
 import { CircleCheck, Sparkles } from 'lucide-react';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
+import { useUpdatePrompt } from '@mister-guiiug/dev-wpa-config/react/use-update-prompt';
 import { useI18n } from '../i18n';
 
 /**
  * Bandeau PWA : informe quand une nouvelle version est disponible (registerType
  * 'prompt') et propose de recharger. Affiche aussi le passage en mode hors ligne.
+ *
+ * L'état et l'application de la mise à jour viennent du hook du socle
+ * (`use-update-prompt`), qui attend l'activation du worker avant de recharger.
+ * Seul l'écartement du message « prêt hors ligne » reste local : le hook expose
+ * `offlineReady` mais son `dismiss()` ne masque que le volet mise à jour.
  */
 export function UpdatePrompt() {
   const { t } = useI18n();
-  const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW();
+  const { offlineReady, visible, update, dismiss } = useUpdatePrompt({
+    registerSW,
+  });
+  const [offlineDismissed, setOfflineDismissed] = useState(false);
 
-  if (!offlineReady && !needRefresh) return null;
+  const showOffline = offlineReady && !offlineDismissed;
+  if (!showOffline && !visible) return null;
 
   const close = () => {
-    setOfflineReady(false);
-    setNeedRefresh(false);
+    setOfflineDismissed(true);
+    dismiss();
   };
 
   return (
@@ -29,7 +36,7 @@ export function UpdatePrompt() {
       className="fixed inset-x-3 bottom-20 z-40 mx-auto max-w-md rounded-2xl border border-[var(--mg-border)] bg-[var(--mg-surface)] p-4 shadow-lg mg-rise"
     >
       <p className="mb-3 flex items-center gap-2 text-sm font-semibold">
-        {needRefresh ? (
+        {visible ? (
           <>
             <Sparkles
               size={18}
@@ -50,13 +57,13 @@ export function UpdatePrompt() {
         )}
       </p>
       <div className="flex gap-2">
-        {needRefresh && (
-          <Button block onClick={() => updateServiceWorker(true)}>
+        {visible && (
+          <Button block onClick={() => void update()}>
             {t('pwa.update')}
           </Button>
         )}
         <Button variant="secondary" block onClick={close}>
-          {needRefresh ? t('pwa.later') : t('pwa.ok')}
+          {visible ? t('pwa.later') : t('pwa.ok')}
         </Button>
       </div>
     </div>
