@@ -1,7 +1,7 @@
 import { Brain, Moon, Sun } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
-import { Button } from './Button.tsx';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 
 /** En-tête : titre de page + bascule de thème. */
 export function AppHeader({ title }: { title: string }) {

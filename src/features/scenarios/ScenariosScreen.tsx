@@ -9,11 +9,11 @@ import {
 } from '../../shared/lib/average.ts';
 import { formatAverage, formatDelta } from '../../shared/lib/format.ts';
 import { Card } from '../../shared/components/Card.tsx';
-import { Button } from '../../shared/components/Button.tsx';
-import { Sheet } from '../../shared/components/Sheet.tsx';
-import { ConfirmDialog } from '../../shared/components/ConfirmDialog.tsx';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
+import { Sheet } from '@mister-guiiug/dev-wpa-config/react/sheet';
+import { ConfirmDialog } from '@mister-guiiug/dev-wpa-config/react/confirm-dialog';
 import { TrendPill } from '../../shared/components/badges.tsx';
-import { TextField } from '../../shared/components/Field.tsx';
+import { TextField } from '@mister-guiiug/dev-wpa-config/react/field';
 
 export function ScenariosScreen() {
   const { t, locale } = useI18n();

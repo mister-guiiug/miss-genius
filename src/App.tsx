@@ -1,15 +1,24 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ComponentType } from 'react';
 import {
   HashRouter,
+  NavLink,
   Outlet,
   Route,
   Routes,
   useLocation,
 } from 'react-router-dom';
+import {
+  BookOpen,
+  House,
+  Settings,
+  SlidersHorizontal,
+  Target,
+  type LucideIcon,
+} from 'lucide-react';
+import { BottomNav } from '@mister-guiiug/dev-wpa-config/react/bottom-nav';
 import { useAppStore } from './store/useAppStore.ts';
 import { useI18n } from './i18n';
 import { AppHeader } from './shared/components/AppHeader.tsx';
-import { BottomNav } from './shared/components/BottomNav.tsx';
 import { Onboarding } from './features/onboarding/Onboarding.tsx';
 import { UpdatePrompt } from './pwa/UpdatePrompt.tsx';
 import { DashboardScreen } from './features/dashboard/DashboardScreen.tsx';
@@ -41,6 +50,27 @@ const SettingsScreen = lazy(() =>
   }))
 );
 
+/**
+ * Les cinq destinations de la navigation basse.
+ *
+ * Elles vivaient dans un `BottomNav` maison ; la barre vient maintenant du
+ * socle, qui ne connaît pas les routes de l'app — elles se déclarent donc ici,
+ * au seul endroit qui les connaît. Les libellés restent traduits à l'usage :
+ * la table ne porte que la clé.
+ */
+const TABS: Array<{
+  to: string;
+  key: 'home' | 'subjects' | 'scenarios' | 'goal' | 'settings';
+  Icon: LucideIcon;
+  end: boolean;
+}> = [
+  { to: '/', key: 'home', Icon: House, end: true },
+  { to: '/subjects', key: 'subjects', Icon: BookOpen, end: false },
+  { to: '/scenarios', key: 'scenarios', Icon: SlidersHorizontal, end: false },
+  { to: '/goal', key: 'goal', Icon: Target, end: false },
+  { to: '/settings', key: 'settings', Icon: Settings, end: false },
+];
+
 function Shell() {
   const { pathname } = useLocation();
   const { t } = useI18n();
@@ -70,7 +100,25 @@ function Shell() {
           <Outlet />
         </Suspense>
       </main>
-      <BottomNav />
+      <BottomNav
+        label={t('nav.ariaLabel')}
+        currentPath={pathname}
+        items={TABS.map(({ to, key, Icon, end }) => ({
+          href: to,
+          label: t(`nav.${key}`),
+          icon: <Icon size={22} aria-hidden="true" />,
+          end,
+        }))}
+        // `linkComponent` est typé `ComponentType<Record<string, unknown>>`,
+        // qui refuse un composant à prop obligatoire — donc `NavLink` et son
+        // `to`, alors que c'est l'usage que la documentation du socle donne en
+        // exemple. La conversion est sûre : `hrefProp` fournit précisément
+        // `to`. À retirer quand le type du paquet acceptera ce cas.
+        linkComponent={
+          NavLink as unknown as ComponentType<Record<string, unknown>>
+        }
+        hrefProp="to"
+      />
       <UpdatePrompt />
     </div>
   );

@@ -9,7 +9,7 @@ import { formatAverage, formatDelta } from '../../shared/lib/format.ts';
 import { useI18n } from '../../i18n';
 import { TrendPill } from '../../shared/components/badges.tsx';
 import { Card } from '../../shared/components/Card.tsx';
-import { TextField } from '../../shared/components/Field.tsx';
+import { TextField } from '@mister-guiiug/dev-wpa-config/react/field';
 
 interface Props {
   scenario: Scenario;

@@ -5,8 +5,8 @@ import { SUBJECT_COLORS } from '../../shared/types/domain.ts';
 import { useI18n } from '../../i18n';
 import { SUBJECT_HEX } from '../../shared/lib/colors.ts';
 import { cn } from '../../shared/lib/cn.ts';
-import { TextField } from '../../shared/components/Field.tsx';
-import { Button } from '../../shared/components/Button.tsx';
+import { TextField } from '@mister-guiiug/dev-wpa-config/react/field';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
 import {
   DEFAULT_SUBJECT_ICON,

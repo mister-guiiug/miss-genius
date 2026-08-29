@@ -318,3 +318,50 @@ h3,
   background: transparent;
   color: inherit;
 }
+
+/*
+ * Ce que Miss Genius garde en propre sur les composants du socle.
+ *
+ * `components.css` donne une base correcte — cible tactile, contrastes,
+ * contours — et se laisse écraser : tout y est en `@layer components`, donc ce
+ * bloc, qui n'est dans aucune couche, l'emporte. Ne sont repris ici que les
+ * traits qui font l'univers de l'app, pas ceux qu'elle réimplémentait sans
+ * raison. C'est la ligne de partage de toute l'adoption.
+ */
+
+/* Bouton pilule + halo de marque : la signature de l'app. Le socle arrondit à
+   0,7 × le rayon des blocs, ce qui donne un rectangle adouci. */
+[data-dwc='button'] {
+  border-radius: 999px;
+}
+[data-dwc='button'][data-variant='primary'] {
+  box-shadow: 0 1px 3px 0
+    color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* Coins généreux de la feuille modale (`rounded-t-3xl` côté mobile). */
+[data-dwc='sheet-panel'] {
+  border-radius: 1.5rem 1.5rem 0 0;
+}
+@media (min-width: 40rem) {
+  [data-dwc='sheet-panel'] {
+    border-radius: 1.5rem;
+  }
+}
+
+/*
+ * La barre de navigation reste collée en bas.
+ *
+ * Le socle la pose en `position: relative` — délibérément : où elle vit est
+ * une décision de mise en page, pas de composant, et il fournit déjà le filet,
+ * le fond et la marge de zone sûre. Ce qui suit est ce que la version recopiée
+ * faisait en plus, et qu'il faut redire : elle suit le défilement, elle passe
+ * au-dessus du contenu, et son fond est translucide.
+ */
+[data-dwc='bottom-nav'] {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  background: color-mix(in srgb, var(--mg-surface) 95%, transparent);
+  backdrop-filter: blur(8px);
+}

@@ -14,7 +14,7 @@ import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useI18n, plural } from '../../i18n';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import { Card } from '../../shared/components/Card.tsx';
-import { Button } from '../../shared/components/Button.tsx';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { Tag } from '../../shared/components/badges.tsx';
 import { EmptyState } from '../../shared/components/EmptyState.tsx';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
