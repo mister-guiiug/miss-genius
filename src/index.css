@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '@mister-guiiug/dev-wpa-config/tailwind-preset.css';
+@import '@mister-guiiug/dev-wpa-config/components.css';
 
 /*
  * Univers visuel « Miss Genius » : intelligent, motivant, scolaire moderne,
@@ -27,6 +28,27 @@
   --radius-card: 1.25rem;
 }
 
+/*
+ * Les jetons du socle (`--dwc-*`) branchés sur ceux de Miss Genius.
+ *
+ * POURQUOI CE BLOC EXISTE. `components.css` habille les composants du paquet
+ * sans imposer une seule couleur de marque : chaque `var(--dwc-…)` porte un
+ * repli NEUTRE (couleurs système, `light-dark()`). Importer la feuille sans
+ * ce câblage donnerait donc des composants corrects mais gris — l'univers
+ * violet + corail de l'app s'arrêterait à la frontière du socle.
+ *
+ * PAS UNE SIMPLE RECOPIE. Les valeurs ne se reprennent pas telles quelles d'un
+ * thème à l'autre : `--dwc-primary` sert AUSSI de couleur de texte sur la
+ * surface (`color: var(--dwc-primary)`), et le violet #6d28d9 posé sur la
+ * surface sombre #211c2e ne donne que 2,33:1. En sombre, la primaire s'inverse
+ * donc vers le lavande de l'anneau de focus (8,96:1), et son texte devient
+ * sombre. Même raison pour les quatre tons d'état : `--mg-good` et consorts
+ * sont réglés pour vivre sur un aplat teinté, pas pour être lus sur du blanc
+ * (2,5:1) — ils passent ici à une variante lisible, sans changer de teinte.
+ *
+ * Tous les couples ont été mesurés : 4,5:1 au moins pour le texte, 3:1 pour
+ * les contours. Changer une de ces valeurs demande de refaire le calcul.
+ */
 :root {
   --mg-bg: #f7f5ff;
   --mg-surface: #ffffff;
@@ -39,6 +61,25 @@
   --mg-warn: #f59e0b;
   --mg-bad: #ef4444;
   color-scheme: light;
+
+  --dwc-surface: var(--mg-surface);
+  --dwc-surface-2: var(--mg-surface-2);
+  --dwc-text: var(--mg-text);
+  --dwc-text-soft: var(--mg-text-soft);
+  --dwc-border: var(--mg-border);
+  /* Le filet de l'app est volontairement discret (1,1:1) : un contrôle
+     interactif exige 3:1, d'où le gris parlant plutôt que --mg-border. */
+  --dwc-border-strong: var(--mg-text-soft);
+  --dwc-primary: var(--color-primary);
+  --dwc-primary-contrast: #ffffff;
+  --dwc-primary-soft: var(--color-primary-soft);
+  --dwc-success: #047857;
+  --dwc-warning: #b45309;
+  --dwc-danger: #b91c1c;
+  --dwc-info: #0369a1;
+  --dwc-radius: var(--radius-card);
+  /* L'élévation des cartes de l'app : `shadow-sm shadow-black/[0.03]`. */
+  --dwc-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.03), 0 1px 2px -1px rgb(0 0 0 / 0.03);
 }
 
 :root[data-theme='dark'] {
@@ -50,6 +91,22 @@
   --mg-border: #322a45;
   --mg-ring: #c4b5fd;
   color-scheme: dark;
+
+  /* Les six jetons qui ne peuvent pas suivre leur valeur claire. Les autres
+     (`--dwc-surface`, `--dwc-text`…) pointent déjà vers des `--mg-*` que ce
+     bloc redéfinit : ils suivent tout seuls. */
+  --dwc-primary: var(--mg-ring);
+  --dwc-primary-contrast: #1e1b2e;
+  --dwc-primary-soft: color-mix(
+    in srgb,
+    var(--color-primary) 22%,
+    var(--mg-surface)
+  );
+  --dwc-success: #34d399;
+  --dwc-warning: #fbbf24;
+  --dwc-danger: #fb7185;
+  --dwc-info: #38bdf8;
+  --dwc-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
 }
 
 * {
@@ -197,6 +254,17 @@ h3,
   flex-shrink: 0;
   display: flex;
 }
+/*
+ * Les trois règles de maturité visent la PASTILLE, et le disent.
+ *
+ * Elles se contentaient de `[data-maturity='…']`, ce qui attrape aussi la
+ * ligne entière : le paquet pose l'attribut sur `family-app-item` comme sur la
+ * pastille. Rien ne se voit aujourd'hui — la ligne n'a pas de bordure, faute
+ * de `data-with-repo` sur les entrées du catalogue. Mais `components.css` en
+ * donne une aux entrées qui le portent, et la couleur de maturité viendrait
+ * alors cercler la ligne entière de vert, d'ambre ou de rouge. Le sélecteur
+ * dit donc ce qu'il vise, avant que le catalogue ne tranche à sa place.
+ */
 .mg-family [data-dwc='maturity'] {
   font-size: 0.62rem;
   font-weight: 700;
@@ -206,17 +274,17 @@ h3,
   border-radius: 999px;
   border: 1px solid transparent;
 }
-.mg-family [data-maturity='stable'] {
+.mg-family [data-dwc='maturity'][data-maturity='stable'] {
   background: color-mix(in srgb, var(--mg-good) 16%, transparent);
   color: var(--mg-good);
   border-color: color-mix(in srgb, var(--mg-good) 35%, transparent);
 }
-.mg-family [data-maturity='beta'] {
+.mg-family [data-dwc='maturity'][data-maturity='beta'] {
   background: color-mix(in srgb, var(--mg-warn) 16%, transparent);
   color: var(--mg-warn);
   border-color: color-mix(in srgb, var(--mg-warn) 35%, transparent);
 }
-.mg-family [data-maturity='alpha'] {
+.mg-family [data-dwc='maturity'][data-maturity='alpha'] {
   background: color-mix(in srgb, var(--mg-bad) 14%, transparent);
   color: var(--mg-bad);
   border-color: color-mix(in srgb, var(--mg-bad) 32%, transparent);
