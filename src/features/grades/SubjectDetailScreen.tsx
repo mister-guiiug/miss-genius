@@ -20,7 +20,7 @@ import { GradeForm } from './GradeForm.tsx';
 import { FutureGradeSimulator } from './FutureGradeSimulator.tsx';
 
 export function SubjectDetailScreen() {
-  const { t } = useI18n();
+  const { t, fmt } = useI18n();
   const { subjectId = '' } = useParams();
   const scenario = useAppStore(selectActiveScenario);
   const settings = useAppStore(s => s.data.settings);
@@ -116,11 +116,14 @@ export function SubjectDetailScreen() {
                     {t('common.weightShort', { weight: g.weight })}
                     {g.max !== settings.referenceBase &&
                       ` · ${t('subjectDetail.normalized', {
-                        value: normalizeValue(
-                          g.value,
-                          g.max,
-                          settings.referenceBase
-                        ).toLocaleString('fr-FR', { maximumFractionDigits: 2 }),
+                        value: fmt.number(
+                          normalizeValue(
+                            g.value,
+                            g.max,
+                            settings.referenceBase
+                          ),
+                          { maximumFractionDigits: 2 }
+                        ),
                         base: settings.referenceBase,
                       })}`}
                     {g.date && ` · ${g.date}`}
