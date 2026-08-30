@@ -39,7 +39,7 @@ function reasonMessage(
 }
 
 export function GoalScreen() {
-  const { t } = useI18n();
+  const { t, fmt } = useI18n();
   const scenario = useAppStore(selectActiveScenario);
   const settings = useAppStore(s => s.data.settings);
   const setGoal = useAppStore(s => s.setGoal);
@@ -238,7 +238,7 @@ export function GoalScreen() {
               {t('goal.requiredIn', { subject: targetSubjectName })}
             </p>
             <p className="font-display text-5xl font-bold text-primary tabular-nums mg-pop">
-              {computation.required.toLocaleString('fr-FR', {
+              {fmt.number(computation.required, {
                 maximumFractionDigits: 2,
               })}
               <span className="text-2xl text-[var(--mg-text-soft)]">
