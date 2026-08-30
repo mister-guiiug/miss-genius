@@ -339,6 +339,36 @@ h3,
     color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
+/*
+ * Bandeau de mise à jour (`react/update-prompt-banner`). Le socle rend un
+ * titre et deux boutons NUS, que `components.css` habille en contrôles
+ * neutres. La carte écrite à la main posait le message sur sa propre ligne et
+ * deux `Button` de largeur égale dessous : on redit cette mise en page, et on
+ * rend à l'action principale l'aplat de marque qu'elle avait.
+ */
+[data-dwc='update-banner-title'] {
+  flex: 1 1 100%;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--mg-text);
+}
+
+[data-dwc='update-banner-update'],
+[data-dwc='update-banner-dismiss'] {
+  flex: 1 1 8rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+[data-dwc='update-banner-update'] {
+  border-color: transparent;
+  background: var(--dwc-primary);
+  color: var(--dwc-primary-contrast);
+  box-shadow: 0 1px 3px 0
+    color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
 /* Coins généreux de la feuille modale (`rounded-t-3xl` côté mobile). */
 [data-dwc='sheet-panel'] {
   border-radius: 1.5rem 1.5rem 0 0;
