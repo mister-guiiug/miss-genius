@@ -8,18 +8,35 @@
  *  - un *snapshot JSON unique* est l'unité naturelle pour l'export/import et pour
  *    une future synchronisation cloud (on pousse/tire un seul document).
  *
- * Évolution : passer à IndexedDB (via un wrapper Promises) le jour où l'on stocke
- * des historiques volumineux ou des pièces jointes. Le contrat
- * `load()/save()/exportData()/importData()` resterait identique.
+ * Depuis la 3.22 du socle, la mécanique enveloppe versionnée + chaîne de
+ * migrations + validation vient de `dev-wpa-config/versioned-store` — promue
+ * depuis ce fichier même et son jumeau miss-uwh. Ce module reste la façade de
+ * l'app : le contrat `loadData/saveData/clearData/exportData/importData` est
+ * inchangé pour le store zustand et l'écran Réglages.
  *
- * Robustesse : enveloppe versionnée + chaîne de migrations + validation zod.
+ * COMPATIBILITÉ (trois invariants, prouvés par `storage.test.ts`) :
+ *  1. **Données en place.** L'app écrivait la donnée NUE (version interne dans
+ *     `data.version`) sous `miss-genius:data`. Le socle enveloppe (`{v, data}`)
+ *     et considère toute valeur sans enveloppe comme v0 : chaque migration est
+ *     donc GARDÉE par la version interne (migration de coquille) — une donnée
+ *     déjà à jour traverse la chaîne sans transformation ni perte, une donnée
+ *     v1 reçoit ses périodes comme avant.
+ *  2. **Exports.** `exportData` continue de produire la donnée nue (avec son
+ *     `version` interne) : l'ANCIENNE app sait importer les nouveaux fichiers,
+ *     et `importData` accepte les fichiers nus déjà téléchargés (v1 ou v2)
+ *     comme les enveloppes `{v, data}` du socle.
+ *  3. **Contrat.** Mêmes cinq fonctions, mêmes signatures.
+ *
+ * Ce que la bascule AJOUTE : copie de côté (`miss-genius:data.backup-…`) avant
+ * toute migration ou perte possible, migration persistée dès le chargement, et
+ * jamais de destruction silencieuse (une version inconnue est mise de côté au
+ * lieu d'être écrasée à la sauvegarde suivante).
  */
+import { createVersionedStore } from '@mister-guiiug/dev-wpa-config/versioned-store';
 import type { AppData } from '../types/domain.ts';
 import { appDataSchema } from './schema.ts';
 import { createId } from './id.ts';
 import { createInitialData, SCHEMA_VERSION } from './seed.ts';
-
-const STORAGE_KEY = 'miss-genius:data';
 
 /**
  * 1 -> 2 : introduction des périodes. Les données existantes n'avaient pas de
@@ -49,12 +66,29 @@ function migrateScenarioToPeriods(sc: unknown): unknown {
   };
 }
 
-/** Migrations indexées par version *source*. Chacune monte d'un cran. */
+/** Version interne portée par la donnée elle-même (`data.version`). */
+function innerVersion(data: unknown): number {
+  const v = (data as { version?: unknown } | null)?.version;
+  return typeof v === 'number' ? v : 0;
+}
+
+/**
+ * Migrations indexées par version SOURCE (contrat du socle : chacune monte
+ * d'un cran, c'est le magasin qui tient le compte).
+ *
+ * GARDE DE COQUILLE : les données historiques sont stockées nues — le socle
+ * les voit TOUTES en v0, quelle que soit leur version interne. Chaque étape ne
+ * transforme donc que si la version interne l'exige, et la maintient à jour :
+ * le schéma zod l'exige, et c'est elle qui rend les anciens fichiers d'export
+ * auto-descriptifs.
+ */
 const migrations: Record<number, (data: unknown) => unknown> = {
-  // 0 -> 1 : exemple de squelette de migration pour les schémas pré-versionnés.
-  0: (data: unknown) => ({ ...(data as object), version: 1 }),
+  // 0 -> 1 : schémas pré-versionnés -> pose la version interne.
+  0: (data: unknown) =>
+    innerVersion(data) >= 1 ? data : { ...(data as object), version: 1 },
   // 1 -> 2 : périodes (cf. migrateScenarioToPeriods).
   1: (data: unknown) => {
+    if (innerVersion(data) >= 2) return data;
     const d = data as { scenarios?: unknown };
     const scenarios = Array.isArray(d.scenarios)
       ? d.scenarios.map(migrateScenarioToPeriods)
@@ -63,70 +97,49 @@ const migrations: Record<number, (data: unknown) => unknown> = {
   },
 };
 
-function runMigrations(raw: unknown): unknown {
-  let data = raw as { version?: number };
-  let version = typeof data.version === 'number' ? data.version : 0;
-  // Capture de la fonction : narrowing impossible sur un accès indexé répété
-  // (noUncheckedIndexedAccess).
-  let migrate = migrations[version];
-  while (version < SCHEMA_VERSION && migrate) {
-    data = migrate(data) as { version?: number };
-    version = typeof data.version === 'number' ? data.version : version + 1;
-    migrate = migrations[version];
-  }
-  return data;
-}
+const store = createVersionedStore<AppData>({
+  // Préfixe partagé avec `miss-genius:theme` (anti-FOUC dans index.html) ; la
+  // clé composée reste la clé historique `miss-genius:data`.
+  store: 'miss-genius:',
+  key: 'data',
+  version: SCHEMA_VERSION,
+  migrations,
+  // Validation injectée : le socle ne dépend pas de zod, l'app lui passe son
+  // `schema.parse` (qui lève sur une donnée invalide).
+  validate: data => appDataSchema.parse(data) as AppData,
+  seed: createInitialData,
+});
 
 /** Lit l'état persisté, migré et validé. Retombe sur l'état initial si invalide. */
 export function loadData(): AppData {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return createInitialData();
-    const migrated = runMigrations(JSON.parse(raw));
-    const parsed = appDataSchema.safeParse(migrated);
-    if (!parsed.success) {
-      console.warn(
-        '[miss-genius] données invalides, réinitialisation',
-        parsed.error
-      );
-      return createInitialData();
-    }
-    return parsed.data as AppData;
-  } catch (err) {
-    console.warn('[miss-genius] lecture du stockage impossible', err);
-    return createInitialData();
-  }
+  return store.load();
 }
 
 export function saveData(data: AppData): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (err) {
-    console.error('[miss-genius] écriture du stockage impossible', err);
+  if (!store.save(data)) {
+    console.error('[miss-genius] écriture du stockage impossible');
   }
 }
 
+/** Efface l'instantané ET ses copies de côté ; `miss-genius:theme` survit. */
 export function clearData(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    /* no-op */
-  }
+  store.clear();
 }
 
-/** Sérialise pour export (téléchargement JSON). */
+/**
+ * Sérialise pour export (téléchargement JSON). VOLONTAIREMENT la donnée nue,
+ * pas l'enveloppe `{v, data}` du socle : le fichier reste importable par les
+ * versions antérieures de l'app, et la version interne (`data.version`) suffit
+ * à `importData` pour rejouer les migrations demain.
+ */
 export function exportData(data: AppData): string {
   return JSON.stringify(data, null, 2);
 }
 
-/** Parse + valide un JSON importé. Lève une erreur lisible si invalide. */
+/**
+ * Parse + migre + valide un JSON importé (fichier nu historique ou enveloppe
+ * du socle). N'écrit que si tout a réussi ; lève une erreur lisible sinon.
+ */
 export function importData(json: string): AppData {
-  const migrated = runMigrations(JSON.parse(json));
-  const parsed = appDataSchema.safeParse(migrated);
-  if (!parsed.success) {
-    throw new Error(
-      'Fichier invalide : le format ne correspond pas à Miss Genius.'
-    );
-  }
-  return parsed.data as AppData;
+  return store.import(json);
 }
