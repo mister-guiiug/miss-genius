@@ -1,71 +1,78 @@
 import { useState } from 'react';
 import { registerSW } from 'virtual:pwa-register';
-import { CircleCheck, Sparkles } from 'lucide-react';
+import { CircleCheck } from 'lucide-react';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
+import { UpdatePromptBanner } from '@mister-guiiug/dev-wpa-config/react/update-prompt-banner';
 import { useUpdatePrompt } from '@mister-guiiug/dev-wpa-config/react/use-update-prompt';
 import { useI18n } from '../i18n';
 
 /**
- * Bandeau PWA : informe quand une nouvelle version est disponible (registerType
- * 'prompt') et propose de recharger. Affiche aussi le passage en mode hors ligne.
+ * Les deux nouvelles que le service worker peut annoncer.
  *
- * L'état et l'application de la mise à jour viennent du hook du socle
- * (`use-update-prompt`), qui attend l'activation du worker avant de recharger.
- * Seul l'écartement du message « prêt hors ligne » reste local : le hook expose
- * `offlineReady` mais son `dismiss()` ne masque que le volet mise à jour.
+ * LA MISE À JOUR VIENT DU SOCLE. `UpdatePromptBanner` rend le bandeau, tient
+ * son état, applique la mise à jour et offre la sortie. Il faut lui INJECTER
+ * `registerSW` : sans cette prop, `needRefresh` reste faux et le bandeau ne
+ * s'affiche jamais — sans erreur, sans test rouge, sans que rien ne le dise.
+ * `UpdatePrompt.test.tsx` verrouille ce point précis.
+ *
+ * LE « PRÊT HORS LIGNE » RESTE LOCAL : le socle n'a pas d'équivalent. Le hook
+ * expose bien `offlineReady`, mais aucun composant partagé ne le montre. C'est
+ * une candidate à une évolution du socle, pas un motif pour perdre le message.
+ *
+ * DEUX APPELS, UN SEUL ENREGISTREMENT. Le bandeau monte son propre
+ * `useUpdatePrompt`, et celui d'ici en monte un second. Ce n'est pas un
+ * doublon : le hook mémorise sa connexion PAR RÉFÉRENCE de `registerSW`
+ * (WeakMap), donc `registerSW` n'est appelé qu'une fois et les deux instances
+ * lisent le même flux. On ne lit ici que des champs PARTAGÉS (`offlineReady`,
+ * `needRefresh`) ; `visible` et `dismissed`, eux, sont propres à chaque
+ * instance et n'auraient aucun sens de ce côté.
+ *
+ * PRÉCÉDENCE CONSERVÉE : tant qu'une mise à jour attend, le message hors ligne
+ * s'efface. C'est ce que faisait la carte unique d'avant, qui basculait son
+ * contenu au lieu d'afficher les deux.
  */
-export function UpdatePrompt() {
+
+/** Carte flottante commune aux deux messages. */
+const CARD =
+  'fixed inset-x-3 bottom-20 z-40 mx-auto max-w-md rounded-2xl border border-[var(--mg-border)] bg-[var(--mg-surface)] p-4 shadow-lg mg-rise';
+
+function OfflineReadyNotice() {
   const { t } = useI18n();
-  const { offlineReady, visible, update, dismiss } = useUpdatePrompt({
-    registerSW,
-  });
-  const [offlineDismissed, setOfflineDismissed] = useState(false);
+  const { offlineReady, needRefresh } = useUpdatePrompt({ registerSW });
+  const [dismissed, setDismissed] = useState(false);
 
-  const showOffline = offlineReady && !offlineDismissed;
-  if (!showOffline && !visible) return null;
-
-  const close = () => {
-    setOfflineDismissed(true);
-    dismiss();
-  };
+  if (!offlineReady || dismissed || needRefresh) return null;
 
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="fixed inset-x-3 bottom-20 z-40 mx-auto max-w-md rounded-2xl border border-[var(--mg-border)] bg-[var(--mg-surface)] p-4 shadow-lg mg-rise"
-    >
+    <div role="status" aria-live="polite" className={CARD}>
       <p className="mb-3 flex items-center gap-2 text-sm font-semibold">
-        {visible ? (
-          <>
-            <Sparkles
-              size={18}
-              className="shrink-0 text-primary"
-              aria-hidden="true"
-            />
-            {t('pwa.updateReady')}
-          </>
-        ) : (
-          <>
-            <CircleCheck
-              size={18}
-              className="shrink-0 text-[var(--mg-good)]"
-              aria-hidden="true"
-            />
-            {t('pwa.offlineReady')}
-          </>
-        )}
+        <CircleCheck
+          size={18}
+          className="shrink-0 text-[var(--mg-good)]"
+          aria-hidden="true"
+        />
+        {t('pwa.offlineReady')}
       </p>
-      <div className="flex gap-2">
-        {visible && (
-          <Button block onClick={() => void update()}>
-            {t('pwa.update')}
-          </Button>
-        )}
-        <Button variant="secondary" block onClick={close}>
-          {visible ? t('pwa.later') : t('pwa.ok')}
-        </Button>
-      </div>
+      <Button variant="secondary" block onClick={() => setDismissed(true)}>
+        {t('pwa.ok')}
+      </Button>
     </div>
+  );
+}
+
+export function UpdatePrompt() {
+  const { t } = useI18n();
+
+  return (
+    <>
+      <UpdatePromptBanner
+        registerSW={registerSW}
+        className={CARD}
+        title={t('pwa.updateReady')}
+        updateLabel={t('pwa.update')}
+        dismissLabel={t('pwa.later')}
+      />
+      <OfflineReadyNotice />
+    </>
   );
 }
