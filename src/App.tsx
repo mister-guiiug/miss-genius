@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ComponentType } from 'react';
+import { lazy, Suspense } from 'react';
 import {
   HashRouter,
   NavLink,
@@ -109,14 +109,12 @@ function Shell() {
           icon: <Icon size={22} aria-hidden="true" />,
           end,
         }))}
-        // `linkComponent` est typé `ComponentType<Record<string, unknown>>`,
-        // qui refuse un composant à prop obligatoire — donc `NavLink` et son
-        // `to`, alors que c'est l'usage que la documentation du socle donne en
-        // exemple. La conversion est sûre : `hrefProp` fournit précisément
-        // `to`. À retirer quand le type du paquet acceptera ce cas.
-        linkComponent={
-          NavLink as unknown as ComponentType<Record<string, unknown>>
-        }
+        // Le socle 3.32.0 a élargi `linkComponent` à `ComponentType<any>` :
+        // le type refusait jusque-là tout composant à prop OBLIGATOIRE, donc
+        // précisément le composant de lien de react-router et son `to` —
+        // l'usage que sa propre documentation donne en exemple. Cinq apps
+        // portaient la même conversion ; elle n'a plus lieu d'être.
+        linkComponent={NavLink}
         hrefProp="to"
       />
       <UpdatePrompt />
