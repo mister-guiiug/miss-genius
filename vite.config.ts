@@ -53,6 +53,9 @@ export default defineConfig(({ command }) => {
       // SEO partagé famille : canonical/OG via placeholders index.html +
       // sitemap.xml/robots.txt générés au build.
       pwaSeoPlugin({
+        // Deux <meta name="theme-color"> par schéma : la barre du navigateur suit
+        // le mode sombre dès le premier rendu (relevé du 02/09/2026 : 5 apps sur 16).
+        themeColor: { light: '#f7f5ff', dark: '#16131f' },
         siteName: 'Miss Genius',
         basePath,
         logoPath: '/icons/icon-192.png',
