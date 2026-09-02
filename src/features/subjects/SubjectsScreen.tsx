@@ -19,7 +19,7 @@ import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import type { Subject } from '../../shared/types/domain.ts';
-import { Card } from '../../shared/components/Card.tsx';
+import { Card } from '@mister-guiiug/dev-wpa-config/react/card';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { Sheet } from '@mister-guiiug/dev-wpa-config/react/sheet';
 import { ConfirmDialog } from '@mister-guiiug/dev-wpa-config/react/confirm-dialog';

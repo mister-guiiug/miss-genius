@@ -8,7 +8,7 @@ import {
   requiredSubjectAverageForGeneral,
   type RequiredReason,
 } from '../../shared/lib/simulate.ts';
-import { Card } from '../../shared/components/Card.tsx';
+import { Card } from '@mister-guiiug/dev-wpa-config/react/card';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';
 import {
