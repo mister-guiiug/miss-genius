@@ -37,6 +37,9 @@ import type { AppData } from '../types/domain.ts';
 import { appDataSchema } from './schema.ts';
 import { createId } from './id.ts';
 import { createInitialData, SCHEMA_VERSION } from './seed.ts';
+import { createLogger } from '@mister-guiiug/dev-wpa-config/logger';
+
+const log = createLogger('storage');
 
 /**
  * 1 -> 2 : introduction des périodes. Les données existantes n'avaient pas de
@@ -117,7 +120,7 @@ export function loadData(): AppData {
 
 export function saveData(data: AppData): void {
   if (!store.save(data)) {
-    console.error('[miss-genius] écriture du stockage impossible');
+    log.error('[miss-genius] écriture du stockage impossible');
   }
 }
 

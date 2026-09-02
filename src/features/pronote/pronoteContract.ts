@@ -5,7 +5,7 @@ import { z } from 'zod';
  * Le Worker encapsule `pawnote` et renvoie ce format normalisé ; le PWA ne
  * connaît jamais l'API Pronote directement.
  */
-export const pronoteGradeSchema = z.object({
+const pronoteGradeSchema = z.object({
   subject: z.string(),
   value: z.number(),
   max: z.number().positive(),
