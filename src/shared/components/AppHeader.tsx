@@ -1,9 +1,17 @@
 import { Brain, Moon, Sun } from 'lucide-react';
+import { AppHeader as SocleHeader } from '@mister-guiiug/dev-wpa-config/react/app-header';
+import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { useAppStore } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
-import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 
-/** En-tête : titre de page + bascule de thème. */
+/**
+ * En-tête : titre de page + bascule de thème.
+ *
+ * LA MISE EN PAGE VIENT DU SOCLE (`react/app-header`) : `<header>` collant,
+ * zone sûre iOS, fond translucide, filet, et le titre rendu dans un vrai `h1`.
+ * Ce qui reste ici est ce que le socle ne peut pas savoir — l'icône de l'app
+ * et sa bascule de thème, passées en `leading` et en `actions`.
+ */
 export function AppHeader({ title }: { title: string }) {
   const { t } = useI18n();
   const theme = useAppStore(s => s.data.settings.theme);
@@ -11,25 +19,25 @@ export function AppHeader({ title }: { title: string }) {
   const isDark = theme === 'dark';
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-[var(--mg-border)] bg-[var(--mg-surface)]/95 px-4 py-3 backdrop-blur pt-[max(0.75rem,env(safe-area-inset-top))]">
-      <div className="flex items-center gap-2">
-        <Brain size={22} className="text-primary" aria-hidden="true" />
-        <h1 className="font-display text-lg font-bold leading-none">{title}</h1>
-      </div>
-      <Button
-        variant="ghost"
-        aria-label={
-          isDark ? t('header.switchToLight') : t('header.switchToDark')
-        }
-        aria-pressed={isDark}
-        onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      >
-        {isDark ? (
-          <Sun size={20} aria-hidden="true" />
-        ) : (
-          <Moon size={20} aria-hidden="true" />
-        )}
-      </Button>
-    </header>
+    <SocleHeader
+      title={title}
+      leading={<Brain size={22} className="text-primary" aria-hidden="true" />}
+      actions={
+        <Button
+          variant="ghost"
+          aria-label={
+            isDark ? t('header.switchToLight') : t('header.switchToDark')
+          }
+          aria-pressed={isDark}
+          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+        >
+          {isDark ? (
+            <Sun size={20} aria-hidden="true" />
+          ) : (
+            <Moon size={20} aria-hidden="true" />
+          )}
+        </Button>
+      }
+    />
   );
 }

@@ -13,7 +13,7 @@ import {
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useI18n, plural } from '../../i18n';
 import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
-import { Card } from '../../shared/components/Card.tsx';
+import { Card } from '@mister-guiiug/dev-wpa-config/react/card';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { Tag } from '../../shared/components/badges.tsx';
 import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';

@@ -7,7 +7,7 @@ import { exportData, importData } from '../../shared/lib/storage.ts';
 import { applyUpdate } from '@mister-guiiug/dev-wpa-config/sw-update';
 import { dateSlug, downloadText } from '@mister-guiiug/dev-wpa-config/download';
 import { cn } from '../../shared/lib/cn.ts';
-import { Card } from '../../shared/components/Card.tsx';
+import { Card } from '@mister-guiiug/dev-wpa-config/react/card';
 import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
 import { SelectField } from '@mister-guiiug/dev-wpa-config/react/field';
 import { ConfirmDialog } from '@mister-guiiug/dev-wpa-config/react/confirm-dialog';
