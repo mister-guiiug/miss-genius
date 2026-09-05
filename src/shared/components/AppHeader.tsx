@@ -1,6 +1,6 @@
 import { Brain, Moon, Sun } from 'lucide-react';
-import { AppHeader as SocleHeader } from '@mister-guiiug/dev-wpa-config/react/app-header';
-import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
+import { AppHeader as SocleHeader } from '@mister-guiiug/dev-pwa-config/react/app-header';
+import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 import { useAppStore } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
 

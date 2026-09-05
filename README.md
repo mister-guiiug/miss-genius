@@ -5,7 +5,7 @@
 > hors ligne, installable.
 
 Famille `miss-*` / `mister-*` — conventions partagées via
-[`@mister-guiiug/dev-wpa-config`](https://github.com/mister-guiiug/dev-wpa-config)
+[`@mister-guiiug/dev-pwa-config`](https://github.com/mister-guiiug/dev-pwa-config)
 (TypeScript strict, cible ES2025, ESLint flat config, Prettier, Vitest).
 
 ---

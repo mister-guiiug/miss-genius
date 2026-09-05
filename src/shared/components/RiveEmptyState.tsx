@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { EmptyState as BaseEmptyState } from '@mister-guiiug/dev-wpa-config/react/empty-state';
+import { EmptyState as BaseEmptyState } from '@mister-guiiug/dev-pwa-config/react/empty-state';
 import { RiveBadge } from './RiveBadge.tsx';
 
 interface RiveEmptyStateProps {
