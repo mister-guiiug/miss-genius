@@ -15,7 +15,7 @@ import {
   Target,
   type LucideIcon,
 } from 'lucide-react';
-import { BottomNav } from '@mister-guiiug/dev-wpa-config/react/bottom-nav';
+import { BottomNav } from '@mister-guiiug/dev-pwa-config/react/bottom-nav';
 import { useAppStore } from './store/useAppStore.ts';
 import { useI18n } from './i18n';
 import { AppHeader } from './shared/components/AppHeader.tsx';

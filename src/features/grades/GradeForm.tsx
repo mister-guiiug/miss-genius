@@ -5,8 +5,8 @@ import { useI18n } from '../../i18n';
 import {
   TextField,
   SelectField,
-} from '@mister-guiiug/dev-wpa-config/react/field';
-import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
+} from '@mister-guiiug/dev-pwa-config/react/field';
+import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 
 export interface GradeDraft {
   value: number;

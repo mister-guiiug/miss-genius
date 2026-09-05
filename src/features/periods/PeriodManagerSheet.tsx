@@ -3,10 +3,10 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useAppStore, selectActiveScenario } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
 import { PERIOD_PRESETS, type PeriodPreset } from '../../shared/lib/periods.ts';
-import { Sheet } from '@mister-guiiug/dev-wpa-config/react/sheet';
-import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
-import { TextField } from '@mister-guiiug/dev-wpa-config/react/field';
-import { ConfirmDialog } from '@mister-guiiug/dev-wpa-config/react/confirm-dialog';
+import { Sheet } from '@mister-guiiug/dev-pwa-config/react/sheet';
+import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
+import { TextField } from '@mister-guiiug/dev-pwa-config/react/field';
+import { ConfirmDialog } from '@mister-guiiug/dev-pwa-config/react/confirm-dialog';
 
 interface PeriodManagerSheetProps {
   open: boolean;

@@ -9,7 +9,7 @@
  *    une future synchronisation cloud (on pousse/tire un seul document).
  *
  * Depuis la 3.22 du socle, la mécanique enveloppe versionnée + chaîne de
- * migrations + validation vient de `dev-wpa-config/versioned-store` — promue
+ * migrations + validation vient de `dev-pwa-config/versioned-store` — promue
  * depuis ce fichier même et son jumeau miss-uwh. Ce module reste la façade de
  * l'app : le contrat `loadData/saveData/clearData/exportData/importData` est
  * inchangé pour le store zustand et l'écran Réglages.
@@ -32,12 +32,12 @@
  * jamais de destruction silencieuse (une version inconnue est mise de côté au
  * lieu d'être écrasée à la sauvegarde suivante).
  */
-import { createVersionedStore } from '@mister-guiiug/dev-wpa-config/versioned-store';
+import { createVersionedStore } from '@mister-guiiug/dev-pwa-config/versioned-store';
 import type { AppData } from '../types/domain.ts';
 import { appDataSchema } from './schema.ts';
 import { createId } from './id.ts';
 import { createInitialData, SCHEMA_VERSION } from './seed.ts';
-import { createLogger } from '@mister-guiiug/dev-wpa-config/logger';
+import { createLogger } from '@mister-guiiug/dev-pwa-config/logger';
 
 const log = createLogger('storage');
 

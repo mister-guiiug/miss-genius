@@ -3,7 +3,7 @@
  * partagé `createI18n` et expose `I18nProvider` / `useI18n` typés sur le
  * catalogue local. À importer partout via `'../i18n'`.
  */
-import { createI18n } from '@mister-guiiug/dev-wpa-config/react/i18n';
+import { createI18n } from '@mister-guiiug/dev-pwa-config/react/i18n';
 import { messages, type Locale } from './messages';
 
 export type { Locale, Messages } from './messages';

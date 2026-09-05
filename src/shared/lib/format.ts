@@ -15,7 +15,7 @@
  * (U+2212), qu'`Intl` ne produit pas (`signDisplay` donne un trait d'union).
  * Aucun des deux n'a d'équivalent dans le socle.
  */
-import { formatNumber } from '@mister-guiiug/dev-wpa-config/format';
+import { formatNumber } from '@mister-guiiug/dev-pwa-config/format';
 import { applyRounding } from './average.ts';
 import type { RoundingConfig } from '../types/domain.ts';
 

@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   getDefaultLocale,
   setDefaultLocale,
-} from '@mister-guiiug/dev-wpa-config/format';
+} from '@mister-guiiug/dev-pwa-config/format';
 import { deltaTrend, formatAverage, formatDelta } from './format.ts';
 import type { RoundingConfig } from '../types/domain.ts';
 

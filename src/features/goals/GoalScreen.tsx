@@ -8,13 +8,13 @@ import {
   requiredSubjectAverageForGeneral,
   type RequiredReason,
 } from '../../shared/lib/simulate.ts';
-import { Card } from '@mister-guiiug/dev-wpa-config/react/card';
-import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
+import { Card } from '@mister-guiiug/dev-pwa-config/react/card';
+import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';
 import {
   TextField,
   SelectField,
-} from '@mister-guiiug/dev-wpa-config/react/field';
+} from '@mister-guiiug/dev-pwa-config/react/field';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
 
 type Translate = ReturnType<typeof useI18n>['t'];

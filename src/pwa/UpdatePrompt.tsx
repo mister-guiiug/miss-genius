@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { registerSW } from 'virtual:pwa-register';
 import { CircleCheck } from 'lucide-react';
-import { Button } from '@mister-guiiug/dev-wpa-config/react/button';
-import { UpdatePromptBanner } from '@mister-guiiug/dev-wpa-config/react/update-prompt-banner';
-import { useUpdatePrompt } from '@mister-guiiug/dev-wpa-config/react/use-update-prompt';
+import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
+import { UpdatePromptBanner } from '@mister-guiiug/dev-pwa-config/react/update-prompt-banner';
+import { useUpdatePrompt } from '@mister-guiiug/dev-pwa-config/react/use-update-prompt';
 import { useI18n } from '../i18n';
 
 /**

@@ -122,7 +122,7 @@ describe('persistance', () => {
 });
 
 /**
- * La bascule vers `dev-wpa-config/versioned-store` (3.22) change le format
+ * La bascule vers `dev-pwa-config/versioned-store` (3.22) change le format
  * d'enveloppe : l'app écrivait la donnée NUE (version interne `data.version`),
  * le socle écrit `{ v, data }`. Ces tests prouvent les trois compatibilités
  * non négociables : données en place, fichiers d'export déjà téléchargés,
