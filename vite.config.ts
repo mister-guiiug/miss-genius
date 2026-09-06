@@ -33,6 +33,10 @@ export default defineConfig(({ command }) => {
             if (!id.includes('node_modules')) return;
             const norm = id.replace(/\\/g, '/');
             if (norm.includes('/@rive-app/')) return 'rive';
+            // Le générateur PDF du socle est importé DYNAMIQUEMENT au clic
+            // sur « PDF » ; sans cette ligne il retombait dans `vendor`, que
+            // l'entrée précharge — l'import différé n'aurait rien différé.
+            if (norm.includes('/dev-pwa-config/pdf')) return 'pdf';
             if (norm.includes('/lucide-react/')) return 'icons';
             if (
               norm.includes('/react-dom/') ||

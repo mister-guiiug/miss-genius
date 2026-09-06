@@ -107,6 +107,10 @@ Pas de dépendance superflue (date lib, state manager lourd, UI kit) : assumé.
 - **Écrans** — Dashboard, Matières, Détail matière (+ simulateur), Scénarios
   (comparaison d'écarts), Objectif (« Que me faut-il pour atteindre 14/20 ? »),
   Réglages, Onboarding.
+- **Partage** — `shared/lib/scenarioSummary.ts` : le scénario en texte
+  (matières, moyennes, objectif, note nécessaire au prochain contrôle), passé
+  au partage natif avec repli presse-papiers, ou mis en page en PDF
+  (`scenarioPdf.ts`). Rien ne quitte l'appareil sans un geste explicite.
 - **PWA** — `vite.config.ts` (manifest complet, icônes any/maskable, shortcuts,
   standalone, `navigateFallback`), précache raisonnable (Rive exclu),
   `UpdatePrompt` pour les mises à jour.
@@ -120,9 +124,13 @@ Pas de dépendance superflue (date lib, state manager lourd, UI kit) : assumé.
   cible (ok / déjà atteint / impossible / invalide), round-trip export/import.
 - **Intégration (écran critique)** — `DashboardScreen.test.tsx` : état vide,
   puis moyenne générale pondérée réelle après saisie (store + calcul + rendu).
+- **E2E (Playwright)** — `e2e/a11y.spec.ts` (`@a11y`) et `e2e/share.spec.ts`
+  (`@critical`) : ce que le bouton « Partager » transmet réellement, partage
+  natif comme repli presse-papiers. Non exécuté en CI (`run-e2e: false`) —
+  en local : `npx playwright install` puis `npm run test:e2e`.
 
 ```bash
-npm test            # 29 tests
+npm test            # 86 tests unitaires + intégration
 npm run test:coverage
 ```
 
@@ -150,7 +158,6 @@ npm run icons        # régénère les icônes PWA depuis le SVG
 - Simulation par **trimestre / semestre** (périodes).
 - Import/export **CSV** en plus du JSON.
 - **Badges** de progression et mini tableau analytique d'évolution.
-- Tests E2E Playwright (`@critical`, `@a11y`) comme les autres projets famille.
 - Brancher de vraies animations `.riv` (onboarding, succès d'ajout de note,
   variation de moyenne) dans `public/rive/`.
 

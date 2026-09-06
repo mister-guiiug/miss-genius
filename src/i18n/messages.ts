@@ -244,6 +244,37 @@ const fr = {
     deleteTitle: 'Supprimer le scénario ?',
     deleteMessage: '« {name} » sera définitivement supprimé.',
   },
+  /**
+   * Résumé partagé / imprimé d'un scénario. Les lignes sont construites par
+   * `shared/lib/scenarioSummary.ts` : elles sortent de l'écran, il faut donc
+   * qu'elles se suffisent à elles-mêmes — le parent qui les lit n'a pas
+   * l'application sous les yeux.
+   */
+  share: {
+    button: 'Partager',
+    buttonAria: 'Partager le scénario {name}',
+    pdfButton: 'PDF',
+    pdfButtonAria: 'Enregistrer le scénario {name} en PDF',
+    copied: 'Résumé copié dans le presse-papiers.',
+    failed: 'Partage impossible sur cet appareil.',
+    pdfDone: 'PDF enregistré.',
+    pdfFailed: 'Enregistrement du PDF impossible.',
+    title: 'Miss Genius — {name}',
+    allPeriods: 'Toute l’année',
+    overall: 'Moyenne générale : {average}',
+    subjectsHeading: 'Matières :',
+    subjectLine: '- {name} ({weight}) : {average} — {count}',
+    goalHeading: 'Objectif :',
+    goalGeneral: 'Atteindre {target} de moyenne générale.',
+    goalSubject: 'Atteindre {target} en {subject}.',
+    required: 'Note nécessaire en {subject} : {grade} ({weight}).',
+    requiredReached: 'Objectif déjà atteint, même sans nouvelle note.',
+    requiredImpossible:
+      'Objectif hors d’atteinte en une seule évaluation ({subject}).',
+    requiredInvalid: 'Note nécessaire incalculable en l’état.',
+    noGoal: 'Aucun objectif fixé pour l’instant.',
+    footer: 'Simulé avec Miss Genius — {url}',
+  },
   periods: {
     tablistLabel: 'Période',
     manageAria: 'Gérer les périodes',
@@ -586,6 +617,31 @@ const en = {
     renameTitle: 'Rename scenario',
     deleteTitle: 'Delete scenario?',
     deleteMessage: '“{name}” will be permanently deleted.',
+  },
+  share: {
+    button: 'Share',
+    buttonAria: 'Share the {name} scenario',
+    pdfButton: 'PDF',
+    pdfButtonAria: 'Save the {name} scenario as a PDF',
+    copied: 'Summary copied to the clipboard.',
+    failed: 'Sharing is not available on this device.',
+    pdfDone: 'PDF saved.',
+    pdfFailed: 'The PDF could not be saved.',
+    title: 'Miss Genius — {name}',
+    allPeriods: 'Whole year',
+    overall: 'Overall average: {average}',
+    subjectsHeading: 'Subjects:',
+    subjectLine: '- {name} ({weight}): {average} — {count}',
+    goalHeading: 'Goal:',
+    goalGeneral: 'Reach an overall average of {target}.',
+    goalSubject: 'Reach {target} in {subject}.',
+    required: 'Grade needed in {subject}: {grade} ({weight}).',
+    requiredReached: 'Goal already reached, even without a new grade.',
+    requiredImpossible:
+      'This goal cannot be reached in a single test ({subject}).',
+    requiredInvalid: 'The grade needed cannot be computed yet.',
+    noGoal: 'No goal set yet.',
+    footer: 'Simulated with Miss Genius — {url}',
   },
   periods: {
     tablistLabel: 'Period',
