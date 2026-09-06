@@ -106,6 +106,8 @@ function Shell() {
           premier écran comme sur les Réglages — la règle famille. Rendu
           depuis l'écran Réglages, ce pied de page ne valait que pour lui. */}
       <AppFooter
+        version
+        issues
         className="justify-center px-4 pb-2"
         repoUrl={repoUrl('miss-genius')}
         sourceLabel={t('footer.sourceCode')}
