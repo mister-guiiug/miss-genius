@@ -19,6 +19,7 @@ import { Tag } from '../../shared/components/badges.tsx';
 import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
 import { SubjectIcon } from '../../shared/components/SubjectIcon.tsx';
+import { ScenarioShareActions } from '../../shared/components/ScenarioShareActions.tsx';
 import { PeriodBar } from '../periods/PeriodBar.tsx';
 import { formatAverage } from '../../shared/lib/format.ts';
 import { appreciation, SUBJECT_HEX } from '../../shared/lib/colors.ts';
@@ -94,6 +95,10 @@ export function DashboardScreen() {
           </p>
         </div>
       </Card>
+
+      {/* Juste sous la moyenne : c'est le chiffre qu'on montre, et le geste
+          « tendre le téléphone » doit avoir une alternative à cet endroit. */}
+      <ScenarioShareActions scenario={scenario} pdf />
 
       <div className="grid grid-cols-2 gap-3">
         <Link to="/scenarios" className="contents">

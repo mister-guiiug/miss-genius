@@ -13,6 +13,7 @@ import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 import { Sheet } from '@mister-guiiug/dev-pwa-config/react/sheet';
 import { ConfirmDialog } from '@mister-guiiug/dev-pwa-config/react/confirm-dialog';
 import { TrendPill } from '../../shared/components/badges.tsx';
+import { ScenarioShareActions } from '../../shared/components/ScenarioShareActions.tsx';
 import { TextField } from '@mister-guiiug/dev-pwa-config/react/field';
 
 export function ScenariosScreen() {
@@ -151,6 +152,9 @@ export function ScenariosScreen() {
                     </Button>
                   )}
                 </div>
+                {/* Séparé de la rangée d'actions au-dessus : celle-ci GÈRE le
+                    scénario, celle-ci le MONTRE à quelqu'un d'autre. */}
+                <ScenarioShareActions scenario={scenario} className="mt-2" />
                 {delta !== null && (
                   <p className="mt-2 text-sm text-[var(--mg-text-soft)]">
                     {t('scenarios.delta')} <strong>{formatDelta(delta)}</strong>
