@@ -87,8 +87,7 @@ export type SubjectColor = (typeof SUBJECT_COLORS)[number];
 
 /** Portée d'un objectif : moyenne générale ou une matière précise. */
 export type GoalScope =
-  | { kind: 'general' }
-  | { kind: 'subject'; subjectId: string };
+  { kind: 'general' } | { kind: 'subject'; subjectId: string };
 
 export interface Goal {
   id: string;
