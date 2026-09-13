@@ -66,6 +66,7 @@ export function UpdatePrompt() {
   return (
     <>
       <UpdatePromptBanner
+        checkEvery="1h"
         registerSW={registerSW}
         className={CARD}
         title={t('pwa.updateReady')}
