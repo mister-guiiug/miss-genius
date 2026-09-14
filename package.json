@@ -17,7 +17,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc -b",
-    "icons": "node scripts/generate-pwa-icons.mjs",
+    "icons": "pwa-icons --source public/icons/icon.svg --out public/icons --sizes 192,512 --no-apple",
+    "icons:maskable": "node scripts/generate-maskable.mjs",
     "prepare": "husky || true",
     "test:e2e": "playwright test"
   },
