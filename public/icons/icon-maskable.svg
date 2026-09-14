@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Miss Genius">
+  <!--
+    LE MASKABLE, ET POURQUOI CE N'EST PAS `icon.svg` EN PLUS PETIT.
+
+    `scripts/generate-pwa-icons.mjs` le fabriquait en réduisant l'icône ENTIÈRE
+    à 80 % sur un aplat `#7c3aed` — l'arrêt HAUT du dégradé. La tuile arrondie
+    se retrouvait posée au milieu d'un violet uni, et le raccord se voyait de
+    deux façons : le bord arrondi du dégradé se détachait de l'aplat, et le bas
+    de la tuile, rose, tranchait franchement sur le violet. Android ne cache pas
+    ce bord, il le révèle.
+
+    UNE SEULE DIFFÉRENCE AVEC LA SOURCE : le `rx="116"` disparaît. Le dégradé
+    occupe la toile entière, aux mêmes arrêts, et il n'y a plus de bord à
+    raccorder quel que soit le masque de l'appareil.
+
+    AUCUNE RÉDUCTION N'EST NÉCESSAIRE, et c'est mesuré. La zone de sécurité est
+    le disque de 80 % de la toile, rayon 204,8. Le point le plus éloigné du
+    centre n'est pas l'ampoule — son sommet n'est qu'à 152 — mais le coin
+    bas-gauche du culot inférieur, à 197. Huit pixels de marge. Réduire à 80 %,
+    comme le faisait l'ancien script, coûtait donc un cinquième de la présence
+    pour protéger ce qui était déjà dedans.
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#f43f7e"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- Ampoule = idée / génie -->
+  <path fill="#fff" d="M256 104c-66 0-118 50-118 114 0 42 22 74 50 96 10 8 16 18 17 30l2 18h98l2-18c1-12 7-22 17-30 28-22 50-54 50-96 0-64-52-114-118-114Z"/>
+  <!-- Filament en forme de coche/progression -->
+  <path fill="none" stroke="#7c3aed" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" d="M214 232l30 32 56-72"/>
+  <!-- Culot -->
+  <rect x="214" y="392" width="84" height="26" rx="13" fill="#fff"/>
+  <rect x="226" y="430" width="60" height="22" rx="11" fill="#fff"/>
+</svg>
