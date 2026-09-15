@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { BottomNav } from '@mister-guiiug/dev-pwa-config/react/bottom-nav';
 import { AppFooter } from '@mister-guiiug/dev-pwa-config/react/app-footer';
+import { ConsentBanner } from '@mister-guiiug/dev-pwa-config/react/consent-banner';
+import { usePageViews } from '@mister-guiiug/dev-pwa-config/react/use-page-views';
 import { repoUrl } from '@mister-guiiug/dev-pwa-config/apps-catalog';
 import { useAppStore } from './store/useAppStore.ts';
 import { useI18n } from './i18n';
@@ -75,6 +77,10 @@ const TABS: Array<{
 
 function Shell() {
   const { pathname } = useLocation();
+  // Une vue de page par navigation. GA4 n'en envoie qu'une par chargement de
+  // document, et `initAnalytics` pose `send_page_view: false` pour que la
+  // première passe par ici comme les autres. Rien sans consentement.
+  usePageViews(pathname);
   const { t } = useI18n();
   // 'Miss Genius' est un nom propre (identique dans toutes les langues).
   const titles: Record<string, string> = {
@@ -105,6 +111,12 @@ function Shell() {
       {/* HORS des routes : le code source et le soutien sont ainsi sur le
           premier écran comme sur les Réglages — la règle famille. Rendu
           depuis l'écran Réglages, ce pied de page ne valait que pour lui. */}
+      {/* Une `region`, pas une boîte modale : elle ne recouvre rien et ne
+          piège pas le focus. Ne rend RIEN sans `VITE_GA_MEASUREMENT_ID`. */}
+      <ConsentBanner
+        gaMeasurementId={import.meta.env.VITE_GA_MEASUREMENT_ID}
+        className="mx-4 mb-3"
+      />
       <AppFooter
         version
         issues
