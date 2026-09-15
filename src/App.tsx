@@ -111,12 +111,6 @@ function Shell() {
       {/* HORS des routes : le code source et le soutien sont ainsi sur le
           premier écran comme sur les Réglages — la règle famille. Rendu
           depuis l'écran Réglages, ce pied de page ne valait que pour lui. */}
-      {/* Une `region`, pas une boîte modale : elle ne recouvre rien et ne
-          piège pas le focus. Ne rend RIEN sans `VITE_GA_MEASUREMENT_ID`. */}
-      <ConsentBanner
-        gaMeasurementId={import.meta.env.VITE_GA_MEASUREMENT_ID}
-        className="mx-4 mb-3"
-      />
       <AppFooter
         version
         issues
@@ -150,20 +144,45 @@ function Shell() {
 export function App() {
   const onboarded = useAppStore(s => s.data.onboarded);
 
-  if (!onboarded) return <Onboarding />;
-
   return (
-    <HashRouter>
-      <Routes>
-        <Route element={<Shell />}>
-          <Route index element={<DashboardScreen />} />
-          <Route path="subjects" element={<SubjectsScreen />} />
-          <Route path="subjects/:subjectId" element={<SubjectDetailScreen />} />
-          <Route path="scenarios" element={<ScenariosScreen />} />
-          <Route path="goal" element={<GoalScreen />} />
-          <Route path="settings" element={<SettingsScreen />} />
-        </Route>
-      </Routes>
-    </HashRouter>
+    <>
+      {onboarded ? (
+        <HashRouter>
+          <Routes>
+            <Route element={<Shell />}>
+              <Route index element={<DashboardScreen />} />
+              <Route path="subjects" element={<SubjectsScreen />} />
+              <Route
+                path="subjects/:subjectId"
+                element={<SubjectDetailScreen />}
+              />
+              <Route path="scenarios" element={<ScenariosScreen />} />
+              <Route path="goal" element={<GoalScreen />} />
+              <Route path="settings" element={<SettingsScreen />} />
+            </Route>
+          </Routes>
+        </HashRouter>
+      ) : (
+        <Onboarding />
+      )}
+      {/*
+        HORS DE L'ONBOARDING, ET C'EST TOUT L'INTÉRÊT. Monté dans `Shell`, le
+        bandeau vivait derrière l'écran d'accueil : un visiteur qui n'avait pas
+        franchi l'onboarding n'a JAMAIS vu la question. Vérifié le 16/09/2026
+        sur la production — `[data-dwc="consent-banner"]` absent du document.
+        Cette app n'aurait donc rien mesuré, sa variable posée ou non.
+
+        `sticky bottom-0` et non `fixed` : le bandeau reste dans le flux, ne
+        recouvre que ce qui défile sous lui et ne piège pas le focus — une
+        boîte modale pour obtenir un consentement est la figure que le RGPD
+        nomme « dark pattern ». Sans ce calage il atterrirait en bas du
+        document, sous la ligne de flottaison de l'onboarding.
+      */}
+      <div className="sticky bottom-0 mx-auto w-full max-w-md px-4 pb-3">
+        <ConsentBanner
+          gaMeasurementId={import.meta.env.VITE_GA_MEASUREMENT_ID}
+        />
+      </div>
+    </>
   );
 }
