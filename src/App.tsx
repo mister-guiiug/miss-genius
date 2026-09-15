@@ -136,7 +136,6 @@ function Shell() {
         linkComponent={NavLink}
         hrefProp="to"
       />
-      <UpdatePrompt />
     </div>
   );
 }
@@ -165,6 +164,22 @@ export function App() {
       ) : (
         <Onboarding />
       )}
+      {/*
+        HORS DE L'ONBOARDING, ET CE N'EST PAS QU'UN BANDEAU. Ce composant
+        appelle `registerSW` : rendu dans `Shell`, il vivait derrière l'écran
+        d'accueil, donc AUCUN service worker n'était enregistré tant que
+        l'onboarding n'était pas franchi, et rien n'était mis en cache.
+
+        Mesuré le 16/09/2026 sur la production, navigateur vierge : six
+        secondes après le chargement, `navigator.serviceWorker
+        .getRegistrations()` rendait `[]` et `caches.keys()` aussi. Les deux
+        autres apps du parc à écran d'entrée — miss-uwh et miss-ticket-pwa —
+        en enregistraient bien un : celle-ci était la dernière.
+
+        À la racine, la mise en cache commence dès la première visite, y
+        compris pour qui referme l'app sans avoir rempli l'accueil.
+      */}
+      <UpdatePrompt />
       {/*
         HORS DE L'ONBOARDING, ET C'EST TOUT L'INTÉRÊT. Monté dans `Shell`, le
         bandeau vivait derrière l'écran d'accueil : un visiteur qui n'avait pas
