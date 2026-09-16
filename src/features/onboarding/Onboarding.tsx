@@ -3,6 +3,7 @@ import { Brain, GraduationCap, Target, type LucideIcon } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
 import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
+import { usePageViews } from '@mister-guiiug/dev-pwa-config/react/use-page-views';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
 
 interface Step {
@@ -19,6 +20,19 @@ const STEPS: Step[] = [
 
 /** Onboarding très court (3 écrans), illustration Rive avec fallback statique. */
 export function Onboarding() {
+  /*
+   * L'ÉCRAN D'ENTRÉE EST UNE VUE DE PAGE, et c'est ici qu'elle se déclare.
+   *
+   * `usePageViews` vit dans `Shell`, qui n'existe qu'une fois l'onboarding
+   * franchi — et avant lui il n'y a même pas de routeur. Mesuré en production
+   * le 16/09/2026, socle 4.20.0 en place : consentement accordé, bandeau parti,
+   * ZÉRO vue. Un visiteur qui arrive, regarde et repart ne comptait pas.
+   *
+   * La vue est déclarée par l'écran plutôt que par une condition posée
+   * au-dessus de la porte : une condition dupliquée finit par diverger de la
+   * porte qu'elle imite.
+   */
+  usePageViews('/onboarding');
   const { t } = useI18n();
   const complete = useAppStore(s => s.completeOnboarding);
   const [step, setStep] = useState(0);
