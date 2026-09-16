@@ -66,6 +66,7 @@ export function UpdatePrompt() {
   return (
     <>
       <UpdatePromptBanner
+        snoozeHours={0}
         checkEvery="1h"
         registerSW={registerSW}
         className={CARD}
