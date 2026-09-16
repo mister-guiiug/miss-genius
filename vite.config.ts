@@ -32,6 +32,13 @@ export default defineConfig(({ command }) => {
           manualChunks(id) {
             if (!id.includes('node_modules')) return;
             const norm = id.replace(/\\/g, '/');
+            // Sentry est chargé par un `import()` que `loader` rend
+            // analysable. Sans cette ligne il tomberait dans `vendor`,
+            // qui est PRÉCHARGÉ : mesuré sur miss-uwh, 381,9 kB
+            // préchargés au lieu de 227,2 — pour un total gzip identique
+            // à 0,1 kB près. Le total ne voit pas la différence,
+            // `bundleBudget.preloadGzipKb` si.
+            if (norm.includes('/@sentry/')) return 'sentry';
             if (norm.includes('/@rive-app/')) return 'rive';
             // Le générateur PDF du socle est importé DYNAMIQUEMENT au clic
             // sur « PDF » ; sans cette ligne il retombait dans `vendor`, que
@@ -95,9 +102,22 @@ export default defineConfig(({ command }) => {
         ],
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,svg,png,woff2,webmanifest}'],
-          // Le moteur Rive (optionnel, décoratif, chargé à la demande) reste hors
-          // du précache : on garde un shell hors ligne léger sur réseau lent.
-          globIgnores: ['**/rive-*.js', '**/RivePlayer-*.js'],
+          /*
+           * CE QUI EST CHARGÉ À LA DEMANDE NE SE PRÉCACHE PAS, sans quoi le
+           * découpage ci-dessus ne servirait à rien : `globPatterns` ramasse
+           * TOUT le JS émis, `import()` ou pas.
+           *
+           * Le moteur Rive y était déjà — optionnel, décoratif, pour garder un
+           * shell hors ligne léger sur réseau lent. Sentry le rejoint, pour la
+           * même raison et un poids bien plus lourd : mesuré le 16/09/2026 sur
+           * la production de deux apps du parc, 345 et 463 KiB bruts de SDK
+           * téléchargés par chaque visiteur, sans qu'aucun DSN soit posé.
+           *
+           * Hors précache, il est cherché sur le réseau à la première erreur,
+           * et jamais si l'observabilité reste éteinte. Ne pas l'avoir hors
+           * ligne est sans conséquence : rapporter une erreur demande le réseau.
+           */
+          globIgnores: ['**/rive-*.js', '**/RivePlayer-*.js', '**/sentry-*.js'],
           navigateFallback: 'index.html',
           cleanupOutdatedCaches: true,
         },

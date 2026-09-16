@@ -13,3 +13,10 @@ interface ImportMetaEnv {
   readonly VITE_PRONOTE_PROXY_URL?: string;
   readonly VITE_SENTRY_DSN?: string;
 }
+
+/**
+ * Injecté par Vite (`define`) — la version applicative lue dans package.json.
+ * Le `define` existait déjà ; il n'était pas DÉCLARÉ, donc invisible du
+ * type-check. `initSentry({ release })` est le premier appel à en avoir besoin.
+ */
+declare const __APP_VERSION__: string;
