@@ -370,7 +370,6 @@ const fr = {
     updating: 'Mise à jour…',
     forceUpdate: 'Forcer la mise à jour',
     otherApps: 'Nos autres applications',
-    version: 'Miss Genius v{version}',
     resetConfirmTitle: 'Tout réinitialiser ?',
     resetConfirmMessage:
       'Tous les scénarios, matières et notes seront effacés. Cette action est irréversible.',
@@ -738,7 +737,6 @@ const en = {
     updating: 'Updating…',
     forceUpdate: 'Force update',
     otherApps: 'Our other apps',
-    version: 'Miss Genius v{version}',
     resetConfirmTitle: 'Reset everything?',
     resetConfirmMessage:
       'All scenarios, subjects and grades will be erased. This cannot be undone.',
