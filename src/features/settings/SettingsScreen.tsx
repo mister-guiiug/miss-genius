@@ -14,8 +14,6 @@ import { ConfirmDialog } from '@mister-guiiug/dev-pwa-config/react/confirm-dialo
 import { FamilyApps } from '@mister-guiiug/dev-pwa-config/react';
 import { PronoteSheet } from '../pronote/PronoteSheet.tsx';
 
-declare const __APP_VERSION__: string;
-
 export function SettingsScreen() {
   const { t, locale, setLocale, locales } = useI18n();
   const data = useAppStore(s => s.data);
@@ -240,10 +238,6 @@ export function SettingsScreen() {
           le premier écran. */}
       <p className="text-center text-xs text-[var(--mg-text-soft)]">
         {t('footer.tagline')}
-      </p>
-
-      <p className="text-center text-xs text-[var(--mg-text-soft)]">
-        {t('settings.version', { version: __APP_VERSION__ })}
       </p>
 
       <ConfirmDialog
