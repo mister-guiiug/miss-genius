@@ -28,7 +28,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: '22.23.2'
 
       - name: Install worker dependencies
         working-directory: worker
