@@ -88,9 +88,7 @@ describe('UpdatePrompt', () => {
 
     const banner = screen.getByRole('status');
     expect(banner).toHaveAttribute('data-dwc', 'update-banner');
-    expect(banner).toHaveTextContent(
-      'Une nouvelle version de Miss Genius est prête.'
-    );
+    expect(banner).toHaveTextContent('Mise à jour disponible');
     expect(
       screen.getByRole('button', { name: 'Mettre à jour' })
     ).toBeInTheDocument();
