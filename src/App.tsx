@@ -77,9 +77,10 @@ const TABS: Array<{
 
 function Shell() {
   const { pathname } = useLocation();
-  // Une vue de page par navigation. GA4 n'en envoie qu'une par chargement de
-  // document, et `initAnalytics` pose `send_page_view: false` pour que la
-  // première passe par ici comme les autres. Rien sans consentement.
+  // Une vue de page par navigation — ni zéro, ni deux. `initAnalytics` pose
+  // `capture_pageview: false` pour que toutes passent par ici, la première
+  // comprise : laissé à lui-même, PostHog compterait chaque navigation deux
+  // fois. Rien sans consentement.
   usePageViews(pathname);
   const { t } = useI18n();
   // 'Miss Genius' est un nom propre (identique dans toutes les langues).
@@ -195,7 +196,8 @@ export function App() {
       */}
       <div className="sticky bottom-0 mx-auto w-full max-w-md px-4 pb-3">
         <ConsentBanner
-          gaMeasurementId={import.meta.env.VITE_GA_MEASUREMENT_ID}
+          posthogKey={import.meta.env.VITE_POSTHOG_KEY}
+          loader={() => import('posthog-js/dist/module.slim.js')}
         />
       </div>
     </>
