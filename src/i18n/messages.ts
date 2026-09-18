@@ -384,10 +384,7 @@ const fr = {
     buyCoffee: 'M’offrir un café',
   },
   pwa: {
-    updateReady: 'Une nouvelle version de Miss Genius est prête.',
     offlineReady: 'Miss Genius fonctionne maintenant hors ligne.',
-    update: 'Mettre à jour',
-    later: 'Plus tard',
     ok: 'OK',
   },
   language: {
@@ -751,10 +748,7 @@ const en = {
     buyCoffee: 'Buy me a coffee',
   },
   pwa: {
-    updateReady: 'A new version of Miss Genius is ready.',
     offlineReady: 'Miss Genius now works offline.',
-    update: 'Update',
-    later: 'Later',
     ok: 'OK',
   },
   language: {

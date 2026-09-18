@@ -61,18 +61,17 @@ function OfflineReadyNotice() {
 }
 
 export function UpdatePrompt() {
-  const { t } = useI18n();
-
   return (
     <>
+      {/* Aucun libellé câblé : titre et boutons viennent du socle, comme
+          partout ailleurs dans le parc. Le bandeau disait « Une nouvelle
+          version de Miss Genius est prête. » — une phrase de plus parmi les
+          neuf que le parc employait pour la même chose. */}
       <UpdatePromptBanner
         snoozeHours={0}
         checkEvery="1h"
         registerSW={registerSW}
         className={CARD}
-        title={t('pwa.updateReady')}
-        updateLabel={t('pwa.update')}
-        dismissLabel={t('pwa.later')}
       />
       <OfflineReadyNotice />
     </>
