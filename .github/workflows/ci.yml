@@ -19,4 +19,19 @@ jobs:
     # secrets du dépôt à un workflow qui n'en demande pas un seul.
     with:
       run-doctor: true # la checklist du parc, lue sur le dépôt et sur dist/ (AMELIORATIONS.md, T2)
-      run-e2e: false
+      # `doctor-strict` reste à `false`, et voici pourquoi. Relevé du 19/09/2026 :
+      # le docteur rend « 0 défaut(s) » ici, mais pas « 0 dette(s) » — et
+      # `--strict` échoue sur une dette (pwa-doctor.mjs:1631). Ce qui bloque,
+      # cette PR appliquée :
+      #   · code source + soutien sur tous les écrans, rendus par la coquille
+      # Le mode strict s'active quand cette liste est vide. Pas avant : une CI
+      # rouge sur une dette connue et non traitée n'apprend rien à personne.
+      # La suite existait et ne tournait nulle part : le docteur le disait en
+      # dette (« les e2e ne tournent pas en CI »), et rien ne peut échouer sur
+      # une dette. Mesuré le 19/09/2026 avec la commande exacte du
+      # réutilisable : 3 tests, 10 s, tous verts.
+      #
+      # Pas de `e2e-grep` : le défaut du socle (`@critical|@a11y`) atteint DÉJÀ
+      # les deux fichiers de spec, et la suite entière ne joue pas un test de
+      # plus. Écrire le filtre à la main ne ferait que figer le défaut.
+      run-e2e: true
