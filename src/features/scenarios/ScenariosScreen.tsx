@@ -9,6 +9,7 @@ import {
 } from '../../shared/lib/average.ts';
 import { formatAverage, formatDelta } from '../../shared/lib/format.ts';
 import { Card } from '@mister-guiiug/dev-pwa-config/react/card';
+import { GESTES, trackEvent } from '@mister-guiiug/dev-pwa-config/analytics';
 import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 import { Sheet } from '@mister-guiiug/dev-pwa-config/react/sheet';
 import { ConfirmDialog } from '@mister-guiiug/dev-pwa-config/react/confirm-dialog';
@@ -176,6 +177,22 @@ export function ScenariosScreen() {
           onSubmit={e => {
             e.preventDefault();
             addScenario(newName.trim() || t('scenarios.defaultName'));
+            /*
+             * LE SCÉNARIO EST LA RAISON D'ÊTRE DE L'APP : simuler « et si
+             * j'avais 14 au lieu de 11 ». Savoir combien de simulations sont
+             * créées dit si l'outil sert vraiment, ou s'il s'arrête à la
+             * saisie des notes.
+             *
+             * `nomme` ET NON LE NOM. Le nom est saisi par l'utilisatrice : il
+             * peut porter une matière, un professeur, une humeur. Ce qui est
+             * utile tient dans un booléen — a-t-elle pris la peine de nommer,
+             * ou accepté le libellé par défaut ? Cela suffit à savoir si les
+             * scénarios se comparent entre eux ou se jettent après usage.
+             */
+            trackEvent(GESTES.CREATION, {
+              objet: 'scenario',
+              nomme: Boolean(newName.trim()),
+            });
             setNewName('');
             setCreating(false);
           }}
