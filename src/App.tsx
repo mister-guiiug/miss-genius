@@ -4,7 +4,6 @@ import {
   Suspense,
   useCallback,
   useContext,
-  useEffect,
   useState,
   useTransition,
   type ComponentProps,
@@ -32,6 +31,7 @@ import { BottomNav } from '@mister-guiiug/dev-pwa-config/react/bottom-nav';
 import { AppFooter } from '@mister-guiiug/dev-pwa-config/react/app-footer';
 import { ConsentBanner } from '@mister-guiiug/dev-pwa-config/react/consent-banner';
 import { usePageViews } from '@mister-guiiug/dev-pwa-config/react/use-page-views';
+import { useIdlePrefetch } from '@mister-guiiug/dev-pwa-config/react/use-prefetch';
 import { repoUrl } from '@mister-guiiug/dev-pwa-config/apps-catalog';
 import { useAppStore } from './store/useAppStore.ts';
 import { useI18n } from './i18n';
@@ -43,8 +43,8 @@ import { DashboardScreen } from './features/dashboard/DashboardScreen.tsx';
 // Routes secondaires chargées à la demande (perf : on n'embarque pas tout au boot).
 //
 // CHAQUE IMPORT D'UN ÉCRAN DU MENU EST NOMMÉ, parce qu'il sert DEUX FOIS : à
-// `lazy` ci-dessous, et au préchargement à l'inactivité de
-// `usePrechargeLesEcransDuMenu`. Deux `import()` du même spécificateur ne
+// `lazy` ci-dessous, et au chargeur composé `chargeLesEcransDuMenu`, que le
+// socle lance à l'inactivité. Deux `import()` du même spécificateur ne
 // téléchargent qu'une fois — le registre de modules dédoublonne — mais encore
 // faut-il que ce soit LITTÉRALEMENT le même spécificateur, sinon le bundler
 // émet deux morceaux et le préchargement ne sert plus à rien.
@@ -66,6 +66,15 @@ const CHARGEURS_DU_MENU = [
   chargeSettings,
 ];
 
+/**
+ * UN SEUL CHARGEUR POUR LE SOCLE, ET UNE CONSTANTE DE MODULE : `prefetch()` ne
+ * lance un chargeur qu'une fois et le reconnaît à son IDENTITÉ de fonction — une
+ * fonction recréée à chaque montage serait un chargeur neuf à chaque fois.
+ * `allSettled` : un morceau qui manque n'empêche pas les autres d'arriver.
+ */
+const chargeLesEcransDuMenu = () =>
+  Promise.allSettled(CHARGEURS_DU_MENU.map(charge => charge()));
+
 const SubjectsScreen = lazy(() =>
   chargeSubjects().then(m => ({ default: m.SubjectsScreen }))
 );
@@ -83,55 +92,6 @@ const GoalScreen = lazy(() =>
 const SettingsScreen = lazy(() =>
   chargeSettings().then(m => ({ default: m.SettingsScreen }))
 );
-
-/** `navigator.connection` n'est pas dans les types du DOM : il reste un brouillon. */
-type NavigateurEconome = Navigator & { connection?: { saveData?: boolean } };
-
-/**
- * PRÉCHARGE LES ÉCRANS DU MENU DÈS QUE LE FIL PRINCIPAL SOUFFLE.
- *
- * Sans préchargement, le morceau d'un écran n'est demandé qu'AU CLIC : un
- * aller-retour réseau complet, payé au pire moment. Mesuré le 20/09/2026 sur
- * deux apps sœurs du parc, à la première visite (service worker pas encore
- * installé) : 133 ms sur mister-settle, 161 ms sur mister-molkky, pendant
- * lesquelles l'URL indique déjà la nouvelle route et l'écran affiche encore
- * l'ancien — sans rien pour le dire (voir le repli de `Shell`).
- *
- * Le préchargement n'entre PAS dans `bundleBudget.preloadGzipKb` : ce budget ne
- * compte que ce qui est `modulepreload` dans le document, et un `import()`
- * tardif n'y entre pas.
- */
-function usePrechargeLesEcransDuMenu() {
-  useEffect(() => {
-    // `saveData` : le visiteur a demandé qu'on épargne son forfait. On ne
-    // télécharge alors que ce qu'il demande vraiment — et c'est précisément
-    // pour ce cas-là que le menu, lui, sait désormais dire qu'il charge.
-    if ((navigator as NavigateurEconome).connection?.saveData) return;
-
-    let annule = false;
-    const precharge = () => {
-      if (annule) return;
-      // Un échec ici est sans conséquence : au clic, `lazy` redemandera le
-      // morceau et c'est LUI qui portera l'erreur, dans son propre `Suspense`.
-      for (const charge of CHARGEURS_DU_MENU) void charge().catch(() => {});
-    };
-
-    // `requestIdleCallback` manque encore à Safari avant la 17 ; le repli
-    // minuté vaut mieux que rien.
-    if (typeof window.requestIdleCallback === 'function') {
-      const id = window.requestIdleCallback(precharge, { timeout: 3000 });
-      return () => {
-        annule = true;
-        window.cancelIdleCallback?.(id);
-      };
-    }
-    const id = window.setTimeout(precharge, 1200);
-    return () => {
-      annule = true;
-      window.clearTimeout(id);
-    };
-  }, []);
-}
 
 /**
  * Le geste de navigation du menu, porté jusqu'au `linkComponent` du socle.
@@ -192,7 +152,16 @@ const TABS: Array<{
  * `App` sans mettre la main dans le registre de modules.
  */
 export function Shell() {
-  usePrechargeLesEcransDuMenu();
+  // PRÉCHARGE LES ÉCRANS DU MENU DÈS QUE LE FIL PRINCIPAL SOUFFLE. Sans ça, le
+  // morceau d'un écran n'est demandé qu'AU CLIC : un aller-retour réseau payé
+  // au pire moment — 133 ms sur mister-settle, 161 ms sur mister-molkky,
+  // mesurés le 20/09/2026 à la première visite, service worker pas encore
+  // installé. Le socle décide du reste : une seule fois par chargeur, rejets
+  // avalés, rien sous `saveData` ni en 2g, un délai en repli là où
+  // `requestIdleCallback` manque (Safari avant la 17). Ce préchargement
+  // n'entre PAS dans `bundleBudget.preloadGzipKb`, qui ne compte que ce qui
+  // est `modulepreload` dans le document.
+  useIdlePrefetch(chargeLesEcransDuMenu);
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [enCours, demarreLaTransition] = useTransition();
