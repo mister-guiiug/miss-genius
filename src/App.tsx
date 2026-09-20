@@ -1,4 +1,15 @@
-import { lazy, Suspense } from 'react';
+import {
+  createContext,
+  lazy,
+  Suspense,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useTransition,
+  type ComponentProps,
+  type MouseEvent,
+} from 'react';
 import {
   HashRouter,
   NavLink,
@@ -6,10 +17,12 @@ import {
   Route,
   Routes,
   useLocation,
+  useNavigate,
 } from 'react-router-dom';
 import {
   BookOpen,
   House,
+  LoaderCircle,
   Settings,
   SlidersHorizontal,
   Target,
@@ -28,10 +41,33 @@ import { UpdatePrompt } from './pwa/UpdatePrompt.tsx';
 import { DashboardScreen } from './features/dashboard/DashboardScreen.tsx';
 
 // Routes secondaires chargées à la demande (perf : on n'embarque pas tout au boot).
+//
+// CHAQUE IMPORT D'UN ÉCRAN DU MENU EST NOMMÉ, parce qu'il sert DEUX FOIS : à
+// `lazy` ci-dessous, et au préchargement à l'inactivité de
+// `usePrechargeLesEcransDuMenu`. Deux `import()` du même spécificateur ne
+// téléchargent qu'une fois — le registre de modules dédoublonne — mais encore
+// faut-il que ce soit LITTÉRALEMENT le même spécificateur, sinon le bundler
+// émet deux morceaux et le préchargement ne sert plus à rien.
+const chargeSubjects = () => import('./features/subjects/SubjectsScreen.tsx');
+const chargeScenarios = () =>
+  import('./features/scenarios/ScenariosScreen.tsx');
+const chargeGoal = () => import('./features/goals/GoalScreen.tsx');
+const chargeSettings = () => import('./features/settings/SettingsScreen.tsx');
+
+/**
+ * Les quatre écrans qu'une entrée de la barre basse peut atteindre — et eux
+ * seuls. `SubjectDetailScreen` reste dehors : on y arrive depuis la liste des
+ * matières, pas d'un clic dans le menu.
+ */
+const CHARGEURS_DU_MENU = [
+  chargeSubjects,
+  chargeScenarios,
+  chargeGoal,
+  chargeSettings,
+];
+
 const SubjectsScreen = lazy(() =>
-  import('./features/subjects/SubjectsScreen.tsx').then(m => ({
-    default: m.SubjectsScreen,
-  }))
+  chargeSubjects().then(m => ({ default: m.SubjectsScreen }))
 );
 const SubjectDetailScreen = lazy(() =>
   import('./features/grades/SubjectDetailScreen.tsx').then(m => ({
@@ -39,20 +75,95 @@ const SubjectDetailScreen = lazy(() =>
   }))
 );
 const ScenariosScreen = lazy(() =>
-  import('./features/scenarios/ScenariosScreen.tsx').then(m => ({
-    default: m.ScenariosScreen,
-  }))
+  chargeScenarios().then(m => ({ default: m.ScenariosScreen }))
 );
 const GoalScreen = lazy(() =>
-  import('./features/goals/GoalScreen.tsx').then(m => ({
-    default: m.GoalScreen,
-  }))
+  chargeGoal().then(m => ({ default: m.GoalScreen }))
 );
 const SettingsScreen = lazy(() =>
-  import('./features/settings/SettingsScreen.tsx').then(m => ({
-    default: m.SettingsScreen,
-  }))
+  chargeSettings().then(m => ({ default: m.SettingsScreen }))
 );
+
+/** `navigator.connection` n'est pas dans les types du DOM : il reste un brouillon. */
+type NavigateurEconome = Navigator & { connection?: { saveData?: boolean } };
+
+/**
+ * PRÉCHARGE LES ÉCRANS DU MENU DÈS QUE LE FIL PRINCIPAL SOUFFLE.
+ *
+ * Sans préchargement, le morceau d'un écran n'est demandé qu'AU CLIC : un
+ * aller-retour réseau complet, payé au pire moment. Mesuré le 20/09/2026 sur
+ * deux apps sœurs du parc, à la première visite (service worker pas encore
+ * installé) : 133 ms sur mister-settle, 161 ms sur mister-molkky, pendant
+ * lesquelles l'URL indique déjà la nouvelle route et l'écran affiche encore
+ * l'ancien — sans rien pour le dire (voir le repli de `Shell`).
+ *
+ * Le préchargement n'entre PAS dans `bundleBudget.preloadGzipKb` : ce budget ne
+ * compte que ce qui est `modulepreload` dans le document, et un `import()`
+ * tardif n'y entre pas.
+ */
+function usePrechargeLesEcransDuMenu() {
+  useEffect(() => {
+    // `saveData` : le visiteur a demandé qu'on épargne son forfait. On ne
+    // télécharge alors que ce qu'il demande vraiment — et c'est précisément
+    // pour ce cas-là que le menu, lui, sait désormais dire qu'il charge.
+    if ((navigator as NavigateurEconome).connection?.saveData) return;
+
+    let annule = false;
+    const precharge = () => {
+      if (annule) return;
+      // Un échec ici est sans conséquence : au clic, `lazy` redemandera le
+      // morceau et c'est LUI qui portera l'erreur, dans son propre `Suspense`.
+      for (const charge of CHARGEURS_DU_MENU) void charge().catch(() => {});
+    };
+
+    // `requestIdleCallback` manque encore à Safari avant la 17 ; le repli
+    // minuté vaut mieux que rien.
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(precharge, { timeout: 3000 });
+      return () => {
+        annule = true;
+        window.cancelIdleCallback?.(id);
+      };
+    }
+    const id = window.setTimeout(precharge, 1200);
+    return () => {
+      annule = true;
+      window.clearTimeout(id);
+    };
+  }, []);
+}
+
+/**
+ * Le geste de navigation du menu, porté jusqu'au `linkComponent` du socle.
+ *
+ * POURQUOI UN CONTEXTE. `BottomNav` construit lui-même le `onClick` de chaque
+ * lien — `onClick: () => { setMoreOpen(false); onNavigate?.(item); }`, SANS
+ * l'événement — donc ni `preventDefault`, ni touche de modification, ni
+ * transition ne peuvent passer par `onNavigate`. Le seul point d'entrée qui
+ * reçoit l'événement est le composant de lien, et le socle ne lui transmet que
+ * ce qu'il connaît. Un contexte l'atteint sans redéfinir le composant à chaque
+ * rendu (ce qui le remonterait, et perdrait le focus au clavier).
+ */
+const NavigationDuMenu = createContext<{
+  versLaVue: (e: MouseEvent<HTMLAnchorElement>, to: string) => void;
+  enAttente: string | null;
+} | null>(null);
+
+function LienDeMenu({ to, onClick, ...reste }: ComponentProps<typeof NavLink>) {
+  const menu = useContext(NavigationDuMenu);
+  const cible = typeof to === 'string' ? to : '';
+  return (
+    <NavLink
+      to={to}
+      aria-busy={menu?.enAttente === cible || undefined}
+      onClick={e => {
+        onClick?.(e);
+        menu?.versLaVue(e, cible);
+      }}
+      {...reste}
+    />
+  );
+}
 
 /**
  * Les cinq destinations de la navigation basse.
@@ -75,8 +186,51 @@ const TABS: Array<{
   { to: '/settings', key: 'settings', Icon: Settings, end: false },
 ];
 
-function Shell() {
+/**
+ * Exportée POUR ÊTRE ÉPROUVÉE : `App.nav.test.tsx` la monte face à un écran
+ * dont il décide lui-même de l'arrivée, ce qu'on ne peut pas faire à travers
+ * `App` sans mettre la main dans le registre de modules.
+ */
+export function Shell() {
+  usePrechargeLesEcransDuMenu();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [enCours, demarreLaTransition] = useTransition();
+  const [ciblePendante, setCiblePendante] = useState<string | null>(null);
+
+  /**
+   * LA TRANSITION EST LA NÔTRE, et c'est tout l'intérêt.
+   *
+   * react-router 7 en ouvre déjà une de son côté — `startTransition(() =>
+   * setStateImpl(newState))` dans son `HashRouter` — mais ne l'expose nulle
+   * part hors d'un routeur de données. Or React 19 garde délibérément l'écran
+   * déjà affiché pendant une transition : le repli de `<Suspense>` ci-dessous
+   * ne paraît donc JAMAIS sur un clic, seulement sur un atterrissage direct.
+   * Le clic restait muet le temps de l'aller-retour.
+   *
+   * En pilotant `navigate` depuis ici, `enCours` reste vrai tant que le morceau
+   * de l'écran n'est pas arrivé : c'est la seule information qui manquait.
+   */
+  const versLaVue = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>, to: string) => {
+      // On laisse le navigateur faire son travail quand le visiteur le lui
+      // demande : nouvel onglet, nouvelle fenêtre, enregistrement de la cible.
+      if (
+        e.defaultPrevented ||
+        e.button !== 0 ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.altKey
+      ) {
+        return;
+      }
+      e.preventDefault();
+      setCiblePendante(to);
+      demarreLaTransition(() => navigate(to));
+    },
+    [navigate]
+  );
   // Une vue de page par navigation — ni zéro, ni deux. `initAnalytics` pose
   // `capture_pageview: false` pour que toutes passent par ici, la première
   // comprise : laissé à lui-même, PostHog compterait chaque navigation deux
@@ -120,23 +274,50 @@ function Shell() {
         sourceLabel={t('footer.sourceCode')}
         sponsorLabel={t('footer.buyCoffee')}
       />
-      <BottomNav
-        label={t('nav.ariaLabel')}
-        currentPath={pathname}
-        items={TABS.map(({ to, key, Icon, end }) => ({
-          href: to,
-          label: t(`nav.${key}`),
-          icon: <Icon size={22} aria-hidden="true" />,
-          end,
-        }))}
-        // Le socle 3.32.0 a élargi `linkComponent` à `ComponentType<any>` :
-        // le type refusait jusque-là tout composant à prop OBLIGATOIRE, donc
-        // précisément le composant de lien de react-router et son `to` —
-        // l'usage que sa propre documentation donne en exemple. Cinq apps
-        // portaient la même conversion ; elle n'a plus lieu d'être.
-        linkComponent={NavLink}
-        hrefProp="to"
-      />
+      <NavigationDuMenu.Provider
+        value={{ versLaVue, enAttente: enCours ? ciblePendante : null }}
+      >
+        <BottomNav
+          label={t('nav.ariaLabel')}
+          currentPath={pathname}
+          items={TABS.map(({ to, key, Icon, end }) => ({
+            href: to,
+            label: t(`nav.${key}`),
+            // LA PASTILLE DE L'ENTRÉE CLIQUÉE TOURNE pendant que son morceau
+            // arrive. C'est le seul retour visible : le repli de `Suspense` ne
+            // paraîtra pas, React 19 gardant l'écran courant le temps de la
+            // transition.
+            icon:
+              enCours && ciblePendante === to ? (
+                <LoaderCircle
+                  size={22}
+                  aria-hidden="true"
+                  className="animate-spin"
+                />
+              ) : (
+                <Icon size={22} aria-hidden="true" />
+              ),
+            end,
+          }))}
+          // Le socle 3.32.0 a élargi `linkComponent` à `ComponentType<any>` :
+          // le type refusait jusque-là tout composant à prop OBLIGATOIRE, donc
+          // précisément le composant de lien de react-router et son `to` —
+          // l'usage que sa propre documentation donne en exemple. Cinq apps
+          // portaient la même conversion ; elle n'a plus lieu d'être.
+          //
+          // C'est désormais `LienDeMenu` — le `NavLink` du dessus, plus le
+          // geste qui ouvre la transition. Le socle ne passe pas l'événement à
+          // `onNavigate` : le composant de lien est le seul endroit qui l'ait.
+          linkComponent={LienDeMenu}
+          hrefProp="to"
+        />
+      </NavigationDuMenu.Provider>
+      {/* HORS DES LIENS, pour ne pas changer leur nom accessible en cours de
+          route : un lecteur d'écran annoncerait « Matières, chargement… » puis
+          « Matières », sur le lien qui a le focus. */}
+      <span className="sr-only" role="status" aria-live="polite">
+        {enCours ? t('nav.loading') : ''}
+      </span>
     </div>
   );
 }
