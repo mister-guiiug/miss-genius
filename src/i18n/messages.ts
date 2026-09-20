@@ -57,6 +57,7 @@ const fr = {
     goal: 'Objectif',
     settings: 'Réglages',
     ariaLabel: 'Navigation principale',
+    loading: 'Chargement…',
     currentPage: '(page active)',
   },
   app: {
@@ -427,6 +428,7 @@ const en = {
     goal: 'Goal',
     settings: 'Settings',
     ariaLabel: 'Main navigation',
+    loading: 'Loading…',
     currentPage: '(current page)',
   },
   app: {
