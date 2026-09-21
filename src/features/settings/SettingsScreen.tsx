@@ -228,6 +228,10 @@ export function SettingsScreen() {
           currentAppId="miss-genius"
           showSource={false}
           showSponsor={false}
+          // Une colonne, sur demande : l'app refaisait la grille en flex.
+          layout="list"
+          // Dix-neuf cartes d'affilée : repliées par catégorie, sept lignes.
+          groupBy="category"
           labels={{ otherApps: t('settings.otherApps') }}
         />
       </Card>
