@@ -77,6 +77,10 @@ const fr = {
     step3Title: 'Vise une moyenne',
     step3Text:
       'Fixe un objectif et découvre la note qu’il te faut à la prochaine évaluation. 100 % hors ligne.',
+    highlight1: 'Ta moyenne générale, calculée avec les coefficients',
+    highlight2: 'Trimestres, semestres et scénarios « et si… »',
+    highlight3: 'La note à viser pour atteindre ton objectif',
+    promise: 'Gratuit et sans compte : tes notes restent sur ton appareil.',
     start: 'Commencer',
     next: 'Suivant',
     skip: 'Passer',
@@ -448,6 +452,10 @@ const en = {
     step3Title: 'Aim for an average',
     step3Text:
       'Set a goal and find out the grade you need on your next test. 100% offline.',
+    highlight1: 'Your overall average, worked out with subject weights',
+    highlight2: 'Terms, semesters and “what if” scenarios',
+    highlight3: 'The grade to aim for to reach your goal',
+    promise: 'Free, no account needed: your grades stay on your device.',
     start: 'Get started',
     next: 'Next',
     skip: 'Skip',

@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { Brain, GraduationCap, Target, type LucideIcon } from 'lucide-react';
+import {
+  Brain,
+  Check,
+  GraduationCap,
+  Target,
+  type LucideIcon,
+} from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore.ts';
 import { useI18n } from '../../i18n';
 import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
@@ -17,6 +23,9 @@ const STEPS: Step[] = [
   { Icon: GraduationCap, key: 'step2' },
   { Icon: Target, key: 'step3' },
 ];
+
+/** Ce que fait l'app, en trois lignes, sous le premier écran seulement. */
+const HIGHLIGHTS = ['highlight1', 'highlight2', 'highlight3'] as const;
 
 /** Onboarding très court (3 écrans), illustration Rive avec fallback statique. */
 export function Onboarding() {
@@ -52,9 +61,33 @@ export function Onboarding() {
         <p className="max-w-sm text-[15px] text-[var(--mg-text-soft)]">
           {t(`onboarding.${current.key}Text`)}
         </p>
+        {/*
+          LE PREMIER ÉCRAN DOIT SE SUFFIRE. C'est le seul que voit un visiteur
+          qui ne touche à rien, et le seul que lit un moteur : relevé du
+          23/09/2026 dans un navigateur vierge, 39 mots en tout, sans un mot
+          des coefficients, des trimestres ni de la note à viser. Les deux
+          écrans suivants détaillent ; celui-ci résume.
+        */}
+        {step === 0 && (
+          <ul className="flex max-w-sm flex-col gap-2 text-left text-[15px]">
+            {HIGHLIGHTS.map(key => (
+              <li key={key} className="flex items-start gap-2">
+                <Check
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                  aria-hidden="true"
+                />
+                <span>{t(`onboarding.${key}`)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="flex w-full max-w-sm flex-col gap-4">
+        <p className="text-center text-sm text-[var(--mg-text-soft)]">
+          {t('onboarding.promise')}
+        </p>
         <div className="flex justify-center gap-2" aria-hidden="true">
           {STEPS.map((_, i) => (
             <span
