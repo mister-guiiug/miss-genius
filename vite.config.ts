@@ -104,7 +104,7 @@ export default defineConfig(({ command }) => {
         themeColor: { light: '#f7f5ff', dark: '#16131f' },
         siteName: 'Miss Genius',
         basePath,
-        logoPath: '/icons/icon-192.png',
+        logoPath: '/icons/icon-512.png',
       }),
       // CSP durcie : script-src par hash SHA-256 de l'IIFE anti-FOUC inline
       // (plus de 'unsafe-inline' en prod). Placé après pwaSeoPlugin pour hasher
