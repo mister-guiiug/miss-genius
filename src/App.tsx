@@ -28,11 +28,9 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { BottomNav } from '@mister-guiiug/dev-pwa-config/react/bottom-nav';
-import { AppFooter } from '@mister-guiiug/dev-pwa-config/react/app-footer';
 import { ConsentBanner } from '@mister-guiiug/dev-pwa-config/react/consent-banner';
 import { usePageViews } from '@mister-guiiug/dev-pwa-config/react/use-page-views';
 import { useIdlePrefetch } from '@mister-guiiug/dev-pwa-config/react/use-prefetch';
-import { repoUrl } from '@mister-guiiug/dev-pwa-config/apps-catalog';
 import { useAppStore } from './store/useAppStore.ts';
 import { useI18n } from './i18n';
 import { AppHeader } from './shared/components/AppHeader.tsx';
@@ -232,17 +230,10 @@ export function Shell() {
           <Outlet />
         </Suspense>
       </main>
-      {/* HORS des routes : le code source et le soutien sont ainsi sur le
-          premier écran comme sur les Réglages — la règle famille. Rendu
-          depuis l'écran Réglages, ce pied de page ne valait que pour lui. */}
-      <AppFooter
-        version
-        issues
-        className="justify-center px-4 pb-2"
-        repoUrl={repoUrl('miss-genius')}
-        sourceLabel={t('footer.sourceCode')}
-        sponsorLabel={t('footer.buyCoffee')}
-      />
+      {/* PAS DE PIED DE PAGE ICI. La règle famille du 06/09/2026 le veut sur
+          DEUX écrans — l'accueil (DashboardScreen) et les Réglages — et
+          nulle part ailleurs : rendu hors des routes, il suivait l'élève
+          jusque dans la saisie d'une note. */}
       <NavigationDuMenu.Provider
         value={{ versLaVue, enAttente: enCours ? ciblePendante : null }}
       >

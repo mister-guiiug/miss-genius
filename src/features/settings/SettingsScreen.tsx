@@ -12,6 +12,8 @@ import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 import { SelectField } from '@mister-guiiug/dev-pwa-config/react/field';
 import { ConfirmDialog } from '@mister-guiiug/dev-pwa-config/react/confirm-dialog';
 import { FamilyApps } from '@mister-guiiug/dev-pwa-config/react';
+import { AppFooter } from '@mister-guiiug/dev-pwa-config/react/app-footer';
+import { repoUrl } from '@mister-guiiug/dev-pwa-config/apps-catalog';
 import { PronoteSheet } from '../pronote/PronoteSheet.tsx';
 
 export function SettingsScreen() {
@@ -236,10 +238,17 @@ export function SettingsScreen() {
         />
       </Card>
 
-      {/* La phrase d'accroche reste ici : le pied de page du socle ne porte
-          que les deux liens de la règle famille (source, sponsor) — et il a
-          été REMONTÉ dans la coquille, hors des routes, pour être aussi sur
-          le premier écran. */}
+      {/* Le code source, le soutien et le signalement : ici et sur l'accueil,
+          nulle part ailleurs (règle famille du 06/09/2026). La phrase
+          d'accroche l'accompagne : le pied de page du socle ne la porte pas. */}
+      <AppFooter
+        version
+        issues
+        className="justify-center px-4 pb-2"
+        repoUrl={repoUrl('miss-genius')}
+        sourceLabel={t('footer.sourceCode')}
+        sponsorLabel={t('footer.buyCoffee')}
+      />
       <p className="text-center text-xs text-[var(--mg-text-soft)]">
         {t('footer.tagline')}
       </p>
