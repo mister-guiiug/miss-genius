@@ -16,6 +16,8 @@ import { useScenarioResults } from '../../shared/hooks/useScenarioResults.ts';
 import { Card } from '@mister-guiiug/dev-pwa-config/react/card';
 import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 import { PwaInstallPrompt } from '@mister-guiiug/dev-pwa-config/react/pwa-install-prompt';
+import { AppFooter } from '@mister-guiiug/dev-pwa-config/react/app-footer';
+import { repoUrl } from '@mister-guiiug/dev-pwa-config/apps-catalog';
 import { Tag } from '../../shared/components/badges.tsx';
 import { RiveEmptyState } from '../../shared/components/RiveEmptyState.tsx';
 import { RiveBadge } from '../../shared/components/RiveBadge.tsx';
@@ -252,6 +254,17 @@ export function DashboardScreen() {
           n'existe pas, donne la marche à suivre. Cadence du socle : au premier
           lancement, puis une fois par mois, trois fois. */}
       <PwaInstallPrompt />
+
+      {/* Le code source, le soutien et le signalement : ici et dans les
+          Réglages, nulle part ailleurs (règle famille du 06/09/2026). */}
+      <AppFooter
+        version
+        issues
+        className="justify-center px-4 pb-2"
+        repoUrl={repoUrl('miss-genius')}
+        sourceLabel={t('footer.sourceCode')}
+        sponsorLabel={t('footer.buyCoffee')}
+      />
     </div>
   );
 }
