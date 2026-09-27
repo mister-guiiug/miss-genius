@@ -63,7 +63,7 @@ Vérification : (58 + 16 × 2) ÷ 6 = 90 ÷ 6 = 15. Si le résultat dépasse 20,
 
 ## Comment Miss Genius vous aide
 
-Miss Genius est une application gratuite de simulation de moyennes, qui fonctionne dans le navigateur et s'installe sur le téléphone.
+[Miss Genius](https://mister-guiiug.github.io/miss-genius/) est une application gratuite de simulation de moyennes, qui fonctionne dans le navigateur et s'installe sur le téléphone.
 
 - **Démarrage rapide par classe** : de la 6e à la 3e, puis en seconde, en première et en terminale générales, l'application propose les matières habituelles avec des coefficients de départ, que vous modifiez selon votre bulletin.
 - **Des notes sur n'importe quel barème**, chacune avec son coefficient. Une note sur 10 ou sur 100 est ramenée sur 20, et la moyenne se recalcule à chaque saisie.
