@@ -11,6 +11,7 @@ import { Card } from '@mister-guiiug/dev-pwa-config/react/card';
 import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 import { SelectField } from '@mister-guiiug/dev-pwa-config/react/field';
 import { ConfirmDialog } from '@mister-guiiug/dev-pwa-config/react/confirm-dialog';
+import { ConsentSection } from '@mister-guiiug/dev-pwa-config/react/consent-section';
 import { FamilyApps } from '@mister-guiiug/dev-pwa-config/react';
 import { AppFooter } from '@mister-guiiug/dev-pwa-config/react/app-footer';
 import { repoUrl } from '@mister-guiiug/dev-pwa-config/apps-catalog';
@@ -223,6 +224,19 @@ export function SettingsScreen() {
           />
           {updating ? t('settings.updating') : t('settings.forceUpdate')}
         </Button>
+      </Card>
+
+      {/* Revenir sur son choix de mesure d’audience : le retrait se fait ici,
+          en un clic (RGPD, art. 7.3). Mêmes clé et chargeur que le bandeau.
+          Sans clé, la section ne rend rien : `empty:hidden` retire alors la
+          carte, qui resterait vide à l’écran. */}
+      <Card className="empty:hidden">
+        <ConsentSection
+          posthogKey={import.meta.env.VITE_POSTHOG_KEY}
+          loader={() => import('posthog-js/dist/module.slim.js')}
+          className="flex flex-col items-stretch gap-3"
+          titleClassName="font-bold"
+        />
       </Card>
 
       <Card className="mg-family">
