@@ -1,6 +1,9 @@
 ---
 title: Calculer sa moyenne avec coefficients : méthode et exemples
 description: Calculer sa moyenne avec coefficients pas à pas : moyenne d'une matière, moyenne générale, note à viser au prochain contrôle. Exemples et simulateur gratuit.
+date: 2026-09-25
+updated: 2026-09-29
+answer: Pour calculer une moyenne avec coefficients, multipliez chaque note par son coefficient, additionnez ces produits, puis divisez par la somme des coefficients. Exemple : 12 (coefficient 1), 15 (coefficient 2) et 16 (coefficient 1) donnent 58 ÷ 4 = 14,5. La même règle, appliquée aux moyennes des matières, donne la moyenne générale.
 ---
 
 # Calculer sa moyenne avec coefficients : la méthode
@@ -59,7 +62,7 @@ Vérification : (58 + 16 × 2) ÷ 6 = 90 ÷ 6 = 15. Si le résultat dépasse 20,
 - **Oublier de ramener une note sur 20.** Un 8/10 et un 8/20 ne valent pas la même chose. Certains professeurs intègrent toutefois ces notes autrement : en cas de doute, demandez-leur.
 - **Deviner les coefficients.** Ils dépendent de l'établissement, de la classe et parfois du professeur. Reprenez ceux de votre bulletin ou de votre espace numérique de travail.
 - **Arrondir trop tôt.** Gardez les décimales jusqu'au bout, et n'arrondissez que le résultat final.
-- **Confondre moyenne de bulletin et note d'examen.** Le brevet et le baccalauréat ont leurs propres règles de calcul : cette méthode sert aux moyennes de classe.
+- **Confondre moyenne de bulletin et note d'examen.** Le brevet et le baccalauréat ont leurs propres règles de calcul : cette méthode sert aux moyennes de classe. Pour le bac, voyez comment [calculer sa moyenne au bac avec le contrôle continu](calculer-sa-moyenne-au-bac.html).
 
 ## Comment Miss Genius vous aide
 
@@ -84,8 +87,14 @@ Les causes habituelles : un coefficient différent de celui que vous pensiez, un
 
 ### Miss Genius calcule-t-elle la note du brevet ou du bac ?
 
-Non. Elle calcule des moyennes à partir des notes et des coefficients que vous saisissez. Les règles propres aux examens ne sont pas appliquées.
+Non. Elle calcule des moyennes à partir des notes et des coefficients que vous saisissez. Les règles propres aux examens ne sont pas appliquées d'office, mais vous pouvez y reproduire le calcul du bac en saisissant ses coefficients officiels.
 
 ### Faut-il créer un compte ?
 
 Non. Les données sont enregistrées dans le navigateur de votre appareil. Vous pouvez les exporter dans un fichier pour les garder ou les transférer.
+
+## Sources
+
+- [Wikipédia : Moyenne pondérée](https://fr.wikipedia.org/wiki/Moyenne_pond%C3%A9r%C3%A9e)
+- [Ministère de l'Éducation nationale : le diplôme national du brevet](https://www.education.gouv.fr/le-diplome-national-du-brevet-10613)
+- [Ministère de l'Éducation nationale : comment calculer votre note au baccalauréat](https://www.education.gouv.fr/reussir-au-lycee/comment-calculer-votre-note-au-baccalaureat-325511)
