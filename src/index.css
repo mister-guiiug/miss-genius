@@ -268,11 +268,12 @@ h3,
 }
 
 /*
- * Bandeau de mise à jour (`react/update-prompt-banner`). Le socle rend un
- * titre et deux boutons NUS, que `components.css` habille en contrôles
- * neutres. La carte écrite à la main posait le message sur sa propre ligne et
- * deux `Button` de largeur égale dessous : on redit cette mise en page, et on
- * rend à l'action principale l'aplat de marque qu'elle avait.
+ * Bandeau de mise à jour (`react/update-prompt-banner`). La carte écrite à la
+ * main posait le message sur sa propre ligne et deux `Button` de largeur égale
+ * dessous : on redit cette mise en page. Depuis la 6.21.0, le socle groupe les
+ * boutons et peint lui-même « Mettre à jour » de la couleur principale
+ * (`--dwc-primary`) ; il ne reste ici que l'ombre de marque, la même que celle
+ * des boutons primaires.
  */
 [data-dwc='update-banner-title'] {
   flex: 1 1 100%;
@@ -290,9 +291,6 @@ h3,
 }
 
 [data-dwc='update-banner-update'] {
-  border-color: transparent;
-  background: var(--dwc-primary);
-  color: var(--dwc-primary-contrast);
   box-shadow: 0 1px 3px 0
     color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
