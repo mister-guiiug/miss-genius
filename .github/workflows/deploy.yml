@@ -31,4 +31,5 @@ jobs:
       # rien par elle-même : elle rend la variable capable d'agir.
       build-env: |
         VITE_POSTHOG_KEY=${{ vars.VITE_POSTHOG_KEY }}
+        VITE_PRONOTE_PROXY_URL=${{ vars.VITE_PRONOTE_PROXY_URL }}
         VITE_SENTRY_DSN=${{ vars.VITE_SENTRY_DSN }}
