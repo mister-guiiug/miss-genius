@@ -12,9 +12,9 @@
     "pawnote": "^1.6.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261007.1",
+    "@cloudflare/workers-types": "^5.20261028.1",
     "typescript": "~6.0.3",
-    "wrangler": "^4.148.0"
+    "wrangler": "^4.154.0"
   },
   "overrides": {
     "miniflare": {
