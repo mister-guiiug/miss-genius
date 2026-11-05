@@ -12,6 +12,7 @@ import { Button } from '@mister-guiiug/dev-pwa-config/react/button';
 import { SelectField } from '@mister-guiiug/dev-pwa-config/react/field';
 import { ConfirmDialog } from '@mister-guiiug/dev-pwa-config/react/confirm-dialog';
 import { ConsentSection } from '@mister-guiiug/dev-pwa-config/react/consent-section';
+import { PrivacyNotice } from '@mister-guiiug/dev-pwa-config/react/privacy-notice';
 import { FamilyApps } from '@mister-guiiug/dev-pwa-config/react';
 import { AppFooter } from '@mister-guiiug/dev-pwa-config/react/app-footer';
 import { repoUrl } from '@mister-guiiug/dev-pwa-config/apps-catalog';
@@ -231,6 +232,11 @@ export function SettingsScreen() {
           Sans clé, la section ne rend rien : `empty:hidden` retire alors la
           carte, qui resterait vide à l’écran. */}
       <Card className="empty:hidden">
+        <PrivacyNotice
+          env={import.meta.env}
+          className="flex flex-col items-stretch gap-3"
+          titleClassName="font-bold"
+        />
         <ConsentSection
           posthogKey={import.meta.env.VITE_POSTHOG_KEY}
           loader={() => import('posthog-js/dist/module.slim.js')}
