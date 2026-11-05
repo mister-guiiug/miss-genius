@@ -159,6 +159,39 @@ export default defineConfig(({ command }) => {
             '**/sentry.js',
             '**/sentry-*.js',
           ],
+          /*
+           * FREDOKA ET PLUS JAKARTA SANS HORS LIGNE. Les polices viennent de
+           * Google à l'exécution (`index.html`) : sans ces deux règles, l'app
+           * « 100 % hors ligne » démarrait hors ligne en police système. La
+           * FEUILLE se relit en arrière-plan — Google la fait évoluer ; les
+           * FICHIERS, eux, sont immuables sous leur URL et se gardent un an.
+           * `[0, 200]` partout : la feuille part sans `crossorigin`, donc en
+           * réponse opaque (statut 0), et `CacheFirst` refuse l'opaque par
+           * défaut ; écrit, le choix ne dépend plus du défaut de chaque
+           * stratégie.
+           */
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\//,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'google-fonts-stylesheets',
+                cacheableResponse: { statuses: [0, 200] },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/fonts\.gstatic\.com\//,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-webfonts',
+                cacheableResponse: { statuses: [0, 200] },
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 60 * 60 * 24 * 365,
+                },
+              },
+            },
+          ],
           navigateFallback: 'index.html',
           cleanupOutdatedCaches: true,
         },
