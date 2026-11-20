@@ -3,13 +3,15 @@
  *
  * Pourquoi : Pronote n'a pas d'API publique et n'autorise pas les requêtes
  * cross-origin depuis un navigateur (CORS). Ce Worker s'exécute côté serveur,
- * se connecte à Pronote via la librairie non officielle `pawnote`, et renvoie
+ * se connecte à Pronote avec son propre client (`src/pronote/`, portage de
+ * Pawnote.js sous GPL-3.0-or-later, sans dépendance), et renvoie
  * au PWA un JSON normalisé (contrat partagé avec
  * `src/features/pronote/pronoteContract.ts`).
  *
  * ⚠️ Avertissements
- *  - `pawnote` est **non officielle** (rétro-ingénierie) : l'API peut évoluer
- *    (ce Worker cible pawnote 1.6.x). Vérifier après toute mise à jour.
+ *  - Le protocole Pronote n'est pas public (rétro-ingénierie de Pawnote 1.6.2) :
+ *    il peut changer à une mise à jour de Pronote. Comparer alors `src/pronote/`
+ *    à Pawnote.js, dont il reprend les noms pour faciliter le report.
  *  - Les identifiants transitent par ce Worker le temps de la requête : ne rien
  *    journaliser, restreindre `ALLOWED_ORIGIN`, préférer un usage personnel.
  *  - Respecter les conditions d'utilisation de votre établissement / Pronote.
@@ -25,7 +27,7 @@ import {
   gradesOverview,
   loginCredentials,
   TabLocation,
-} from 'pawnote';
+} from './pronote/index.ts';
 
 interface Env {
   ALLOWED_ORIGIN?: string;

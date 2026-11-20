@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * Contrat **stable** entre le PWA et le proxy Pronote (Cloudflare Worker).
- * Le Worker encapsule `pawnote` et renvoie ce format normalisé ; le PWA ne
+ * Le Worker (client Pronote intégré, `worker/src/pronote/`) renvoie ce format normalisé ; le PWA ne
  * connaît jamais l'API Pronote directement.
  */
 const pronoteGradeSchema = z.object({

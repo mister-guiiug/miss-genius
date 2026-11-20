@@ -20,7 +20,9 @@ Famille `miss-*` / `mister-*` — conventions partagées via
 - **Connecteur Pronote optionnel** (`worker/`, Cloudflare Worker) : un relais
   qui récupère les notes Pronote. Le build publié ne le branche pas
   (`VITE_PRONOTE_PROXY_URL` n'y est pas posée) : l'écran Pronote n'y propose que
-  des données de démonstration.
+  des données de démonstration. Son client Pronote est intégré (`worker/src/pronote/`,
+  portage de Pawnote.js, sans dépendance) : le dossier `worker/` est donc sous
+  GPL-3.0-or-later, le reste de l'application sous MIT.
 - **Découpage par feature** (`features/*`) au-dessus d'un socle partagé
   (`shared/*`) : types métier, moteur de calcul **pur**, store, composants UI.
 - **Moteur de calcul = fonctions pures** (`shared/lib/average.ts`,
@@ -209,4 +211,4 @@ pourtant de l'appareil :
 
 ---
 
-MIT © GuiiuG
+MIT © GuiiuG, sauf le dossier `worker/` : GPL-3.0-or-later (voir `worker/LICENSE`).
