@@ -34,6 +34,8 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           build-mode: none
+          # Un seul fichier exclu, le faux serveur Pronote des tests : voir la config.
+          config-file: ./.github/codeql/codeql-config.yml
 
       - uses: github/codeql-action/analyze@v3
         with:
