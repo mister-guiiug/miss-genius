@@ -86,6 +86,23 @@ const modpow = (b: bigint, e: bigint, m: bigint) => {
   return r;
 };
 
+// Une clé RSA de 2048 bits, générée une seule fois pour tous les faux serveurs.
+// La taille ne fait pas partie du protocole : le client lit le module dans la
+// page (MR) et en déduit la longueur du bloc chiffré. La validation par Pawnote
+// citée plus haut a été faite avec une clé de 1024 bits.
+let cleRsa: { n: bigint; d: bigint } | undefined;
+const cleServeur = () => {
+  if (!cleRsa) {
+    const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+    const jwk = privateKey.export({ format: 'jwk' }) as {
+      n: string;
+      d: string;
+    };
+    cleRsa = { n: b64url(jwk.n), d: b64url(jwk.d) };
+  }
+  return cleRsa;
+};
+
 export function fauxPronote(options: OptionsFauxPronote = {}) {
   const o = {
     version: '2025.2.5',
@@ -101,10 +118,8 @@ export function fauxPronote(options: OptionsFauxPronote = {}) {
   const version = o.version.split('.').map(Number);
   const p = proprietes(version);
   const recente = versionGte(version, [2025, 1, 3]);
-  const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 1024 });
-  const jwk = privateKey.export({ format: 'jwk' }) as { n: string; d: string };
-  const n = b64url(jwk.n);
-  const d = b64url(jwk.d);
+  const { n, d } = cleServeur();
+  const octetsModule = Math.ceil(n.toString(16).length / 2);
   const jeton = 'jeton-' + randomBytes(8).toString('hex');
   const journal: string[] = [];
   const sessions = new Map<number, any>();
@@ -166,7 +181,7 @@ export function fauxPronote(options: OptionsFauxPronote = {}) {
       if (o.rsa === 'page') {
         const em = modpow(BigInt('0x' + brut.toString('hex')), d, n)
           .toString(16)
-          .padStart(256, '0');
+          .padStart(octetsModule * 2, '0');
         const octets = Buffer.from(em, 'hex');
         if (octets[0] !== 0 || octets[1] !== 2)
           throw new Error('remplissage RSA invalide');
