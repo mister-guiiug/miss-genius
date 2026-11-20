@@ -15,6 +15,11 @@ on:
     paths:
       - 'worker/**'
       - '.github/workflows/deploy-worker.yml'
+  # Les PR qui touchent au Worker jouent ses tests ; elles ne déploient rien.
+  pull_request:
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
   workflow_dispatch:
 
 permissions:
@@ -34,14 +39,24 @@ jobs:
         working-directory: worker
         run: npm install --no-audit --no-fund
 
-      # Validation du bundling (esbuild) sans déployer — informatif, non bloquant
-      # car `pawnote` est une lib non officielle dont l'API peut évoluer.
+      - name: Types
+        working-directory: worker
+        run: npm run typecheck
+
+      # Le client Pronote (src/pronote/) contre un faux serveur, validé avec
+      # Pawnote : voir worker/README.md. Bloquant : un client cassé ne part pas.
+      - name: Tests du client Pronote
+        working-directory: worker
+        run: npm test
+
+      # Validation du bundling (esbuild) sans déployer. Bloquant depuis que le
+      # client est intégré : plus de dépendance non officielle à attendre.
       - name: Dry-run build
-        continue-on-error: true
         working-directory: worker
         run: npx wrangler deploy --dry-run --outdir=.wrangler-dryrun
 
       - name: Deploy (si secrets Cloudflare présents)
+        if: github.event_name != 'pull_request'
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

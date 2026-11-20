@@ -1,0 +1,13 @@
+# Configuration CodeQL de miss-genius.
+#
+# UN SEUL FICHIER EXCLU, et pour une raison écrite. `worker/test/faux-pronote.ts`
+# est un faux serveur Pronote, écrit pour éprouver le client du Worker sans
+# compte réel. Il reproduit À DESSEIN la cryptographie du protocole Pronote :
+# clés et vecteurs AES dérivés par MD5, clé RSA de 1024 bits. CodeQL y voit
+# donc « algorithme faible » (js/weak-cryptographic-algorithm) et « clé trop
+# courte » (js/insufficient-key-size) : vrai en général, voulu ici. Ce fichier
+# ne sert qu'aux tests et n'est jamais déployé. Tout le reste du dépôt, client
+# Pronote compris (`worker/src/pronote/`), reste analysé.
+name: miss-genius
+paths-ignore:
+  - worker/test/faux-pronote.ts
