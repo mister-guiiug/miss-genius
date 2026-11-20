@@ -315,7 +315,7 @@ const fr = {
     usernameLabel: 'Identifiant',
     passwordLabel: 'Mot de passe',
     passwordHint:
-      'Transmis au connecteur uniquement le temps de la requête, jamais enregistré.',
+      'Envoyé, avec ton identifiant, au connecteur de Miss Genius (un serveur Cloudflare), qui se connecte à Pronote à ta place le temps de la requête. Jamais enregistré, ni sur l’appareil ni sur le serveur.',
     connecting: 'Connexion…',
     fetch: 'Récupérer mes notes',
     tryDemo: 'Essayer avec des données de démo',
@@ -684,7 +684,7 @@ const en = {
     usernameLabel: 'Username',
     passwordLabel: 'Password',
     passwordHint:
-      'Sent to the connector only for the duration of the request, never stored.',
+      'Sent, with your username, to the Miss Genius connector (a Cloudflare server), which signs in to Pronote on your behalf for the duration of the request. Never stored, neither on the device nor on the server.',
     connecting: 'Connecting…',
     fetch: 'Fetch my grades',
     tryDemo: 'Try with demo data',
