@@ -18,9 +18,9 @@ Famille `miss-*` / `mister-*` — conventions partagées via
   JSON unique**, ce qui rend l'export/import trivial et prépare une future
   synchro cloud (push/pull d'un seul document).
 - **Connecteur Pronote optionnel** (`worker/`, Cloudflare Worker) : un relais
-  qui récupère les notes Pronote. Le build publié ne le branche pas
-  (`VITE_PRONOTE_PROXY_URL` n'y est pas posée) : l'écran Pronote n'y propose que
-  des données de démonstration. Son client Pronote est intégré (`worker/src/pronote/`,
+  qui récupère les notes Pronote. Le build publié y est branché depuis le
+  20/11/2026 (`VITE_PRONOTE_PROXY_URL`, variable du dépôt) ; sans la variable,
+  l'écran Pronote ne propose que des données de démonstration. Son client Pronote est intégré (`worker/src/pronote/`,
   portage de Pawnote.js, sans dépendance) : le dossier `worker/` est donc sous
   GPL-3.0-or-later, le reste de l'application sous MIT.
 - **Découpage par feature** (`features/*`) au-dessus d'un socle partagé
@@ -199,7 +199,7 @@ signe + libellé lecteur d'écran), `prefers-reduced-motion` respecté.
 ## Confidentialité
 
 Notes, scénarios et réglages restent dans le `localStorage` de l'appareil ; le
-partage (texte ou PDF) ne part que sur un geste explicite. Trois flux sortent
+partage (texte ou PDF) ne part que sur un geste explicite. Quatre flux sortent
 pourtant de l'appareil :
 
 - **Sentry** (région UE) : démarre à l'ouverture, sans consentement ; il signale
@@ -208,6 +208,11 @@ pourtant de l'appareil :
   dans le bandeau de consentement ; un refus n'envoie rien.
 - **Google Fonts** : les polices Fredoka et Plus Jakarta Sans sont demandées à
   Google au chargement de la page, ce qui lui transmet l'adresse IP du visiteur.
+- **Connecteur Pronote** (Cloudflare Workers) : seulement quand l'élève lance
+  « Récupérer mes notes ». L'adresse de l'établissement, l'identifiant et le mot
+  de passe partent au Worker, qui se connecte à Pronote le temps de la requête
+  et renvoie les notes ; rien n'est enregistré, ni sur l'appareil ni sur le
+  Worker, qui ne journalise rien. Seule l'origine de l'app est admise (CORS).
 
 ---
 

@@ -1,4 +1,4 @@
-import { defineConfig, type PluginOption } from 'vite';
+import { defineConfig, loadEnv, type PluginOption } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -20,7 +20,20 @@ const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as {
 };
 
 // Déployé sur GitHub Pages : https://mister-guiiug.github.io/miss-genius/
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
+  // L'ORIGINE DU CONNECTEUR PRONOTE, ET ELLE SEULE, dans connect-src. La
+  // politique ouvrait `https://*.workers.dev` : n'importe quel Worker de
+  // n'importe quel compte, de quoi exfiltrer vers le sien après une injection.
+  // Sans variable, aucun hôte de plus.
+  const proxyPronote = loadEnv(
+    mode,
+    process.cwd(),
+    'VITE_'
+  ).VITE_PRONOTE_PROXY_URL;
+  const origineProxyPronote = proxyPronote?.trim()
+    ? new URL(proxyPronote.trim()).origin
+    : null;
+
   // `VITE_BASE_PATH` (déploiement famille + CI Lighthouse avec « / ») prioritaire.
   const basePath =
     process.env.VITE_BASE_PATH || (command === 'build' ? '/miss-genius/' : '/');
@@ -123,7 +136,10 @@ export default defineConfig(({ command }) => {
         // l'accord serait refusée par la politique — et l'échec ne se verrait
         // qu'en console, sur le site déployé, une fois le consentement donné.
         analytics: true,
-        connectSrc: ["'self'", 'https://*.workers.dev'],
+        connectSrc: [
+          "'self'",
+          ...(origineProxyPronote ? [origineProxyPronote] : []),
+        ],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
         fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
         extraDirectives: {
