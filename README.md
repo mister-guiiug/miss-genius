@@ -10,6 +10,11 @@ Famille `miss-*` / `mister-*` — conventions partagées via
 
 ---
 
+## Guides
+
+- [Calculer sa moyenne au bac](https://mister-guiiug.github.io/miss-genius/calculer-sa-moyenne-au-bac.html)
+- [Calculer sa moyenne avec coefficients](https://mister-guiiug.github.io/miss-genius/calculer-sa-moyenne-avec-coefficients.html)
+
 ## 1. Choix d'architecture (résumé)
 
 - **Local-first.** Toute la logique vit dans le navigateur. Aucune dépendance
